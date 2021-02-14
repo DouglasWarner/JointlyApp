@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="titleApp">60sp</dimen>
+    <dimen name="margin_top_chbRemember">8dp</dimen>
+    <dimen name="margin_top_btnSignIn">24dp</dimen>
+    <dimen name="margin_top_btnGoogle">8dp</dimen>
+    <dimen name="icon_size_btnGoogle">30dp</dimen>
+    <dimen name="icon_size_btnFacebook">30dp</dimen>
+    <dimen name="titleSignUp">30sp</dimen>
+</resources>

@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".ui.initiative.InitiativeFragment">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/llNoDataInitiativeCreated"
+        android:orientation="vertical"
+        android:visibility="gone">
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/imgNoData"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:id="@+id/tvNoData"
+            android:text="@string/tvNoData"
+            android:gravity="center"
+            android:textSize="20sp"
+            android:layout_marginBottom="20dp"/>
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+<!--        <TextView-->
+<!--            android:id="@+id/tvCreated"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:text="Creados"-->
+<!--            style="@style/TextOnPrimary"-->
+<!--            android:textSize="20sp"-->
+<!--            android:layout_margin="10dp"-->
+<!--            app:drawableEndCompat="@drawable/ic_arrow_down"-->
+<!--            android:clickable="true"/>-->
+
+
+        <!-- Lista de inicitativa creadas -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:id="@+id/llInitiativeCreated"
+            android:visibility="visible">
+
+<!--            <TextView-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:text="En curso"-->
+<!--                style="@style/TextOnPrimary"-->
+<!--                android:textSize="20sp"-->
+<!--                android:layout_marginStart="20dp"-->
+<!--                android:layout_marginTop="10dp"/>-->
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvInitiativeCreatedInProgress"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+<!--            <TextView-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:text="Historial"-->
+<!--                style="@style/TextOnPrimary"-->
+<!--                android:textSize="20sp"-->
+<!--                android:layout_marginStart="20dp"-->
+<!--                android:layout_marginTop="10dp" />-->
+
+<!--            <androidx.recyclerview.widget.RecyclerView-->
+<!--                android:id="@+id/rvInitiativeCreatedHistory"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content" />-->
+
+        </LinearLayout>
+
+<!--        <TextView-->
+<!--            android:id="@+id/tvJoined"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:text="Unidos"-->
+<!--            style="@style/TextOnPrimary"-->
+<!--            android:textSize="20sp"-->
+<!--            android:layout_margin="10dp"-->
+<!--            app:drawableEndCompat="@drawable/ic_arrow_down"-->
+<!--            android:clickable="true"/>-->
+
+<!--        &lt;!&ndash; Lista de iniciativas unidas &ndash;&gt;-->
+<!--        <LinearLayout-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:orientation="vertical"-->
+<!--            android:id="@+id/llInitiativeJoined"-->
+<!--            android:visibility="gone">-->
+
+<!--            <TextView-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:text="En curso"-->
+<!--                style="@style/TextOnPrimary"-->
+<!--                android:textSize="20sp"-->
+<!--                android:layout_margin="10dp"/>-->
+
+<!--            <androidx.recyclerview.widget.RecyclerView-->
+<!--                android:id="@+id/rvInitiativeJoinedInProgress"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content" />-->
+
+<!--            <TextView-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:text="Historial"-->
+<!--                style="@style/TextOnPrimary"-->
+<!--                android:textSize="20sp"-->
+<!--                android:layout_margin="10dp" />-->
+
+<!--            <androidx.recyclerview.widget.RecyclerView-->
+<!--                android:id="@+id/rvInitiativeJoinedHistory"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content" />-->
+
+<!--        </LinearLayout>-->
+
+    </LinearLayout>
+
+    <include layout="@layout/layout_loading_data"
+        android:layout_height="match_parent"
+        android:layout_width="match_parent"/>
+
+</FrameLayout>

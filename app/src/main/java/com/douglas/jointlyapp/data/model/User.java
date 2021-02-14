@@ -1,11 +1,13 @@
 package com.douglas.jointlyapp.data.model;
 
+import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
 
 import java.io.Serializable;
-import java.text.ParseException;
-import java.util.Comparator;
+import java.util.ArrayList;
+import java.util.List;
+
 
 public class User implements Comparable<User>, Serializable, Parcelable {
 
@@ -14,15 +16,19 @@ public class User implements Comparable<User>, Serializable, Parcelable {
     private String password;
     private String name;
     private String phone;
-    private String imagen;
+    private Uri imagen;
     private String location;
     private String description;
     private String createdAt;
+    private List<User> userFollowed;
+    private List<User> userFollowers;
 
     public User() {
+        userFollowed = new ArrayList<>();
+        userFollowers = new ArrayList<>();
     }
 
-    public User(int id, String email, String password, String name, String phone, String imagen, String location, String description, String createdAt) {
+    public User(int id, String email, String password, String name, String phone, Uri imagen, String location, String description, String createdAt) {
         this.id = id;
         this.email = email;
         this.password = password;
@@ -32,7 +38,36 @@ public class User implements Comparable<User>, Serializable, Parcelable {
         this.location = location;
         this.description = description;
         this.createdAt = createdAt;
+        userFollowed = new ArrayList<>();
+        userFollowers = new ArrayList<>();
     }
+
+
+    protected User(Parcel in) {
+        id = in.readInt();
+        email = in.readString();
+        password = in.readString();
+        name = in.readString();
+        phone = in.readString();
+        imagen = in.readParcelable(Uri.class.getClassLoader());
+        location = in.readString();
+        description = in.readString();
+        createdAt = in.readString();
+        userFollowed = in.createTypedArrayList(User.CREATOR);
+        userFollowers = in.createTypedArrayList(User.CREATOR);
+    }
+
+    public static final Creator<User> CREATOR = new Creator<User>() {
+        @Override
+        public User createFromParcel(Parcel in) {
+            return new User(in);
+        }
+
+        @Override
+        public User[] newArray(int size) {
+            return new User[size];
+        }
+    };
 
     public int getId() {
         return id;
@@ -74,11 +109,11 @@ public class User implements Comparable<User>, Serializable, Parcelable {
         this.phone = phone;
     }
 
-    public String getImagen() {
+    public Uri getImagen() {
         return imagen;
     }
 
-    public void setImagen(String imagen) {
+    public void setImagen(Uri imagen) {
         this.imagen = imagen;
     }
 
@@ -104,6 +139,14 @@ public class User implements Comparable<User>, Serializable, Parcelable {
 
     public void setCreatedAt(String createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public List<User> getUserFollowed() {
+        return userFollowed;
+    }
+
+    public List<User> getUserFollowers() {
+        return userFollowers;
     }
 
     @Override
@@ -149,11 +192,16 @@ public class User implements Comparable<User>, Serializable, Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(id);
+        dest.writeString(email);
+        dest.writeString(password);
         dest.writeString(name);
-        dest.writeString(name);
-        dest.writeString(name);
-        dest.writeString(name);
-        dest.writeString(name);
-        dest.writeString(name);
+        dest.writeString(phone);
+        imagen.writeToParcel(dest, flags);
+        dest.writeString(location);
+        dest.writeString(description);
+        dest.writeString(createdAt);
+        dest.writeTypedList(userFollowed);
+        dest.writeTypedList(userFollowers);
     }
 }

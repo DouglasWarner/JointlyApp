@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/homeFragment">
+
+    <fragment
+        android:id="@+id/homeFragment"
+        android:name="com.douglas.jointlyapp.ui.home.HomeFragment"
+        android:label="@string/home"
+        tools:layout="@layout/fragment_home" >
+        <action
+            android:id="@+id/action_homeFragment_to_showInitiativeFragment"
+            app:destination="@id/showInitiativeFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/initiativeFragment"
+        android:name="com.douglas.jointlyapp.ui.initiative.InitiativeFragment"
+        android:label="@string/initiative"
+        tools:layout="@layout/fragment_initiative" >
+        <action
+            android:id="@+id/action_initiativeFragment_to_manageInitiativeFragment"
+            app:destination="@id/manageInitiativeFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/favoriteFragment"
+        android:name="com.douglas.jointlyapp.ui.favorite.FavoriteFragment"
+        android:label="@string/favorite"
+        tools:layout="@layout/fragment_favorite" >
+        <action
+            android:id="@+id/action_favoriteFragment_to_profileFragment"
+            app:destination="@id/profileFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/profileFragment"
+        android:name="com.douglas.jointlyapp.ui.profile.ProfileFragment"
+        android:label="@string/profile"
+        tools:layout="@layout/fragment_profile">
+        <action
+            android:id="@+id/action_profileFragment_to_showInitiativeFragment"
+            app:destination="@id/showInitiativeFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/manageInitiativeFragment"
+        android:name="com.douglas.jointlyapp.ui.initiative.manage.ManageInitiativeFragment"
+        android:label=""
+        tools:layout="@layout/fragment_manage_initiative" />
+    <fragment
+        android:id="@+id/showInitiativeFragment"
+        android:name="com.douglas.jointlyapp.ui.showinitiative.ShowInitiativeFragment"
+        android:label=" "
+        tools:layout="@layout/fragment_show_initiative" />
+</navigation>

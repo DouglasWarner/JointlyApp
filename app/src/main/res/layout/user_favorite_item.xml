@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="75dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/cardView"
+    android:layout_margin="10dp"
+    android:clickable="true"
+    app:cardCornerRadius="30dp"
+    app:cardElevation="8dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
+
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/imgUserFavorite"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="10dp"
+            android:src="@mipmap/ic_app"
+            app:shapeAppearanceOverlay="@style/imageCircular"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/tvUserName"
+            android:layout_weight="1"
+            android:text="@string/tvUserName"
+            android:layout_gravity="center_vertical"
+            style="@style/TextOnPrimary"
+            android:textStyle="bold"
+            android:layout_marginHorizontal="10dp"/>
+
+        <Button
+            android:id="@+id/btnFollowUser"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:text="@string/btnFollowUser"
+            android:layout_marginEnd="10dp"/>
+
+    </LinearLayout>
+
+</com.google.android.material.card.MaterialCardView>

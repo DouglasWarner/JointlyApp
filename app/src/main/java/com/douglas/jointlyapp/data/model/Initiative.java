@@ -1,9 +1,12 @@
 package com.douglas.jointlyapp.data.model;
 
+import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Initiative implements Comparable<Initiative>, Serializable, Parcelable {
 
@@ -11,24 +14,37 @@ public class Initiative implements Comparable<Initiative>, Serializable, Parcela
     private String name;
     private String createdAt;
     private String targetDate;
-    private String targetHour;
+    private String targetTime;
     private String description;
     private String targetArea;
     private String location;
-    private String imagen;
+    private Uri imagen;
     private String targetAmount;
     private String status;
     private String createdBy;
+    private List<User> userJoined;
 
     public Initiative() {
+        this.userJoined = new ArrayList<>();
     }
 
-    public Initiative(int id, String name, String createdAt, String targetDate, String targetHour, String description, String targetArea, String location, String imagen, String targetAmount, String status, String createdBy) {
+    public Initiative(int id, String name, String createdAt, String targetDate, String targetTime, String description, String targetArea, String location) {
         this.id = id;
         this.name = name;
         this.createdAt = createdAt;
         this.targetDate = targetDate;
-        this.targetHour = targetHour;
+        this.targetTime = targetTime;
+        this.description = description;
+        this.targetArea = targetArea;
+        this.location = location;
+        this.userJoined = new ArrayList<>();
+    }
+
+    public Initiative(String name, String createdAt, String targetDate, String targetTime, String description, String targetArea, String location, Uri imagen, String targetAmount, String status, String createdBy) {
+        this.name = name;
+        this.createdAt = createdAt;
+        this.targetDate = targetDate;
+        this.targetTime = targetTime;
         this.description = description;
         this.targetArea = targetArea;
         this.location = location;
@@ -36,7 +52,67 @@ public class Initiative implements Comparable<Initiative>, Serializable, Parcela
         this.targetAmount = targetAmount;
         this.status = status;
         this.createdBy = createdBy;
+        this.userJoined = new ArrayList<>();
     }
+
+    /**
+     * Crea una iniciativa
+     * @param id
+     * @param name
+     * @param createdAt
+     * @param targetDate
+     * @param targetTime
+     * @param description
+     * @param targetArea
+     * @param location
+     * @param imagen
+     * @param targetAmount
+     * @param status
+     * @param createdBy
+     */
+    public Initiative(int id, String name, String createdAt, String targetDate, String targetTime, String description, String targetArea, String location, Uri imagen, String targetAmount, String status, String createdBy) {
+        this.id = id;
+        this.name = name;
+        this.createdAt = createdAt;
+        this.targetDate = targetDate;
+        this.targetTime = targetTime;
+        this.description = description;
+        this.targetArea = targetArea;
+        this.location = location;
+        this.imagen = imagen;
+        this.targetAmount = targetAmount;
+        this.status = status;
+        this.createdBy = createdBy;
+        this.userJoined = new ArrayList<>();
+    }
+
+    protected Initiative(Parcel in) {
+        id = in.readInt();
+        name = in.readString();
+        createdAt = in.readString();
+        targetDate = in.readString();
+        targetTime = in.readString();
+        description = in.readString();
+        targetArea = in.readString();
+        location = in.readString();
+        imagen = in.readParcelable(Uri.class.getClassLoader());
+        targetAmount = in.readString();
+        status = in.readString();
+        createdBy = in.readString();
+        userJoined = in.createTypedArrayList(User.CREATOR);
+    }
+
+    public static final Creator<Initiative> CREATOR = new Creator<Initiative>() {
+        @Override
+        public Initiative createFromParcel(Parcel in) {
+            return new Initiative(in);
+        }
+
+        @Override
+        public Initiative[] newArray(int size) {
+            return new Initiative[size];
+        }
+    };
 
     public int getId() {
         return id;
@@ -70,12 +146,12 @@ public class Initiative implements Comparable<Initiative>, Serializable, Parcela
         this.targetDate = targetDate;
     }
 
-    public String getTargetHour() {
-        return targetHour;
+    public String getTargetTime() {
+        return targetTime;
     }
 
-    public void setTargetHour(String targetHour) {
-        this.targetHour = targetHour;
+    public void setTargetTime(String targetTime) {
+        this.targetTime = targetTime;
     }
 
     public String getDescription() {
@@ -102,11 +178,13 @@ public class Initiative implements Comparable<Initiative>, Serializable, Parcela
         this.location = location;
     }
 
-    public String getImagen() {
+    public Uri getImagen()
+    {
         return imagen;
     }
 
-    public void setImagen(String imagen) {
+    public void setImagen(Uri imagen)
+    {
         this.imagen = imagen;
     }
 
@@ -134,6 +212,10 @@ public class Initiative implements Comparable<Initiative>, Serializable, Parcela
         this.createdBy = createdBy;
     }
 
+    public List<User> getUserJoined() {
+        return userJoined;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -149,23 +231,6 @@ public class Initiative implements Comparable<Initiative>, Serializable, Parcela
         return id;
     }
 
-    @Override
-    public String toString() {
-        return "Initiative{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", createdAt='" + createdAt + '\'' +
-                ", targetDate='" + targetDate + '\'' +
-                ", targetHour='" + targetHour + '\'' +
-                ", description='" + description + '\'' +
-                ", targetArea='" + targetArea + '\'' +
-                ", location='" + location + '\'' +
-                ", imagen='" + imagen + '\'' +
-                ", targetAmount='" + targetAmount + '\'' +
-                ", status='" + status + '\'' +
-                ", createdBy='" + createdBy + '\'' +
-                '}';
-    }
 
     @Override
     public int compareTo(Initiative initiative) {
@@ -181,11 +246,16 @@ public class Initiative implements Comparable<Initiative>, Serializable, Parcela
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeInt(id);
         dest.writeString(name);
-        dest.writeString(name);
-        dest.writeString(name);
-        dest.writeString(name);
-        dest.writeString(name);
-        dest.writeString(name);
-        dest.writeString(name);
+        dest.writeString(createdAt);
+        dest.writeString(targetDate);
+        dest.writeString(targetTime);
+        dest.writeString(description);
+        dest.writeString(targetArea);
+        dest.writeString(location);
+        imagen.writeToParcel(dest, flags);
+        dest.writeString(targetAmount);
+        dest.writeString(status);
+        dest.writeString(createdBy);
+        dest.writeTypedList(userJoined);
     }
 }

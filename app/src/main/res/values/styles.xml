@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="TextInputLayout" parent="Widget.Design.TextInputLayout">
+        <item name="android:fontFamily">@font/raleway</item>
+        <item name="android:textColor">@color/primaryTextColor</item>
+        <item name="errorEnabled">true</item>
+        <item name="errorTextColor">@android:color/holo_red_light</item>
+    </style>
+    <style name="TextOnPrimary" parent="TextAppearance.AppCompat">
+        <item name="android:fontFamily">@font/raleway</item>
+        <item name="android:textColor">@color/primaryTextColor</item>
+    </style>
+    <style name="MiButton">
+        <item name="android:fontFamily">@font/raleway</item>
+        <item name="android:textSize">10sp</item>
+        <item name="backgroundTint">@color/secondaryColor</item>
+        <item name="android:background">@drawable/button_shape</item>
+        <item name="android:textColor">@color/secondaryTextColor</item>
+    </style>
+    <style name="imageCircular">
+        <item name="cornerSize">50%</item>
+    </style>
+</resources>
