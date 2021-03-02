@@ -5,15 +5,21 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toolbar;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.douglas.jointlyapp.R;
+import com.douglas.jointlyapp.data.comparators.InitiativeSortByDate;
+import com.douglas.jointlyapp.data.comparators.InitiativeSortByLocation;
+import com.douglas.jointlyapp.data.comparators.InitiativeSortByUserJoineds;
 import com.douglas.jointlyapp.data.model.Initiative;
+import com.douglas.jointlyapp.data.model.User;
+import com.douglas.jointlyapp.ui.JointlyApplication;
+import com.douglas.jointlyapp.ui.utils.CommonUtils;
 import com.google.android.material.imageview.ShapeableImageView;
 
+import java.util.Collections;
 import java.util.List;
 
 public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ViewHolder> {
@@ -24,10 +30,12 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ViewHolder> {
     }
 
     private List<Initiative> list;
+    private List<User> userOwners;
     private ManageInitiative listener;
 
-    public HomeAdapter(List<Initiative> list, ManageInitiative listener) {
+    public HomeAdapter(List<Initiative> list, List<User> userOwners, ManageInitiative listener) {
         this.list = list;
+        this.userOwners = userOwners;
         this.listener = listener;
     }
 
@@ -40,10 +48,16 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ViewHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull HomeAdapter.ViewHolder holder, int position) {
-        holder.imgInitiative.setImageURI(list.get(position).getImagen());
-        holder.imgUser.setImageResource(R.mipmap.ic_app);
+        holder.imgInitiative.setImageBitmap(list.get(position).getImagen());
+        User u = userOwners.stream().findFirst().filter(x -> x.getEmail().equals(list.get(position).getCreatedBy())).orElse(null);
+
+        if(u != null)
+            holder.imgUser.setImageBitmap(u.getImagen());
+        else
+            holder.imgUser.setImageBitmap(CommonUtils.getImagenUserDefault(JointlyApplication.getContext()));
+
         holder.tvInitiativeName.setText(list.get(position).getName());
-        holder.tvCountUser.setText(String.valueOf(list.get(position).getUserJoined().size()));
+        holder.tvCountUser.setText(String.valueOf(list.get(position).getCountUserJoined()));
         holder.tvLocationInitiative.setText(list.get(position).getLocation());
     }
 
@@ -52,10 +66,28 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ViewHolder> {
         return list.size();
     }
 
-    public void update(List<Initiative> list)
+    public void update(List<Initiative> list, List<User> userOwners)
     {
         this.list.clear();
         this.list.addAll(list);
+        this.userOwners.clear();
+        this.userOwners.addAll(userOwners);
+        notifyDataSetChanged();
+    }
+
+    //TODO refactorizar
+    public void sortByDate() {
+        Collections.sort(list, new InitiativeSortByDate());
+        notifyDataSetChanged();
+    }
+
+    public void sortByLocation() {
+        Collections.sort(list, new InitiativeSortByLocation());
+        notifyDataSetChanged();
+    }
+
+    public void sortByUsersJoineds() {
+        Collections.sort(list, new InitiativeSortByUserJoineds());
         notifyDataSetChanged();
     }
 
@@ -70,11 +102,10 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ViewHolder> {
         TextView tvInitiativeName;
         TextView tvCountUser;
         TextView tvLocationInitiative;
-        Toolbar tbCard;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-            imgInitiative = itemView.findViewById(R.id.imgInitiative);
+            imgInitiative = itemView.findViewById(R.id.imgBtnInitiative);
             imgUser = itemView.findViewById(R.id.imgUser);
             tvInitiativeName = itemView.findViewById(R.id.tvInitiativeName);
             tvCountUser = itemView.findViewById(R.id.tvCountUser);
@@ -83,7 +114,6 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ViewHolder> {
             itemView.setOnClickListener(v -> {
                 listener.onClick(v);
             });
-            //TODO implementar click on toolbar
         }
     }
 }

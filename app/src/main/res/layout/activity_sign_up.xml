@@ -2,9 +2,9 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/signUpContent"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:id="@+id/signUpContent"
     tools:context=".ui.signup.SignUpActivity">
 
     <TextView
@@ -26,19 +26,20 @@
         style="@style/TextInputLayout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/guideline11"
         app:layout_constraintEnd_toStartOf="@+id/guideline2"
         app:layout_constraintStart_toStartOf="@+id/guideline"
         app:layout_constraintTop_toBottomOf="@+id/tvTitleSignUp"
-        app:layout_constraintVertical_bias="0.2">
+        app:layout_constraintVertical_bias="0.08">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/tieEmail"
+            style="@style/TextInputLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/tieEmail"
-            android:inputType="textEmailAddress"
-            style="@style/TextInputLayout">
+            android:inputType="textEmailAddress">
+
             <requestFocus />
         </com.google.android.material.textfield.TextInputEditText>
     </com.google.android.material.textfield.TextInputLayout>
@@ -48,20 +49,20 @@
         style="@style/TextInputLayout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:endIconMode="password_toggle"
+        app:layout_constraintBottom_toTopOf="@+id/guideline11"
         app:layout_constraintEnd_toStartOf="@+id/guideline2"
         app:layout_constraintStart_toStartOf="@+id/guideline"
         app:layout_constraintTop_toBottomOf="@+id/tilEmail"
-        app:layout_constraintVertical_bias="0.03"
-        app:endIconMode="password_toggle">
+        app:layout_constraintVertical_bias="0.0">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/tiePassword"
             style="@style/TextInputLayout"
-            android:inputType="textPassword"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/tiePassword" />
+            android:hint="@string/tiePassword"
+            android:inputType="textPassword" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
@@ -69,20 +70,20 @@
         style="@style/TextInputLayout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:endIconMode="password_toggle"
+        app:layout_constraintBottom_toTopOf="@+id/guideline11"
         app:layout_constraintEnd_toStartOf="@+id/guideline2"
         app:layout_constraintStart_toStartOf="@+id/guideline"
         app:layout_constraintTop_toBottomOf="@+id/tilPassword"
-        app:layout_constraintVertical_bias="0.05"
-        app:endIconMode="password_toggle">
+        app:layout_constraintVertical_bias="0.0">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/tieConfirmPassword"
             style="@style/TextInputLayout"
-            android:inputType="textPassword"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/tieConfirmPassword" />
+            android:hint="@string/tieConfirmPassword"
+            android:inputType="textPassword" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
@@ -90,19 +91,19 @@
         style="@style/TextInputLayout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/guideline11"
         app:layout_constraintEnd_toStartOf="@+id/guideline2"
         app:layout_constraintStart_toStartOf="@+id/guideline"
         app:layout_constraintTop_toBottomOf="@+id/tilConfirmPassword"
-        app:layout_constraintVertical_bias="0.07">
+        app:layout_constraintVertical_bias="0.0">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/tieUsername"
             style="@style/TextInputLayout"
-            android:inputType="textPersonName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/tieUserName"/>
+            android:hint="@string/tieUserName"
+            android:inputType="textPersonName" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <Button
@@ -110,9 +111,9 @@
         style="@style/MiButton"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="@string/btnSignUp"
         android:onClick="signUp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:text="@string/btnSignUp"
+        app:layout_constraintBottom_toTopOf="@+id/guideline11"
         app:layout_constraintEnd_toStartOf="@+id/guideline2"
         app:layout_constraintStart_toStartOf="@+id/guideline"
         app:layout_constraintTop_toBottomOf="@+id/tilUsername"
@@ -131,5 +132,12 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         app:layout_constraintGuide_end="20dp" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline11"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.9737336" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

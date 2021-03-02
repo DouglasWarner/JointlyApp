@@ -1,6 +1,5 @@
 package com.douglas.jointlyapp.ui.favorite;
 
-import android.icu.text.RelativeDateTimeFormatter;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -11,15 +10,16 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
 import com.douglas.jointlyapp.R;
 import com.douglas.jointlyapp.data.model.User;
-import com.douglas.jointlyapp.ui.JointlyApplication;
 import com.douglas.jointlyapp.ui.adapter.UserFavoriteAdapter;
-import com.douglas.jointlyapp.ui.utils.CommonUtils;
+import com.douglas.jointlyapp.ui.preferences.JointlyPreferences;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,7 +36,8 @@ public class FavoriteFragment extends Fragment implements FavoriteContract.View,
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        setRetainInstance(true);
+        setHasOptionsMenu(true);
     }
 
     @Override
@@ -48,34 +49,47 @@ public class FavoriteFragment extends Fragment implements FavoriteContract.View,
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        initUI(view);
+
+        initRecycler();
+
+        presenter = new FavoritePresenter(this);
+    }
+
+    private void initUI(@NonNull View view) {
         llLoading = view.findViewById(R.id.llLoading);
         llNoData = view.findViewById(R.id.llNoDataInitiativeCreated);
 
         rvUserFavorite = view.findViewById(R.id.rvUserFavorite);
+    }
 
+    private void initRecycler() {
         adapter = new UserFavoriteAdapter(new ArrayList<>(), this);
 
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext(), RecyclerView.VERTICAL, false);
         rvUserFavorite.setLayoutManager(layoutManager);
         rvUserFavorite.setAdapter(adapter);
-
-        presenter = new FavoritePresenter(this);
     }
 
     @Override
     public void onStart() {
         super.onStart();
-        User user = new User(0,"douglas@gmail.com","Dou123456","Douglas","666666666", CommonUtils.getImagenUserDefault(JointlyApplication.getContext()),"Málaga","Me dedico a crear iniciativas para ayudar a los mas necesitados","12/02/2021");
-        presenter.load(user);
+        presenter.load();
         getActivity().findViewById(R.id.faButton).setVisibility(View.GONE);
     }
 
     @Override
-    public void onClick(View User) {
+    public void onClick(View v) {
         Bundle b = new Bundle();
-        b.putSerializable("user", (User)adapter.getUserItem(rvUserFavorite.getChildAdapterPosition(User)));
+        b.putString(User.TAG, adapter.getUserItem(rvUserFavorite.getChildAdapterPosition(v)).getEmail());
 
-        NavHostFragment.findNavController(this).navigate(R.id.action_favoriteFragment_to_profileFragment, b);
+        NavHostFragment.findNavController(this).navigate(R.id.action_favoriteFragment_to_userProfileFragment, b);
+    }
+
+    @Override
+    public void onClickBtnFollow(View user) {
+        presenter.followUser((User)adapter.getUserItem(rvUserFavorite.getChildAdapterPosition(user)));
     }
 
     @Override
@@ -94,16 +108,68 @@ public class FavoriteFragment extends Fragment implements FavoriteContract.View,
     }
 
     @Override
+    public void setSuccessUnFollow() {
+        adapter.updateUnFollow(true);
+    }
+
+    @Override
+    public void setSuccessFollow() {
+        adapter.updateUnFollow(false);
+    }
+
+    @Override
     public void onSuccess(List<User> list) {
         if(llNoData.getVisibility() == View.VISIBLE)
             llNoData.setVisibility(View.GONE);
 
         adapter.update(list);
+
+        updateListOrderByDefault();
+    }
+
+    private void updateListOrderByDefault() {
+        switch (JointlyPreferences.getInstance().getOrderByFavorite())
+        {
+            case "name":
+                adapter.sortByName();
+                break;
+            case "location":
+                adapter.sortByLocation();
+                break;
+            case "users":
+                adapter.sortByUsersFollows();
+                break;
+        }
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
         presenter = null;
+    }
+
+    @Override
+    public void onPrepareOptionsMenu(@NonNull Menu menu) {
+        super.onPrepareOptionsMenu(menu);
+        menu.setGroupVisible(R.id.group_action_order_favorite, true);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+
+        switch (item.getItemId())
+        {
+            case R.id.action_order_favorite_by_location:
+                adapter.sortByLocation();
+                break;
+            case R.id.action_order_favorite_by_name:
+                adapter.sortByName();
+                break;
+            case R.id.action_order_favorite_by_users_follows:
+                adapter.sortByUsersFollows();
+                break;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 }

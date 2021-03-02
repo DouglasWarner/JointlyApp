@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="target_area">
+        <item>Recolecta</item>
+        <item>Saneamiento</item>
+        <item>Voluntario</item>
+    </string-array>
+    <string-array name="orderby_initiative">
+        <item>Fecha mas cercana</item>
+        <item>Ciudades</item>
+        <item>Usuarios unidos</item>
+    </string-array>
+    <string-array name="orderby_initiative_values">
+        <item>date</item>
+        <item>location</item>
+        <item>users</item>
+    </string-array>
+    <string-array name="orderby_favorite">
+        <item>Nombre</item>
+        <item>Ubicación</item>
+        <item>Seguidores</item>
+    </string-array>
+    <string-array name="orderby_favorite_values">
+        <item>name</item>
+        <item>location</item>
+        <item>users</item>
+    </string-array>
+</resources>

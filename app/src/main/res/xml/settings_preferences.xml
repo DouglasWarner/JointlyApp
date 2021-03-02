@@ -1,29 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-<!--    <Preference android:key="@string/key_account" android:fragment="com.example.inventory.iu.preferences.AccountFragment" android:title="@string/title_account" android:summary="@string/summay_account"/>-->
-<!--    <PreferenceCategory android:title="@string/title_category_notification">-->
+    <Preference
+        android:key="@string/key_account"
+        android:fragment="com.douglas.jointlyapp.ui.preferences.AccountFragment"
+        android:title="@string/title_account"
+        android:summary="@string/summay_account"/>
 
-<!--        <SwitchPreference-->
-<!--            android:defaultValue="true"-->
-<!--            android:key="@string/key_notification"-->
-<!--            android:summary="@string/summary_notification"-->
-<!--            android:title="@string/title_notification" />-->
-<!--        <ListPreference-->
-<!--            android:entryValues="@array/ringtone_values"-->
-<!--            android:key="@string/key_ringtone_notification"-->
-<!--            android:summary="@string/summary_ringtone_notification"-->
-<!--            android:entries="@array/ringtone"-->
-<!--            android:title="@string/title_ringtone_notification">-->
+    <SwitchPreference android:title="@string/title_remember"
+        android:summary="@string/summary_remember"
+        android:key="@string/key_remember"/>
 
-<!--        </ListPreference>-->
-<!--    </PreferenceCategory>-->
-<!--    <PreferenceCategory android:title="@string/title_category_help" android:summary="@string/summary_category_help">-->
-<!--        <Preference android:title="@string/title_about" android:summary="@string/summary_about">-->
-<!--            <intent android:action="android.intent.action.VIEW"-->
-<!--                android:data="http://www.moronlu18.com/">-->
-<!--            </intent>-->
-<!--        </Preference>-->
+    <PreferenceCategory android:title="@string/title_category_notification">
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="@string/key_notification"
+            android:summary="@string/summary_notification"
+            android:title="@string/title_notification" />
+    </PreferenceCategory>
 
-<!--    </PreferenceCategory>-->
+    <PreferenceCategory android:title="@string/title_category_orderlist">
+        <ListPreference
+            android:title="@string/title_orderby_initiative"
+            android:key="@string/key_orderby_initiative"
+            android:summary="@string/summary_orderby_initiative"
+            android:entries="@array/orderby_initiative"
+            android:entryValues="@array/orderby_initiative_values"/>
+
+        <ListPreference
+            android:title="@string/title_orderby_favorite"
+            android:key="@string/key_orderby_favorite"
+            android:summary="@string/summary_orderby_favorite"
+            android:entries="@array/orderby_favorite"
+            android:entryValues="@array/orderby_favorite_values"/>
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/title_category_help" android:summary="@string/summary_category_help">
+        <Preference android:title="@string/title_about" android:summary="@string/summary_about"
+            android:key="@string/key_aboutus"
+            android:fragment="com.douglas.jointlyapp.ui.preferences.AboutUsFragment">
+        </Preference>
+
+    </PreferenceCategory>
 </PreferenceScreen>

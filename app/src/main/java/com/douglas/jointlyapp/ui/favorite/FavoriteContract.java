@@ -12,10 +12,13 @@ public interface FavoriteContract {
         void setNoData();
         void showProgress();
         void hideProgress();
+        void setSuccessUnFollow();
+        void setSuccessFollow();
     }
 
     interface Presenter extends BasePresenter
     {
-        void load(User user);
+        void load();
+        void followUser(User user);
     }
 }

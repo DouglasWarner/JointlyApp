@@ -4,19 +4,25 @@ import com.douglas.jointlyapp.data.model.Initiative;
 import com.douglas.jointlyapp.ui.base.BaseListView;
 import com.douglas.jointlyapp.ui.base.BasePresenter;
 
+import java.util.List;
+
 public interface InitiativeContract {
-    interface View extends BaseListView<Initiative>
+    interface View
     {
         void setNoData();
         void showProgress();
         void hideProgress();
-        //TODO implementar los metodo cuando el usuario interactua con la lista de iniciativas
+        void onSuccessCreatedInProgress(List<Initiative> initiativeList);
+        void onSuccessJoinedInProgress(List<Initiative> initiativeList);
+        void onSuccessCreatedHistory(List<Initiative> initiativeList);
+        void onSuccessJoinedHistory(List<Initiative> initiativeList);
     }
 
     interface Presenter extends BasePresenter
     {
-        void load();
-
-        //TODO implementar los metodos cuando el usuario efectua alguna accion con la iniciativa
+        void loadCreatedInProgress();
+        void loadJoinedInProgress();
+        void loadCreatedHistory();
+        void loadJoinedHistory();
     }
 }

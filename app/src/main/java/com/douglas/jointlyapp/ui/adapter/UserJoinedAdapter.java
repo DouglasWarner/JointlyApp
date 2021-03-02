@@ -39,7 +39,7 @@ public class UserJoinedAdapter extends RecyclerView.Adapter<UserJoinedAdapter.Vi
 
     @Override
     public void onBindViewHolder(@NonNull UserJoinedAdapter.ViewHolder holder, int position) {
-        holder.imgUser.setImageResource(R.mipmap.ic_app);
+        holder.imgUser.setImageBitmap(list.get(position).getImagen());
     }
 
     @Override
@@ -64,12 +64,11 @@ public class UserJoinedAdapter extends RecyclerView.Adapter<UserJoinedAdapter.Vi
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-            imgUser = itemView.findViewById(R.id.imgUser);
+            imgUser = itemView.findViewById(R.id.imgUserJoined);
 
             itemView.setOnClickListener(v -> {
                 listener.onClick(v);
             });
-            //TODO implementar click verIniciativa y click on toolbar
         }
     }
 }

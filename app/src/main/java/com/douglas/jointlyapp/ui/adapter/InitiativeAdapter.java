@@ -5,7 +5,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toolbar;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -19,15 +18,17 @@ public class InitiativeAdapter extends RecyclerView.Adapter<InitiativeAdapter.Vi
 
     public interface ManageInitiative
     {
-        void onClick(View initiative);
+        void onClick(View initiative, String status);
     }
 
     private List<Initiative> list;
     private ManageInitiative listener;
+    private String type;
 
-    public InitiativeAdapter(List<Initiative> list, ManageInitiative listener) {
+    public InitiativeAdapter(List<Initiative> list, ManageInitiative listener, String type) {
         this.list = list;
         this.listener = listener;
+        this.type = type;
     }
 
     @NonNull
@@ -39,7 +40,7 @@ public class InitiativeAdapter extends RecyclerView.Adapter<InitiativeAdapter.Vi
 
     @Override
     public void onBindViewHolder(@NonNull InitiativeAdapter.ViewHolder holder, int position) {
-        holder.imgInitiative.setImageResource(R.drawable.playasucia);
+        holder.imgInitiative.setImageBitmap(list.get(position).getImagen());
 //        holder.imgInitiative.setImageBitmap(BitmapFactory.decodeByteArray(list.get(position).getImagen(), 0, list.get(position).getImagen().length));
         holder.tvInitiativeName.setText(list.get(position).getName());
     }
@@ -64,17 +65,15 @@ public class InitiativeAdapter extends RecyclerView.Adapter<InitiativeAdapter.Vi
     public class ViewHolder extends RecyclerView.ViewHolder {
         ImageView imgInitiative;
         TextView tvInitiativeName;
-        Toolbar tbCard;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-            imgInitiative = itemView.findViewById(R.id.imgInitiative);
+            imgInitiative = itemView.findViewById(R.id.imgBtnInitiative);
             tvInitiativeName = itemView.findViewById(R.id.tvInitiativeName);
 
             itemView.setOnClickListener(v -> {
-                listener.onClick(v);
+                listener.onClick(v, type);
             });
-            //TODO implementar click on toolbar
         }
     }
 }

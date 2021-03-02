@@ -15,9 +15,27 @@ public class InitiativePresenter implements InitiativeContract.Presenter, Initia
     }
 
     @Override
-    public void load() {
+    public void loadCreatedInProgress() {
         view.showProgress();
-        interactor.loadData();
+        interactor.loadInitiativeCreatedInProgress();
+    }
+
+    @Override
+    public void loadJoinedInProgress() {
+        view.showProgress();
+        interactor.loadInitiativeJoinedInProgress();
+    }
+
+    @Override
+    public void loadCreatedHistory() {
+        view.showProgress();
+        interactor.loadInitiativeCreatedHistory();
+    }
+
+    @Override
+    public void loadJoinedHistory() {
+        view.showProgress();
+        interactor.loadInitiativeJoinedHistory();
     }
 
     @Override
@@ -33,8 +51,27 @@ public class InitiativePresenter implements InitiativeContract.Presenter, Initia
     }
 
     @Override
-    public void onSuccess(List<Initiative> list) {
+    public void onSuccessCreatedInProgress(List<Initiative> list) {
         view.hideProgress();
-        view.onSuccess(list);
+        view.onSuccessCreatedInProgress(list);
+    }
+
+    @Override
+    public void onSuccessJoinedInProgress(List<Initiative> list) {
+        view.hideProgress();
+        view.onSuccessJoinedInProgress(list);
+
+    }
+
+    @Override
+    public void onSuccessCreatedHistory(List<Initiative> list) {
+        view.hideProgress();
+        view.onSuccessCreatedHistory(list);
+    }
+
+    @Override
+    public void onSuccessJoinedInHistory(List<Initiative> list) {
+        view.hideProgress();
+        view.onSuccessJoinedHistory(list);
     }
 }

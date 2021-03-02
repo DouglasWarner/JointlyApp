@@ -36,7 +36,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             app:defaultNavHost="true"
-            app:navGraph="@navigation/nav_graph" />
+            app:navGraph="@navigation/nav_graph"/>
     </androidx.core.widget.NestedScrollView>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -52,27 +52,27 @@
         android:backgroundTint="?attr/colorSecondary"
         app:tint="?attr/colorOnSecondary"
         android:layout_gravity="bottom|end"
-        android:layout_marginBottom="60dp"
+        android:layout_marginBottom="70dp"
         android:layout_marginEnd="10dp"
         app:layout_anchor="@id/bottomNavigation"
         app:layout_anchorGravity="bottom|end" />
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:layout_width="match_parent"
-        android:layout_height="50dp"
+        android:layout_height="wrap_content"
         android:id="@+id/bottomNavigation"
         android:layout_gravity="bottom"
         app:itemTextColor="?attr/colorOnPrimary"
         app:itemIconTint="?attr/colorOnPrimary"
+        app:itemBackground="?attr/colorPrimary"
         android:background="?attr/colorPrimary"
-        app:menu="@menu/bottom_navigation_menu"
-        app:layout_behavior="@string/hide_bottom_view_on_scroll_behavior"/>
+        app:menu="@menu/bottom_navigation_menu"/>
 
     <!-- Elemento BottomSheetBehavior -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/bottomSheetJoinInitiative"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
+        android:layout_height="60dp"
         android:layout_gravity="bottom"
         android:background="@drawable/shape_bottom_sheet"
         android:elevation="8dp"

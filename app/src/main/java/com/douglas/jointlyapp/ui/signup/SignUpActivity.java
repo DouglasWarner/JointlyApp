@@ -11,6 +11,7 @@ import android.view.inputmethod.InputMethodManager;
 
 import com.douglas.jointlyapp.R;
 import com.douglas.jointlyapp.ui.JointlyActivity;
+import com.douglas.jointlyapp.ui.preferences.JointlyPreferences;
 import com.douglas.jointlyapp.ui.utils.CommonUtils;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
@@ -36,6 +37,12 @@ public class SignUpActivity extends AppCompatActivity implements SignUpContract.
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_up);
 
+        initUI();
+
+        signUpPresenter = new SignUpPresenter(this);
+    }
+
+    private void initUI() {
         tilEmail = findViewById(R.id.tilEmail);
         tilPassword = findViewById(R.id.tilPassword);
         tilConfirmPassword = findViewById(R.id.tilConfirmPassword);
@@ -45,16 +52,11 @@ public class SignUpActivity extends AppCompatActivity implements SignUpContract.
         tiePassword = findViewById(R.id.tiePassword);
         tieConfirmPassword = findViewById(R.id.tieConfirmPassword);
         tieUserName = findViewById(R.id.tieUsername);
-
-
-
-        signUpPresenter = new SignUpPresenter(this);
     }
 
     public void signUp(View v)
     {
-        signUpPresenter.addUser(tieEmail.getText().toString(), tiePassword.getText().toString(),tieConfirmPassword.getText().toString(), tieUserName.getText().toString());
-
+        signUpPresenter.addUser(tieEmail.getText().toString(), tiePassword.getText().toString(), tieConfirmPassword.getText().toString(), tieUserName.getText().toString());
         clearErrors();
     }
 
@@ -119,6 +121,9 @@ public class SignUpActivity extends AppCompatActivity implements SignUpContract.
 
     @Override
     public void onSuccess() {
+
+        JointlyPreferences.getInstance().putUser(tieEmail.getText().toString(), tieUserName.getText().toString(), " "," ", " ");
+        JointlyPreferences.getInstance().putRemember(true);
         startActivity(new Intent(this, JointlyActivity.class));
 
         finish();

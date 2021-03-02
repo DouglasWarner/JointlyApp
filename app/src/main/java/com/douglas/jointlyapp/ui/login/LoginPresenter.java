@@ -1,6 +1,6 @@
 package com.douglas.jointlyapp.ui.login;
 
-import com.douglas.jointlyapp.ui.base.BasePresenter;
+import com.douglas.jointlyapp.data.model.User;
 
 public class LoginPresenter implements LoginContract.Presenter, LoginInteractorImpl.LoginInteractor {
 
@@ -49,9 +49,9 @@ public class LoginPresenter implements LoginContract.Presenter, LoginInteractorI
     }
 
     @Override
-    public void onSuccess() {
+    public void onSuccess(User user) {
         view.hideProgress();
-        view.onSuccess();
+        view.onSuccess(user);
     }
 
     @Override

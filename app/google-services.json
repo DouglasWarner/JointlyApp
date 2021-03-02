@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "346187743488",
+    "project_id": "jointlyapp-36c0a",
+    "storage_bucket": "jointlyapp-36c0a.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:346187743488:android:9edd64dafd632a8c45b3e5",
+        "android_client_info": {
+          "package_name": "com.douglas.jointlyapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "346187743488-p2nkv5ub5v952kg0tqgj668jr31lieqm.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC4oFozZ3j4w_gLhZx4VLDNRX_uVrS4Wjo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "346187743488-p2nkv5ub5v952kg0tqgj668jr31lieqm.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

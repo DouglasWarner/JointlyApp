@@ -1,6 +1,7 @@
 package com.douglas.jointlyapp.ui.home;
 
 import com.douglas.jointlyapp.data.model.Initiative;
+import com.douglas.jointlyapp.data.model.User;
 
 import java.util.List;
 
@@ -33,8 +34,8 @@ public class HomePresenter implements HomeContract.Presenter, HomeInteractorImpl
     }
 
     @Override
-    public void onSuccess(List<Initiative> list) {
+    public void onSuccess(List<Initiative> list, List<User> userOwners) {
         view.hideProgress();
-        view.onSuccess(list);
+        view.onSuccess(list, userOwners);
     }
 }

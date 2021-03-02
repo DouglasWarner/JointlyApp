@@ -1,7 +1,9 @@
 package com.douglas.jointlyapp.ui;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.widget.NestedScrollView;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
@@ -9,11 +11,14 @@ import androidx.navigation.ui.NavigationUI;
 
 import android.os.Bundle;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 
 import com.douglas.jointlyapp.R;
+import com.douglas.jointlyapp.ui.preferences.JointlyPreferences;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 public class JointlyActivity extends AppCompatActivity  {
 
@@ -21,6 +26,10 @@ public class JointlyActivity extends AppCompatActivity  {
     private Toolbar toolbar;
     private AppBarConfiguration appBarConfiguration;
     private NavController navController;
+    private NestedScrollView nestedScrollView;
+    private FloatingActionButton floatingActionButton;
+    private View viewBottomSheet;
+    private BottomSheetBehavior<View> bottomSheetBehavior;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,6 +38,10 @@ public class JointlyActivity extends AppCompatActivity  {
 
         bottomNavigationView = findViewById(R.id.bottomNavigation);
         toolbar = findViewById(R.id.toolbar);
+        nestedScrollView = findViewById(R.id.nestedScrollView);
+        floatingActionButton = findViewById(R.id.faButton);
+        viewBottomSheet = findViewById(R.id.bottomSheetJoinInitiative);
+
         setSupportActionBar(toolbar);
 
         appBarConfiguration = new AppBarConfiguration.Builder(
@@ -44,21 +57,36 @@ public class JointlyActivity extends AppCompatActivity  {
 
         navController.addOnDestinationChangedListener((controller, destination, arguments) -> {
             int id = destination.getId();
-            
+
             switch (id)
             {
+                case R.id.homeFragment:
+                    bottomNavigationView.setVisibility(View.VISIBLE);
+                    floatingActionButton.setVisibility(View.GONE);
+                    break;
+                case R.id.initiativeFragment:
+                    bottomNavigationView.setVisibility(View.VISIBLE);
+                    floatingActionButton.setVisibility(View.VISIBLE);
+                    floatingActionButton.setImageResource(R.drawable.ic_add);
+                    break;
                 case R.id.manageInitiativeFragment:
                     bottomNavigationView.setVisibility(View.GONE);
+                    floatingActionButton.setImageResource(R.drawable.ic_edit);
                     break;
-                case R.id.showInitiativeFragment:
-                    //TODO Arreglar posicionamiento scroll cuando abro una iniciativa
-//                    (JointlyActivity.this).findViewById(R.id.nestedScrollView);
-                    bottomNavigationView.setVisibility(View.GONE);
+                case R.id.favoriteFragment:
+                    bottomNavigationView.setVisibility(View.VISIBLE);
+                    floatingActionButton.setVisibility(View.GONE);
+                    break;
+                case R.id.profileFragment:
+                    bottomNavigationView.setVisibility(View.VISIBLE);
+                    floatingActionButton.setVisibility(View.GONE);
                     break;
                 default:
-                    bottomNavigationView.setVisibility(View.VISIBLE);
+                    bottomNavigationView.setVisibility(View.GONE);
+                    floatingActionButton.setVisibility(View.GONE);
                     break;
             }
+            nestedScrollView.scrollTo(0,0);
         });
     }
 
@@ -66,6 +94,26 @@ public class JointlyActivity extends AppCompatActivity  {
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_base, menu);
         return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+
+        switch (item.getItemId())
+        {
+            case R.id.action_settings:
+                Navigation.findNavController(this, R.id.nav_host_fragment).navigate(R.id.settingFragment);
+                break;
+            case R.id.action_logout:
+                JointlyPreferences.getInstance().putRemember(false);
+                finish();
+                break;
+            case R.id.action_editAccount:
+                Navigation.findNavController(this, R.id.nav_host_fragment).navigate(R.id.accountFragment);
+                break;
+        }
+
+        return false;
     }
 
     @Override

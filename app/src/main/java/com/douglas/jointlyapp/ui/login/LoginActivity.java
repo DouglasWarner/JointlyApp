@@ -7,8 +7,10 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.CheckBox;
 
 import com.douglas.jointlyapp.R;
+import com.douglas.jointlyapp.data.model.User;
 import com.douglas.jointlyapp.ui.JointlyActivity;
 import com.douglas.jointlyapp.ui.preferences.JointlyPreferences;
 import com.douglas.jointlyapp.ui.signup.SignUpActivity;
@@ -26,17 +28,24 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Vi
     private TextInputLayout tilPassword;
     private TextInputEditText tieEmail;
     private TextInputEditText tiePassword;
+    private CheckBox chbRemember;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+        initUI();
+
+        presenter = new LoginPresenter(this);
+    }
+
+    private void initUI() {
         tilEmail = findViewById(R.id.tilEmail);
         tilPassword = findViewById(R.id.tilPassword);
         tieEmail = findViewById(R.id.tieEmail);
         tiePassword = findViewById(R.id.tiePassword);
-
-        presenter = new LoginPresenter(this);
+        chbRemember = findViewById(R.id.chbRemember);
     }
 
     public void validateUser(View v)
@@ -97,11 +106,12 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Vi
     }
 
     @Override
-    public void onSuccess() {
+    public void onSuccess(User user) {
 
-        JointlyPreferences.getInstance().putUser(tieEmail.getText().toString(), tiePassword.getText().toString());
+        JointlyPreferences.getInstance().putUser(user.getEmail(), user.getName(), user.getLocation(), user.getPhone(), user.getDescription());
+        JointlyPreferences.getInstance().putRemember(chbRemember.isChecked());
 
-        startActivity(new Intent(this, JointlyActivity.class));
+        startActivity(new Intent(LoginActivity.this, JointlyActivity.class));
 
         finish();
     }

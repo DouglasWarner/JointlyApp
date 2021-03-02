@@ -1,8 +1,15 @@
 package com.douglas.jointlyapp.ui.initiative.manage;
 
+import android.Manifest;
+import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -11,31 +18,35 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.DatePicker;
+import android.widget.ImageButton;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.fragment.NavHostFragment;
 
 import com.douglas.jointlyapp.R;
 import com.douglas.jointlyapp.data.model.Initiative;
+import com.douglas.jointlyapp.ui.JointlyApplication;
+import com.douglas.jointlyapp.ui.Notifications;
 import com.douglas.jointlyapp.ui.dialog.DatePickerFragment;
 import com.douglas.jointlyapp.ui.dialog.TimePickerFragment;
+import com.douglas.jointlyapp.ui.preferences.JointlyPreferences;
 import com.douglas.jointlyapp.ui.utils.CommonUtils;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.TimeZone;
+import java.util.GregorianCalendar;
 
 public class ManageInitiativeFragment extends Fragment implements ManageInitiativeContract.View {
 
-    //TODO Implementar MVP de esta clase
-
+    //region Variables
+    private ImageButton imgBtnImagen;
     private TextInputLayout tilName;
     private TextInputLayout tilDescription;
     private TextInputLayout tilLocation;
@@ -52,11 +63,14 @@ public class ManageInitiativeFragment extends Fragment implements ManageInitiati
     private TextInputEditText tieTargetAmount;
 
     private Initiative initiative;
+    private int idInitiative;
+    private BitmapDrawable imageInitiative;
     private boolean isEditing;
 
     private ManageInitiativePresenter presenter;
 
     private FloatingActionButton floatingActionButton;
+    //endregion
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -76,14 +90,27 @@ public class ManageInitiativeFragment extends Fragment implements ManageInitiati
 
         Bundle bundle = getArguments();
 
-        initiative = (Initiative) bundle.getSerializable("initiative");
+        idInitiative = bundle.getInt(Initiative.TAG);
 
-        if(initiative == null)
-            isEditing = false;
-        else
+        if(idInitiative != 0)
             isEditing = true;
+        else
+            isEditing = false;
 
-        tilName = view.findViewById(R.id.tilTitle);
+        initUI(view);
+        setOnClickUI();
+
+        manageFloatingButton();
+
+        presenter = new ManageInitiativePresenter(this);
+
+        if(isEditing)
+            presenter.loadInitiative(idInitiative);
+    }
+
+    private void initUI(@NonNull View view) {
+        imgBtnImagen = view.findViewById(R.id.imgBtnInitiative);
+        tilName = view.findViewById(R.id.tilNameInitiative);
         tilDescription = view.findViewById(R.id.tilDescription);
         tilLocation = view.findViewById(R.id.tilLocation);
         tilTargetArea = view.findViewById(R.id.tilTargetArea);
@@ -99,16 +126,27 @@ public class ManageInitiativeFragment extends Fragment implements ManageInitiati
         tieTargetTime = view.findViewById(R.id.tieTargetTime);
         tieTargetAmount = view.findViewById(R.id.tieTargetAmount);
 
-        if(isEditing)
-        {
-            tieName.setText(initiative.getName());
-            tieDescription.setText(initiative.getDescription());
-            tieLocation.setText(initiative.getLocation());
-            tieTargetArea.setText(initiative.getTargetArea());
-            tieTargetDate.setText(initiative.getTargetDate());
-            tieTargetTime.setText(initiative.getTargetTime());
-            tieTargetAmount.setText(initiative.getTargetAmount());
-        }
+        floatingActionButton = getActivity().findViewById(R.id.faButton);
+    }
+
+    private void setOnClickUI() {
+        imgBtnImagen.setOnClickListener(v -> {
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
+            {
+                if(ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)
+                {
+                    openGallery();
+                }
+                else
+                {
+                    requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, JointlyApplication.REQUEST_PERMISSION_CODE);
+                }
+            }
+            else
+            {
+                openGallery();
+            }
+        });
 
         tieTargetDate.setOnClickListener(v -> {
             showDatePickerDialog();
@@ -116,18 +154,38 @@ public class ManageInitiativeFragment extends Fragment implements ManageInitiati
         tieTargetTime.setOnClickListener(v -> {
             showTimePickerDialog();
         });
-
-        floatingActionButton = getActivity().findViewById(R.id.faButton);
-
-        if(isEditing)
-            manageTextInputEditTextEnable();
-
-        manageFloatingButton();
-
-        presenter = new ManageInitiativePresenter(this);
     }
 
-    private void manageTextInputEditTextEnable() {
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if(requestCode == JointlyApplication.REQUEST_PERMISSION_CODE)
+        {
+            if(permissions.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
+            {
+                openGallery();
+            }
+            else
+            {
+                Toast.makeText(getActivity(), "Se necesitan los permisos para abrir la galeria", Toast.LENGTH_SHORT).show();
+            }
+        }
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    }
+
+    private void setInitiative(Initiative init) {
+        imgBtnImagen.setImageBitmap(init.getImagen());
+        tieName.setText(init.getName());
+        tieDescription.setText(init.getDescription());
+        tieLocation.setText(init.getLocation());
+        tieTargetArea.setText(init.getTargetArea());
+        tieTargetDate.setText(init.getTargetDate());
+        tieTargetTime.setText(init.getTargetTime());
+        tieTargetAmount.setText(init.getTargetAmount());
+
+        initiative = init;
+    }
+
+    private void setTextInputEditTextNoEnable() {
         tieName.setEnabled(false);
         tilName.setHelperTextEnabled(false);
         tieTargetAmount.setEnabled(false);
@@ -137,7 +195,6 @@ public class ManageInitiativeFragment extends Fragment implements ManageInitiati
     private void manageFloatingButton() {
         if(isEditing)
         {
-            floatingActionButton.setImageResource(R.drawable.ic_edit);
             floatingActionButton.setOnClickListener(v -> {
                 editInitiative();
             });
@@ -149,28 +206,103 @@ public class ManageInitiativeFragment extends Fragment implements ManageInitiati
     }
 
     private void editInitiative() {
+
+        String user = JointlyPreferences.getInstance().getUser();
+
         presenter.editInitiative(initiative.getId(), initiative.getName(), initiative.getCreatedAt(), tieTargetDate.getText().toString(),
                 tieTargetTime.getText().toString(), tieDescription.getText().toString(), tieTargetArea.getText().toString(), tieLocation.getText().toString(),
-                initiative.getImagen(), initiative.getTargetAmount(), initiative.getStatus(), initiative.getCreatedBy());
+                initiative.getImagen(), initiative.getTargetAmount(), initiative.getStatus(), user);
 
     }
 
     private void addInitiative()
     {
-        SimpleDateFormat localDateTime = new SimpleDateFormat("hh/MM/yyyy");
-        Date now = Calendar.getInstance(TimeZone.getTimeZone("UTF")).getTime();
+        String user = JointlyPreferences.getInstance().getUser();
 
-        Uri imageUri = CommonUtils.getImagenInitiativeDefault(getContext());
+        if(imageInitiative == null)
+                imageInitiative = new BitmapDrawable(CommonUtils.getImagenInitiativeDefault(getActivity()));
 
-        presenter.addInitiative(tieName.getText().toString(), localDateTime.format(now), tieTargetDate.getText().toString(),
+        initiative = new Initiative(tieName.getText().toString(), CommonUtils.getDateNow(), tieTargetDate.getText().toString(),
                 tieTargetTime.getText().toString(), tieDescription.getText().toString(), tieTargetArea.getText().toString(), tieLocation.getText().toString(),
-                imageUri, tieTargetAmount.getText().toString(), "A", "usuario");
+                imageInitiative.getBitmap(), tieTargetAmount.getText().toString(), "A", user);
+
+        presenter.addInitiative(tieName.getText().toString(), tieTargetDate.getText().toString(),
+                tieTargetTime.getText().toString(), tieDescription.getText().toString(), tieTargetArea.getText().toString(), tieLocation.getText().toString(),
+                imageInitiative.getBitmap(), tieTargetAmount.getText().toString(), "A", user);
     }
 
     private void deleteInitiative()
     {
-        presenter.delete(initiative);
+        AlertDialog.Builder dialog = new AlertDialog.Builder(getActivity())
+                .setTitle("Eliminando iniciativa")
+                .setMessage("Eliminar iniciativa: " + initiative.getName())
+                .setIcon(R.drawable.ic_alert)
+                .setPositiveButton("Aceptar", (dialog1, which) -> {
+                    presenter.delete(initiative);
+                })
+                .setNegativeButton("Cancelar", (dialog1, which) -> {
+                    dialog1.dismiss();
+                });
+
+        dialog.show();
     }
+
+    /**
+     * Muestra un dialog para seleccionar la hora
+     */
+    private void showTimePickerDialog() {
+        TimePickerFragment timePickerFragment = TimePickerFragment.newInstance(new TimePickerDialog.OnTimeSetListener() {
+            @Override
+            public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+                String hour = String.format("%d:%d",hourOfDay, minute);
+                tieTargetTime.setText(hour);
+            }
+        });
+
+        timePickerFragment.show(getActivity().getSupportFragmentManager(), "timePicker");
+    }
+
+    /**
+     * Muestra un dialog para seleccionar la fecha
+     */
+    private void showDatePickerDialog() {
+        DatePickerFragment datePickerFragment = DatePickerFragment.newInstance(new DatePickerDialog.OnDateSetListener() {
+            @Override
+            public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+                SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
+                String date = format.format(new GregorianCalendar(year, month, dayOfMonth).getTime());
+                tieTargetDate.setText(date);
+            }
+        });
+
+        datePickerFragment.show(getActivity().getSupportFragmentManager(), "datePicker");
+    }
+
+    private void openGallery() {
+        Intent intent = new Intent(Intent.ACTION_PICK);
+        intent.setType("image/*");
+        startActivityForResult(intent, JointlyApplication.REQUEST_IMAGE_GALLERY);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        if(requestCode == JointlyApplication.REQUEST_IMAGE_GALLERY)
+        {
+            if(resultCode == Activity.RESULT_OK && data != null)
+            {
+                Uri imagen = data.getData();
+                imgBtnImagen.setImageURI(imagen);
+                imageInitiative = ((BitmapDrawable)imgBtnImagen.getDrawable());
+            }
+            else
+            {
+                Toast.makeText(getActivity(), "No se ha seleccionado ninguna imagen", Toast.LENGTH_SHORT).show();
+            }
+        }
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
+
 
     @Override
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
@@ -197,30 +329,6 @@ public class ManageInitiativeFragment extends Fragment implements ManageInitiati
                 }
             });
         }
-    }
-
-    private void showTimePickerDialog() {
-        TimePickerFragment timePickerFragment = TimePickerFragment.newInstance(new TimePickerDialog.OnTimeSetListener() {
-            @Override
-            public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-                String hour = String.format("%d:%d",hourOfDay, minute);
-                tieTargetTime.setText(hour);
-            }
-        });
-
-        timePickerFragment.show(getActivity().getSupportFragmentManager(), "timePicker");
-    }
-
-    private void showDatePickerDialog() {
-        DatePickerFragment datePickerFragment = DatePickerFragment.newInstance(new DatePickerDialog.OnDateSetListener() {
-            @Override
-            public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-                String date = String.format("%d/%d/%d", dayOfMonth, month+1, year);
-                tieTargetDate.setText(date);
-            }
-        });
-
-        datePickerFragment.show(getActivity().getSupportFragmentManager(), "datePicker");
     }
 
     @Override
@@ -270,24 +378,33 @@ public class ManageInitiativeFragment extends Fragment implements ManageInitiati
 
     @Override
     public void setCannotDeleted() {
-        Toast.makeText(getContext(), "Imposible eleminar porque ya hay usuarios unidos", Toast.LENGTH_SHORT).show();
-        getActivity().onBackPressed();
+        Toast.makeText(getContext(), "Imposible eliminar porque ya hay usuarios unidos", Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void setSuccessDeleted() {
         Toast.makeText(getContext(), "Iniciativa "+initiative.getName()+" eliminada", Toast.LENGTH_SHORT).show();
+        NavHostFragment.findNavController(this).popBackStack();
     }
 
     @Override
-    public void onSuccess() {
+    public void onSuccessLoad(Initiative initiative) {
+        setInitiative(initiative);
+        setTextInputEditTextNoEnable();
+    }
+
+    @Override
+    public void onSuccess(Initiative init) {
         if(isEditing)
         {
-            Toast.makeText(getContext(), "Iniciativa "+initiative.getName()+" editada", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), "Iniciativa "+init.getName()+" editada", Toast.LENGTH_SHORT).show();
         }
         else
         {
-            Toast.makeText(getContext(), "Iniciativa "+tieName.getText().toString()+" añadida", Toast.LENGTH_SHORT).show();
+            initiative = init;
+            if(JointlyPreferences.getInstance().getNotificationAvaible())
+                Notifications.showNotificationAddInitiative(getActivity(), idInitiative);
+            Toast.makeText(getContext(), "Iniciativa "+init.getName()+" añadida", Toast.LENGTH_SHORT).show();
         }
 
 

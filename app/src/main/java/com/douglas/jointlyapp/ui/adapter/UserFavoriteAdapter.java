@@ -10,10 +10,14 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.douglas.jointlyapp.R;
+import com.douglas.jointlyapp.data.comparators.FavoriteSortByFollowers;
+import com.douglas.jointlyapp.data.comparators.FavoriteSortByLocation;
+import com.douglas.jointlyapp.data.comparators.FavoriteSortByName;
 import com.douglas.jointlyapp.data.model.User;
 import com.douglas.jointlyapp.ui.JointlyApplication;
 import com.google.android.material.imageview.ShapeableImageView;
 
+import java.util.Collections;
 import java.util.List;
 
 public class UserFavoriteAdapter extends RecyclerView.Adapter<UserFavoriteAdapter.ViewHolder> {
@@ -21,6 +25,7 @@ public class UserFavoriteAdapter extends RecyclerView.Adapter<UserFavoriteAdapte
     public interface ManageUserFavorite
     {
         void onClick(View User);
+        void onClickBtnFollow(View user);
     }
 
     private List<User> list;
@@ -41,9 +46,8 @@ public class UserFavoriteAdapter extends RecyclerView.Adapter<UserFavoriteAdapte
 
     @Override
     public void onBindViewHolder(@NonNull UserFavoriteAdapter.ViewHolder holder, int position) {
-        holder.imgUser.setImageURI(list.get(position).getImagen());
+        holder.imgUser.setImageBitmap(list.get(position).getImagen());
         holder.tvUserName.setText(list.get(position).getName());
-        //TODO implementar cuando se deja de seguir
     }
 
     @Override
@@ -58,9 +62,28 @@ public class UserFavoriteAdapter extends RecyclerView.Adapter<UserFavoriteAdapte
         notifyDataSetChanged();
     }
 
+    public void sortByName() {
+        Collections.sort(list, new FavoriteSortByName());
+        notifyDataSetChanged();
+    }
+
+    public void sortByLocation() {
+        Collections.sort(list, new FavoriteSortByLocation());
+        notifyDataSetChanged();
+    }
+
+    public void sortByUsersFollows() {
+        Collections.sort(list, new FavoriteSortByFollowers());
+        notifyDataSetChanged();
+    }
+
     public User getUserItem(int position)
     {
         return list.get(position);
+    }
+
+    public void updateUnFollow(boolean b) {
+        follow = b;
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
@@ -75,21 +98,11 @@ public class UserFavoriteAdapter extends RecyclerView.Adapter<UserFavoriteAdapte
             btnFollowUser = itemView.findViewById(R.id.btnFollowUser);
 
             btnFollowUser.setOnClickListener(v -> {
-                if(!follow) {
-//                    btnFollowUser.setBackgroundColor(JointlyApplication.getContext()..getResources().getColor(R.color.white));
-                    btnFollowUser.setText("Seguir");
-                    follow = !follow;
-                }
-                else
-                {
-//                    btnFollowUser.setBackgroundColor(JointlyApplication.getContext().getResources().getColor(R.color.primaryColor));
-                    btnFollowUser.setText("Siguiendo");
-                    follow = !follow;
-                }
+                ((Button)v).setText((follow) ? "Siguiendo" : "Seguir");
+                listener.onClickBtnFollow(itemView);
             });
-            itemView.setOnClickListener(v -> {
-                listener.onClick(v);
-            });
+
+            itemView.setOnClickListener(v -> listener.onClick(v));
         }
     }
 }

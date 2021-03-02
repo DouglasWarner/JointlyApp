@@ -13,6 +13,9 @@
         <action
             android:id="@+id/action_homeFragment_to_showInitiativeFragment"
             app:destination="@id/showInitiativeFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_settingFragment"
+            app:destination="@id/settingFragment" />
     </fragment>
     <fragment
         android:id="@+id/initiativeFragment"
@@ -22,6 +25,12 @@
         <action
             android:id="@+id/action_initiativeFragment_to_manageInitiativeFragment"
             app:destination="@id/manageInitiativeFragment" />
+        <action
+            android:id="@+id/action_initiativeFragment_to_settingFragment"
+            app:destination="@id/settingFragment" />
+        <action
+            android:id="@+id/action_initiativeFragment_to_showInitiativeFragment"
+            app:destination="@id/showInitiativeFragment" />
     </fragment>
     <fragment
         android:id="@+id/favoriteFragment"
@@ -29,8 +38,11 @@
         android:label="@string/favorite"
         tools:layout="@layout/fragment_favorite" >
         <action
-            android:id="@+id/action_favoriteFragment_to_profileFragment"
-            app:destination="@id/profileFragment" />
+            android:id="@+id/action_favoriteFragment_to_userProfileFragment"
+            app:destination="@id/showUserProfileFragment" />
+        <action
+            android:id="@+id/action_favoriteFragment_to_settingFragment"
+            app:destination="@id/settingFragment" />
     </fragment>
     <fragment
         android:id="@+id/profileFragment"
@@ -38,8 +50,11 @@
         android:label="@string/profile"
         tools:layout="@layout/fragment_profile">
         <action
-            android:id="@+id/action_profileFragment_to_showInitiativeFragment"
-            app:destination="@id/showInitiativeFragment" />
+            android:id="@+id/action_profileFragment_to_accountFragment"
+            app:destination="@id/accountFragment" />
+        <action
+            android:id="@+id/action_profileFragment_to_settingFragment"
+            app:destination="@id/settingFragment" />
     </fragment>
     <fragment
         android:id="@+id/manageInitiativeFragment"
@@ -50,5 +65,47 @@
         android:id="@+id/showInitiativeFragment"
         android:name="com.douglas.jointlyapp.ui.showinitiative.ShowInitiativeFragment"
         android:label=" "
-        tools:layout="@layout/fragment_show_initiative" />
+        tools:layout="@layout/fragment_show_initiative" >
+        <action
+            android:id="@+id/action_showInitiativeFragment_to_userProfileFragment"
+            app:destination="@id/showUserProfileFragment" />
+        <action
+            android:id="@+id/action_showInitiativeFragment_to_profileFragment"
+            app:destination="@id/profileFragment" />
+        <action
+            android:id="@+id/action_showInitiativeFragment_to_chatFragment"
+            app:destination="@id/chatFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/settingFragment"
+        android:name="com.douglas.jointlyapp.ui.preferences.SettingFragment"
+        android:label="SettingFragment" >
+        <action
+            android:id="@+id/action_settingFragment_to_accountFragment"
+            app:destination="@id/accountFragment" />
+        <action
+            android:id="@+id/action_settingFragment_to_aboutUsFragment"
+            app:destination="@id/aboutUsFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/accountFragment"
+        android:name="com.douglas.jointlyapp.ui.preferences.AccountFragment"
+        android:label="AccountFragment" />
+    <fragment
+        android:id="@+id/showUserProfileFragment"
+        android:name="com.douglas.jointlyapp.ui.showuserprofile.ShowUserProfileFragment"
+        android:label="UserProfileFragment" >
+        <action
+            android:id="@+id/action_userProfileFragment_to_showInitiativeFragment2"
+            app:destination="@id/showInitiativeFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/chatFragment"
+        android:name="com.douglas.jointlyapp.ui.chat.ChatFragment"
+        android:label="Chat"/>
+    <fragment
+        android:id="@+id/aboutUsFragment"
+        android:name="com.douglas.jointlyapp.ui.preferences.AboutUsFragment"
+        android:label="fragment_about_us"
+        tools:layout="@layout/fragment_about_us" />
 </navigation>

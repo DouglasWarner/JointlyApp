@@ -9,11 +9,11 @@
     tools:context=".ui.showinitiative.ShowInitiativeFragment">
 
     <com.google.android.material.imageview.ShapeableImageView
-        android:id="@+id/imgInitiative"
+        android:id="@+id/imgBtnInitiative"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:scaleType="fitXY"
-        android:src="@drawable/playasucia"
+        android:scaleType="centerCrop"
+        android:src="@drawable/ic_add_photo_initiative"
         app:layout_constraintBottom_toTopOf="@+id/guideline6"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -21,14 +21,15 @@
 
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/circularRevealCardView"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:elevation="8dp"
         app:cardCornerRadius="50dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/guideline7">
+        app:layout_constraintTop_toTopOf="@+id/guideline7"
+        app:layout_constraintVertical_bias="0.0">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -120,6 +121,7 @@
                 android:layout_width="50dp"
                 android:layout_height="50dp"
                 android:layout_marginTop="8dp"
+                android:clickable="true"
                 android:contentDescription="Imagen del usuario propietario de la iniciativa"
                 android:src="@mipmap/ic_app"
                 app:layout_constraintStart_toStartOf="@+id/textView3"
@@ -140,36 +142,60 @@
                 app:layout_constraintStart_toStartOf="@+id/imgUserCreator"
                 app:layout_constraintTop_toBottomOf="@+id/imgUserCreator" />
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rvUserJoined"
+            <FrameLayout
+                android:id="@+id/rvUsers"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:orientation="horizontal"
                 app:layout_constraintEnd_toStartOf="@+id/guideline9"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="@+id/textView4"
-                app:layout_constraintTop_toBottomOf="@+id/textView4" />
+                app:layout_constraintTop_toBottomOf="@+id/textView4" >
+
+                <TextView
+                    android:id="@+id/tvNoUserData"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/tvNoUserData"
+                    android:visibility="gone"/>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvUserJoined"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:orientation="horizontal"
+                    />
+            </FrameLayout>
+
 
             <TextView
                 android:id="@+id/tvTargetDate"
                 style="@style/TextOnPrimary"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="16dp"
                 android:drawableTop="@drawable/ic_date"
                 android:text="Fecha"
-                app:layout_constraintStart_toStartOf="@+id/rvUserJoined"
-                app:layout_constraintTop_toBottomOf="@+id/rvUserJoined" />
+                android:gravity="center_horizontal"
+                app:layout_constraintBottom_toTopOf="@+id/tvUserLocation"
+                app:layout_constraintEnd_toStartOf="@+id/guideline9"
+                app:layout_constraintHorizontal_bias="0.2"
+                app:layout_constraintHorizontal_chainStyle="packed"
+                app:layout_constraintStart_toStartOf="@+id/guideline8"
+                app:layout_constraintTop_toBottomOf="@+id/rvUsers" />
 
             <TextView
                 android:id="@+id/tvTargetTime"
                 style="@style/TextOnPrimary"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="80dp"
                 android:drawableTop="@drawable/ic_time"
                 android:text="Hora"
+                android:gravity="center_horizontal"
                 app:layout_constraintBaseline_toBaselineOf="@+id/tvTargetDate"
+                app:layout_constraintEnd_toStartOf="@+id/guideline9"
+                app:layout_constraintHorizontal_bias="0.58"
                 app:layout_constraintStart_toEndOf="@+id/tvTargetDate" />
 
             <TextView
@@ -180,6 +206,8 @@
                 android:layout_marginTop="16dp"
                 android:drawableTop="@drawable/ic_location"
                 android:text="Ubicacion"
+                android:gravity="center_horizontal"
+                app:layout_constraintEnd_toEndOf="@+id/tvTargetDate"
                 app:layout_constraintStart_toStartOf="@+id/tvTargetDate"
                 app:layout_constraintTop_toBottomOf="@+id/tvTargetDate" />
 
@@ -190,7 +218,9 @@
                 android:layout_height="wrap_content"
                 android:drawableTop="@drawable/ic_amount"
                 android:text="Cantidad prevista"
+                android:gravity="center_horizontal"
                 app:layout_constraintBaseline_toBaselineOf="@+id/tvUserLocation"
+                app:layout_constraintEnd_toEndOf="@+id/tvTargetTime"
                 app:layout_constraintStart_toStartOf="@+id/tvTargetTime" />
 
             <androidx.constraintlayout.widget.Guideline
@@ -215,14 +245,14 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintGuide_begin="203dp" />
+        app:layout_constraintGuide_begin="293dp" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline7"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintGuide_begin="167dp" />
+        app:layout_constraintGuide_begin="243dp" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline10"

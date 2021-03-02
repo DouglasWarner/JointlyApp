@@ -1,13 +1,16 @@
 package com.douglas.jointlyapp.ui;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.preference.PreferenceManager;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 
 import com.douglas.jointlyapp.R;
 import com.douglas.jointlyapp.ui.login.LoginActivity;
+import com.douglas.jointlyapp.ui.preferences.JointlyPreferences;
 
 public class SplashActivity extends AppCompatActivity {
 
@@ -32,7 +35,11 @@ public class SplashActivity extends AppCompatActivity {
             public void run() {
                 //Sólo si el checkbox recuerdame no está seleccionado se muestra login y no existe
                 //ningún usuario
-                initLogin();
+
+                if(!JointlyPreferences.getInstance().getRemember())
+                    initLogin();
+                else
+                    initJointlyApp();
             }
         },WAIT_TIME);
     }
@@ -41,6 +48,13 @@ public class SplashActivity extends AppCompatActivity {
         startActivity(new Intent(this, LoginActivity.class));
         // Vamos a llamar de forma explicita al metodo finish() que destruye la activity
         // y no se muestra cuando se pulse el boton back
+        finish();
+    }
+
+    private void initJointlyApp()
+    {
+        startActivity(new Intent(this, JointlyActivity.class));
+
         finish();
     }
 }

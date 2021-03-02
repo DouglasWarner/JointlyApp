@@ -1,31 +1,41 @@
 package com.douglas.jointlyapp.ui.profile;
 
+import android.Manifest;
+import android.app.Activity;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.graphics.drawable.BitmapDrawable;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
-import androidx.navigation.fragment.NavHostFragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.os.Handler;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.douglas.jointlyapp.R;
-import com.douglas.jointlyapp.data.model.Initiative;
 import com.douglas.jointlyapp.data.model.User;
-import com.douglas.jointlyapp.ui.adapter.InitiativeAdapter;
+import com.douglas.jointlyapp.ui.JointlyApplication;
+import com.douglas.jointlyapp.ui.preferences.JointlyPreferences;
+import com.douglas.jointlyapp.ui.utils.CommonUtils;
 import com.google.android.material.imageview.ShapeableImageView;
 
-import java.util.ArrayList;
+/**
+ * La ventana de el usuario de inicio de sesion
+ */
+public class ProfileFragment extends Fragment implements ProfileContract.View{
 
-//TODO implementar MVP
-public class ProfileFragment extends Fragment implements InitiativeAdapter.ManageInitiative {
-
-    private ShapeableImageView imgUser;
+    private ShapeableImageView shImgUser;
     private TextView tvUserName;
     private TextView tvUserLocation;
     private TextView tvUserEmail;
@@ -37,15 +47,17 @@ public class ProfileFragment extends Fragment implements InitiativeAdapter.Manag
     private TextView tvUserCreatedAt;
 
     private RecyclerView rvInitiativeCreateds;
-    private InitiativeAdapter adapter;
 
-    private boolean isViewingUser;
-    private User user;
+    BitmapDrawable imageUser;
+    User user;
+
+    private ProfileContract.Presenter presenter;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        setRetainInstance(true);
+        setHasOptionsMenu(true);
     }
 
     @Override
@@ -59,16 +71,36 @@ public class ProfileFragment extends Fragment implements InitiativeAdapter.Manag
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        Bundle bundle = getArguments();
-        if(bundle != null) {
-            user = (User) bundle.getSerializable("user");
-            if(user == null)
-                isViewingUser = false;
-            else
-                isViewingUser = true;
-        }
+        initUI(view);
 
-        imgUser = view.findViewById(R.id.imgUser);
+        shImgUser.setOnClickListener(v -> {
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
+            {
+                if(ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)
+                {
+                    openGallery();
+                }
+                else
+                {
+                    requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, JointlyApplication.REQUEST_PERMISSION_CODE);
+                }
+            }
+            else
+            {
+                openGallery();
+            }
+        });
+
+        view.findViewById(R.id.layoutInitiativeCreateds).setVisibility(View.GONE);
+        view.findViewById(R.id.divider4).setVisibility(View.GONE);
+
+        presenter = new ProfilePresenter(this);
+
+        presenter.loadUser(JointlyPreferences.getInstance().getUser());
+    }
+
+    private void initUI(@NonNull View view) {
+        shImgUser = view.findViewById(R.id.imgUser);
         tvUserName = view.findViewById(R.id.tvUserName);
         tvUserLocation = view.findViewById(R.id.tvUserLocation);
         tvUserEmail = view.findViewById(R.id.tvUserEmail);
@@ -79,28 +111,55 @@ public class ProfileFragment extends Fragment implements InitiativeAdapter.Manag
         tvUserDescription = view.findViewById(R.id.tvUserDescription);
         tvUserCreatedAt = view.findViewById(R.id.tvUserCreatedAt);
         rvInitiativeCreateds = view.findViewById(R.id.rvUserInitiativeCreated);
+    }
 
-        if(isViewingUser) {
-            imgUser.setImageResource(R.mipmap.ic_app);
-            tvUserName.setText(user.getName());
-            tvUserLocation.setText(user.getLocation());
-            tvUserEmail.setText(user.getEmail());
-            tvUserPhome.setText(user.getPhone());
-            tvUserInitiativeCreateds.setText("20");
-            tvUserInitiativeJoineds.setText("20");
-            tvUserFollows.setText(String.format("%d siguen a este usuario", user.getUserFollowed().size()));
-            tvUserDescription.setText(user.getDescription());
-            tvUserCreatedAt.setText(user.getCreatedAt());
-            adapter = new InitiativeAdapter(new ArrayList<>(), this);
-            RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext(), RecyclerView.HORIZONTAL, false);
-            rvInitiativeCreateds.setLayoutManager(layoutManager);
-            rvInitiativeCreateds.setAdapter(adapter);
-        }
-        else
+    private void openGallery() {
+        Intent intent = new Intent(Intent.ACTION_PICK);
+        intent.setType("image/*");
+        startActivityForResult(intent, JointlyApplication.REQUEST_IMAGE_GALLERY);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        if(requestCode == JointlyApplication.REQUEST_IMAGE_GALLERY)
         {
-            view.findViewById(R.id.layoutInitiativeCreateds).setVisibility(View.GONE);
-            view.findViewById(R.id.divider4).setVisibility(View.GONE);
+            if(resultCode == Activity.RESULT_OK && data != null)
+            {
+                Uri imagen = data.getData();
+                shImgUser.setImageURI(imagen);
+                imageUser = ((BitmapDrawable)shImgUser.getDrawable());
+                user.setImagen(imageUser.getBitmap());
+                presenter.updateImage(user);
+            }
+            else
+            {
+                Toast.makeText(getActivity(), "No se ha seleccionado ninguna imagen", Toast.LENGTH_SHORT).show();
+            }
         }
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if(requestCode == JointlyApplication.REQUEST_PERMISSION_CODE)
+        {
+            if(permissions.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
+            {
+                openGallery();
+            }
+            else
+            {
+                Toast.makeText(getActivity(), "Se necesitan los permisos para abrir la galeria", Toast.LENGTH_SHORT).show();
+            }
+        }
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    }
+
+    @Override
+    public void onPrepareOptionsMenu(@NonNull Menu menu) {
+        super.onPrepareOptionsMenu(menu);
+        menu.setGroupVisible(R.id.group_action_profile, true);
+        menu.findItem(R.id.action_editAccount).setVisible(true);
     }
 
     @Override
@@ -110,12 +169,54 @@ public class ProfileFragment extends Fragment implements InitiativeAdapter.Manag
     }
 
     @Override
-    public void onClick(View initiative) {
-        //TODO implementar ir a ver iniciativa
-        Bundle b = new Bundle();
-        Initiative i = (Initiative)adapter.getInitiativeItem(rvInitiativeCreateds.getChildAdapterPosition(initiative));
-        b.putSerializable("initiative", i);
+    public void setLocationEmpty() {
+        tvUserLocation.setText("Ubicacion");
+    }
 
-        NavHostFragment.findNavController(this).navigate(R.id.action_profileFragment_to_showInitiativeFragment, b);
+    @Override
+    public void setPhoneEmpty() {
+        tvUserPhome.setText("Telefono");
+    }
+
+    @Override
+    public void setDescriptionEmpty() {
+        tvUserDescription.setText("Descripcion");
+    }
+
+    @Override
+    public void setUserFollowersEmpty() {
+        tvUserFollows.setText("Seguidores");
+    }
+
+    @Override
+    public void setInitiativeCreatedEmpty() {
+        tvUserInitiativeCreateds.setText("0");
+    }
+
+    @Override
+    public void setInitiativeJointedEmpty() {
+        tvUserInitiativeJoineds.setText("0");
+    }
+
+    @Override
+    public void onSuccess(User user, int countUserFollowers, int initiativeCreated, int initiativeJoined) {
+        shImgUser.setImageBitmap(user.getImagen());
+        tvUserName.setText(user.getName());
+        tvUserEmail.setText(user.getEmail());
+        tvUserLocation.setText(user.getLocation());
+        tvUserPhome.setText(user.getPhone());
+        tvUserDescription.setText(user.getDescription());
+        tvUserFollows.setText(String.format(getString(R.string.tvUserFollowsFormat), countUserFollowers));
+        tvUserInitiativeJoineds.setText(String.valueOf(initiativeJoined));
+        tvUserInitiativeCreateds.setText(String.valueOf(initiativeCreated));
+        tvUserCreatedAt.setText(user.getCreatedAt());
+
+        this.user = user;
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        presenter.onDestroy();
     }
 }

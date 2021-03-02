@@ -1,34 +1,77 @@
 package com.douglas.jointlyapp.data.model;
 
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.room.ColumnInfo;
+import androidx.room.Entity;
+import androidx.room.Ignore;
+import androidx.room.Index;
+import androidx.room.PrimaryKey;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-
+@Entity(tableName = "user",
+        indices = {@Index(value = "email", unique = true)})
 public class User implements Comparable<User>, Serializable, Parcelable {
 
+    public static final String TAG = "User";
+
+    @NonNull
+    @PrimaryKey(autoGenerate = true)
     private int id;
+    @NonNull
+    @ColumnInfo(name = "email")
     private String email;
+    @NonNull
     private String password;
+    @NonNull
     private String name;
     private String phone;
-    private Uri imagen;
+    private Bitmap imagen;
     private String location;
     private String description;
+    @NonNull
     private String createdAt;
-    private List<User> userFollowed;
-    private List<User> userFollowers;
 
+    @Ignore
+    private int userFollows;
+
+    @Ignore
     public User() {
-        userFollowed = new ArrayList<>();
-        userFollowers = new ArrayList<>();
     }
 
-    public User(int id, String email, String password, String name, String phone, Uri imagen, String location, String description, String createdAt) {
+    @Ignore
+    public User(@NonNull String email, @NonNull String password, @NonNull String name, String phone, Bitmap imagen, String location, String description, @NonNull String createdAt) {
+        this.email = email;
+        this.password = password;
+        this.name = name;
+        this.phone = phone;
+        this.imagen = imagen;
+        this.location = location;
+        this.description = description;
+        this.createdAt = createdAt;
+    }
+
+    /**
+     * Crea un usuario
+     * @param id
+     * @param email
+     * @param password
+     * @param name
+     * @param phone
+     * @param imagen
+     * @param location
+     * @param description
+     * @param createdAt
+     */
+    public User(int id, @NonNull String email, @NonNull String password, @NonNull String name, String phone, Bitmap imagen, String location, String description, @NonNull String createdAt) {
         this.id = id;
         this.email = email;
         this.password = password;
@@ -38,23 +81,19 @@ public class User implements Comparable<User>, Serializable, Parcelable {
         this.location = location;
         this.description = description;
         this.createdAt = createdAt;
-        userFollowed = new ArrayList<>();
-        userFollowers = new ArrayList<>();
     }
 
-
+    @Ignore
     protected User(Parcel in) {
         id = in.readInt();
         email = in.readString();
         password = in.readString();
         name = in.readString();
         phone = in.readString();
-        imagen = in.readParcelable(Uri.class.getClassLoader());
+        imagen = in.readParcelable(Bitmap.class.getClassLoader());
         location = in.readString();
         description = in.readString();
         createdAt = in.readString();
-        userFollowed = in.createTypedArrayList(User.CREATOR);
-        userFollowers = in.createTypedArrayList(User.CREATOR);
     }
 
     public static final Creator<User> CREATOR = new Creator<User>() {
@@ -109,11 +148,11 @@ public class User implements Comparable<User>, Serializable, Parcelable {
         this.phone = phone;
     }
 
-    public Uri getImagen() {
+    public Bitmap getImagen() {
         return imagen;
     }
 
-    public void setImagen(Uri imagen) {
+    public void setImagen(Bitmap imagen) {
         this.imagen = imagen;
     }
 
@@ -141,12 +180,12 @@ public class User implements Comparable<User>, Serializable, Parcelable {
         this.createdAt = createdAt;
     }
 
-    public List<User> getUserFollowed() {
-        return userFollowed;
+    public int getUserFollows() {
+        return userFollows;
     }
 
-    public List<User> getUserFollowers() {
-        return userFollowers;
+    public void setUserFollows(int userFollows) {
+        this.userFollows = userFollows;
     }
 
     @Override
@@ -172,13 +211,12 @@ public class User implements Comparable<User>, Serializable, Parcelable {
                 ", password='" + password + '\'' +
                 ", name='" + name + '\'' +
                 ", phone='" + phone + '\'' +
-                ", imagen='" + imagen + '\'' +
+                ", imagen=" + imagen +
                 ", location='" + location + '\'' +
                 ", description='" + description + '\'' +
                 ", createdAt='" + createdAt + '\'' +
                 '}';
     }
-
 
     @Override
     public int compareTo(User user) {
@@ -201,7 +239,5 @@ public class User implements Comparable<User>, Serializable, Parcelable {
         dest.writeString(location);
         dest.writeString(description);
         dest.writeString(createdAt);
-        dest.writeTypedList(userFollowed);
-        dest.writeTypedList(userFollowers);
     }
 }

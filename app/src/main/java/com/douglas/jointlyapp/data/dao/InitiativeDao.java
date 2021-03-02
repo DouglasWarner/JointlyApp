@@ -8,6 +8,7 @@ import androidx.room.Query;
 import androidx.room.Update;
 
 import com.douglas.jointlyapp.data.model.Initiative;
+import com.douglas.jointlyapp.data.model.User;
 
 import java.util.List;
 
@@ -24,8 +25,23 @@ public interface InitiativeDao {
     void update(Initiative initiative);
 
     @Query("SELECT * FROM initiative")
-    List<Initiative> get();
+    List<Initiative> getList();
 
     @Query("SELECT COUNT(*) FROM initiative")
     int getRowCount();
+
+    @Query("SELECT * FROM initiative ORDER BY location")
+    List<Initiative> getListOrderByLocation();
+
+    @Query("SELECT * FROM initiative i ORDER BY (SELECT COUNT(*) FROM userJoinInitiative u WHERE i.id=u.idInitiative)")
+    List<Initiative> getListOrderByMaxUserJoined();
+
+    @Query("SELECT * FROM initiative WHERE createdBy=:userEmail")
+    List<Initiative> getListUserCreated(String userEmail);
+
+    @Query("SELECT * FROM initiative WHERE id IN (SELECT idInitiative FROM userJoinInitiative WHERE idUser=:userEmail)")
+    List<Initiative> getListUserJoined(String userEmail);
+
+    @Query("SELECT * FROM initiative WHERE id =:idInitiative")
+    Initiative getInitiative(int idInitiative);
 }

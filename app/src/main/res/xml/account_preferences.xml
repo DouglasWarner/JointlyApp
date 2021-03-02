@@ -5,11 +5,31 @@
         android:key="@string/key_user"
         android:selectAllOnFocus="true"
         android:singleLine="true"
+        android:inputType="textEmailAddress"
         android:title="@string/title_user" />
     <EditTextPreference
-        android:key="@string/key_password"
+        android:key="@string/key_name"
         android:selectAllOnFocus="true"
         android:singleLine="true"
-        android:inputType="textPassword"
-        android:title="@string/title_password" />
+        android:inputType="text"
+        android:title="@string/title_name" />
+    <EditTextPreference
+        android:key="@string/key_location"
+        android:selectAllOnFocus="true"
+        android:singleLine="true"
+        android:inputType="text"
+        android:title="@string/title_location" />
+    <EditTextPreference
+        android:key="@string/key_phone"
+        android:selectAllOnFocus="true"
+        android:singleLine="true"
+        android:inputType="phone"
+        android:title="@string/title_phone" />
+    <EditTextPreference
+        android:key="@string/key_description"
+        android:selectAllOnFocus="true"
+        android:singleLine="true"
+        android:inputType="text"
+        android:title="@string/title_description" />
+
 </PreferenceScreen>

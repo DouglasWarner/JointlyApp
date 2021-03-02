@@ -1,20 +1,29 @@
 package com.douglas.jointlyapp.data.repository;
 
+import android.graphics.Bitmap;
 import android.net.Uri;
 
+import com.douglas.jointlyapp.data.JointlyDatabase;
+import com.douglas.jointlyapp.data.dao.InitiativeDao;
+import com.douglas.jointlyapp.data.dao.UserJoinInitiativeDao;
 import com.douglas.jointlyapp.data.model.Initiative;
 import com.douglas.jointlyapp.data.model.User;
+import com.douglas.jointlyapp.data.model.UserJoinInitiative;
 import com.douglas.jointlyapp.ui.JointlyApplication;
 import com.douglas.jointlyapp.ui.utils.CommonUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.stream.Collectors;
 
 public class InitiativeRepository {
 
     private static InitiativeRepository initiativeRepository;
+    private JointlyDatabase db;
+    private InitiativeDao initiativeDao;
+    private UserJoinInitiativeDao userJoinInitiativeDao;
     private List<Initiative> list;
-    private static int iteractorId;
 
     static {
         initiativeRepository = new InitiativeRepository();
@@ -23,22 +32,9 @@ public class InitiativeRepository {
     private InitiativeRepository()
     {
         this.list = new ArrayList<>();
-        iteractorId = 0;
-
-        initialice();
-    }
-
-    private void initialice() {
-        User user1 = UserRepository.getInstance().getUser("maria@gmail.com");
-        User user2 = UserRepository.getInstance().getUser("douglas@gmail.com");
-        Uri image = CommonUtils.getImagenInitiativeDefault(JointlyApplication.getContext());
-
-        Initiative i = new Initiative(iteractorId, "Recoger basura en la playa","05/01/2021","12/05/2021","12:00","La playa de Málaga queremos limpiarla porque esta muy sucia por la contaminación","Limpieza de playas Málaga","Málaga", image,"20kg","A", user1.getName());
-        i.getUserJoined().add(user2);
-        list.add(i);
-
-        Initiative i1 = new Initiative(iteractorId, "Recolecta de alimentos","28/02/2021","12/03/2021","14:00","Descripcion iniciativa","Recolecta de comidas","Málaga", image,"20kg","A", user2.getName());
-        list.add(i1);
+        db = JointlyDatabase.getDatabase();
+        initiativeDao = db.initiativeDao();
+        userJoinInitiativeDao = db.userJoinInitiativeDao();
     }
 
     public static InitiativeRepository getInstance()
@@ -46,37 +42,225 @@ public class InitiativeRepository {
         return initiativeRepository;
     }
 
+    /**
+     * Devuelve toda la lista de iniciativas
+     * @return
+     */
     public List<Initiative> getList()
     {
-        return list;
+        try {
+            list = JointlyDatabase.DATABASE_WRITE_EXECUTOR.submit(() -> initiativeDao.getList()).get();
+        } catch (ExecutionException | InterruptedException e) {
+            e.printStackTrace();
+        }
+        finally {
+            return list;
+        }
     }
 
-    public int getCountUserJoined(int idInitiative)
+    /**
+     * Devuelve la lista de todas las iniciativas excepto del usuario pasado por parametros
+     * @param userEmail
+     * @return
+     */
+    public List<Initiative> getList(String userEmail)
     {
-        return list.get(idInitiative).getUserJoined().size();
+        try {
+            list = JointlyDatabase.DATABASE_WRITE_EXECUTOR.submit(() -> initiativeDao.getList()).get();
+        } catch (ExecutionException | InterruptedException e) {
+            e.printStackTrace();
+        }
+        finally {
+            return list.stream().filter(x -> !x.getCreatedBy().equals(userEmail)).collect(Collectors.toList());
+        }
     }
 
-    //TODO refactorizar
-    public boolean setUserJoin(Initiative initiative, User user)
+    /**
+     * Inserta la iniciativa
+     * @param initiative
+     * @return
+     */
+    public long insert(Initiative initiative)
     {
-        if(list.get(list.indexOf(initiative)).getUserJoined().contains(user))
-            return false;
-
-        list.get(list.indexOf(initiative)).getUserJoined().add(user);
-        return true;
+        long result = 0;
+        try {
+            result = JointlyDatabase.DATABASE_WRITE_EXECUTOR.submit(() -> initiativeDao.insert(initiative)).get();
+        } catch (ExecutionException | InterruptedException e) {
+            e.printStackTrace();
+        }
+        finally
+        {
+            return result;
+        }
     }
 
-    public void add(Initiative initiative)
-    {
-        initiative.setId(iteractorId++);
-        list.add(initiative);
-    }
-
+    /**
+     * Actualiza la iniciativa
+     * @param editInitiative
+     */
     public void update(Initiative editInitiative) {
-        list.set(list.indexOf(editInitiative), editInitiative);
+        JointlyDatabase.DATABASE_WRITE_EXECUTOR.submit(() -> initiativeDao.update(editInitiative));
     }
 
+    /**
+     * Borra la iniciativa
+     * @param initiative
+     */
     public void delete(Initiative initiative) {
-        list.remove(initiative);
+        JointlyDatabase.DATABASE_WRITE_EXECUTOR.submit(() -> initiativeDao.delete(initiative));
+    }
+
+    /**
+     * Devuelve la lista de iniciativas creadas en curso por el usuario
+     * @param userEmail
+     * @return
+     */
+    public List<Initiative> getListCreatedInProgressByUser(String userEmail)
+    {
+        try {
+            list = JointlyDatabase.DATABASE_WRITE_EXECUTOR.submit(() -> initiativeDao.getListUserCreated(userEmail)).get();
+        } catch (ExecutionException | InterruptedException e) {
+            e.printStackTrace();
+        }
+        finally {
+            return list;
+        }
+    }
+
+    /**
+     * Devulve la lista de iniciativas pasadas creadas por el usuario
+     * @param userEmail
+     * @return
+     */
+    public List<Initiative> getListCreatedHistoryByUser(String userEmail)
+    {
+        try {
+            list = JointlyDatabase.DATABASE_WRITE_EXECUTOR.submit(() -> initiativeDao.getListUserCreated(userEmail)).get();
+        } catch (ExecutionException | InterruptedException e) {
+            e.printStackTrace();
+        }
+        finally {
+            return list;
+        }
+    }
+
+    /**
+     * Devuelve la lista de iniciativas a las que esta unido en curso
+     * @param userEmail
+     * @return
+     */
+    public List<Initiative> getListJoinedInProgressByUser(String userEmail)
+    {
+        try {
+            list = JointlyDatabase.DATABASE_WRITE_EXECUTOR.submit(() -> initiativeDao.getListUserJoined(userEmail)).get();
+        } catch (ExecutionException | InterruptedException e) {
+            e.printStackTrace();
+        }
+        finally {
+            return list;
+        }
+    }
+
+    /**
+     * Devuelve la lista de iniciativas pasadas a las que se unio el usuario
+     * @param userEmail
+     * @return
+     */
+    public List<Initiative> getListJoinedHistoryByUser(String userEmail)
+    {
+        try {
+            list = JointlyDatabase.DATABASE_WRITE_EXECUTOR.submit(() -> initiativeDao.getListUserJoined(userEmail)).get();
+        } catch (ExecutionException | InterruptedException e) {
+            e.printStackTrace();
+        }
+        finally {
+            return list;
+        }
+    }
+
+    /**
+     * Devuelve la lista de iniciativas que ha creado el usuario
+     * @param userEmail
+     * @return
+     */
+    public List<Initiative> getListUserCreated(String userEmail)
+    {
+        try {
+            list = JointlyDatabase.DATABASE_WRITE_EXECUTOR.submit(() -> initiativeDao.getListUserCreated(userEmail)).get();
+        } catch (ExecutionException | InterruptedException e) {
+            e.printStackTrace();
+        }
+        finally {
+            return list;
+        }
+    }
+
+    /**
+     * Devuelve la lista de usuarios unidos a la iniciativa
+     * @param userEmail
+     * @return
+     */
+    public List<Initiative> getListUserJoined(String userEmail)
+    {
+        try {
+            list = JointlyDatabase.DATABASE_WRITE_EXECUTOR.submit(() -> initiativeDao.getListUserJoined(userEmail)).get();
+        } catch (ExecutionException | InterruptedException e) {
+            e.printStackTrace();
+        }
+        finally {
+            return list;
+        }
+    }
+
+    /**
+     * Devuelve el usuario unido a la iniciativa
+     * @param idInitiative
+     * @param userEmail
+     * @return
+     */
+    public UserJoinInitiative getUserJoined(int idInitiative, String userEmail)
+    {
+        UserJoinInitiative userJoinInitiative = null;
+
+        try {
+            userJoinInitiative = JointlyDatabase.DATABASE_WRITE_EXECUTOR.submit(() -> userJoinInitiativeDao.getUserJoinInitiative(idInitiative, userEmail)).get();
+        } catch (ExecutionException | InterruptedException e) {
+            e.printStackTrace();
+        }finally {
+            return userJoinInitiative;
+        }
+    }
+
+    /**
+     * Inserta la union de un usuario con la iniciativa
+     * @param userJoinInitiative
+     */
+    public void insertUserJoin(UserJoinInitiative userJoinInitiative) {
+        JointlyDatabase.DATABASE_WRITE_EXECUTOR.submit(()-> userJoinInitiativeDao.insert(userJoinInitiative));
+    }
+
+    /**
+     * Cancela la union del usuario con la iniciativa
+     * @param userJoinInitiative
+     */
+    public void deleteUserJoin(UserJoinInitiative userJoinInitiative) {
+        JointlyDatabase.DATABASE_WRITE_EXECUTOR.submit(()-> userJoinInitiativeDao.delete(userJoinInitiative));
+    }
+
+    /**
+     * Devuelve la iniciativa
+     * @param idInitiative
+     * @return
+     */
+    public Initiative getInitiative(int idInitiative) {
+        Initiative initiative = null;
+        try {
+            initiative = JointlyDatabase.DATABASE_WRITE_EXECUTOR.submit(() -> initiativeDao.getInitiative(idInitiative)).get();
+        } catch (ExecutionException | InterruptedException e) {
+            e.printStackTrace();
+        }
+        finally {
+            return initiative;
+        }
     }
 }

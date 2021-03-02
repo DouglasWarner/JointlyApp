@@ -3,7 +3,9 @@ package com.douglas.jointlyapp.ui.login;
 import android.os.Handler;
 import android.text.TextUtils;
 
+import com.douglas.jointlyapp.data.model.User;
 import com.douglas.jointlyapp.data.repository.UserRepository;
+import com.douglas.jointlyapp.ui.preferences.JointlyPreferences;
 import com.douglas.jointlyapp.ui.utils.CommonUtils;
 
 public class LoginInteractorImpl {
@@ -14,7 +16,7 @@ public class LoginInteractorImpl {
         void onEmailFormatError();
         void onPasswordFormatError();
         void onAuthenticationError();
-        void onSuccess();
+        void onSuccess(User user);
     }
 
     private LoginInteractor interactor;
@@ -55,7 +57,7 @@ public class LoginInteractorImpl {
                     return;
                 }
 
-                interactor.onSuccess();
+                interactor.onSuccess(UserRepository.getInstance().getUser(email));
 
             }
         }, 2000);

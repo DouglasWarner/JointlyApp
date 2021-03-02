@@ -3,15 +3,32 @@ package com.douglas.jointlyapp.ui.utils;
 import android.app.ProgressDialog;
 import android.content.ContentResolver;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.ImageDecoder;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.icu.text.SimpleDateFormat;
+import android.media.Image;
 import android.net.Uri;
+import android.provider.MediaStore;
 
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.graphics.BitmapCompat;
+import androidx.core.graphics.drawable.DrawableCompat;
 
+import com.bumptech.glide.load.engine.bitmap_recycle.BitmapPool;
+import com.bumptech.glide.load.resource.bitmap.BitmapDrawableResource;
+import com.bumptech.glide.load.resource.bitmap.BitmapEncoder;
+import com.bumptech.glide.load.resource.bitmap.BitmapResource;
+import com.bumptech.glide.load.resource.bitmap.BitmapTransformation;
+import com.bumptech.glide.load.resource.drawable.DrawableResource;
 import com.douglas.jointlyapp.R;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Date;
@@ -33,6 +50,14 @@ public class CommonUtils {
         Matcher match = patron.matcher(password);
 
         return match.matches();
+    }
+
+    public static boolean isPhoneValid(String phone)
+    {
+        Pattern pattern = Pattern.compile("^\\d{9}$");
+        Matcher matcher = pattern.matcher(phone);
+
+        return matcher.matches();
     }
 
     public static boolean isInitiativeNameValid(String name) {
@@ -73,25 +98,26 @@ public class CommonUtils {
         return progressDialog;
     }
 
-    public static Uri getImagenInitiativeDefault(Context context)
+    public static Bitmap getImagenInitiativeDefault(Context context)
     {
-        Uri uri = Uri.parse("android.resource://com.douglas.jointlyapp/drawable/playasucia.png");
+        Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.playasucia);
 
-        return uri;
-//        return Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE +
-//                "://" + context.getResources().getResourcePackageName(R.drawable.playasucia)
-//                + '/' + context.getResources().getResourceTypeName(R.drawable.playasucia)
-//                + '/' + context.getResources().getResourceEntryName(R.drawable.playasucia));
+        return bitmap;
     }
 
-    public static Uri getImagenUserDefault(Context context)
+    public static Bitmap getImagenUserDefault(Context context)
     {
-        Uri uri = Uri.parse("android.resource://com.douglas.jointlyapp/mipmap/ic_app");
+        Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_logomiapp);
 
-        return uri;
-//        return Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE +
-//                "://" + context.getResources().getResourcePackageName(R.drawable.playasucia)
-//                + '/' + context.getResources().getResourceTypeName(R.drawable.playasucia)
-//                + '/' + context.getResources().getResourceEntryName(R.drawable.playasucia));
+        return bitmap;
+    }
+
+    public static String getDateNow()
+    {
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+
+        Date now = Calendar.getInstance().getTime();
+
+        return simpleDateFormat.format(now);
     }
 }

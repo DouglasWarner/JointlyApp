@@ -1,10 +1,18 @@
 package com.douglas.jointlyapp.ui.signup;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Handler;
 import android.text.TextUtils;
 
+import com.douglas.jointlyapp.data.model.User;
 import com.douglas.jointlyapp.data.repository.UserRepository;
+import com.douglas.jointlyapp.ui.JointlyApplication;
 import com.douglas.jointlyapp.ui.utils.CommonUtils;
+
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.TimeZone;
 
 public class SignUpInteractorImpl {
 
@@ -75,7 +83,7 @@ public class SignUpInteractorImpl {
                     return;
                 }
 
-                repository.add(email, password, userName);
+                repository.insert(new User(email, password, userName, " ", CommonUtils.getImagenUserDefault(JointlyApplication.getContext()), " ", " ", CommonUtils.getDateNow()));
 
                 interactor.onSuccess();
 

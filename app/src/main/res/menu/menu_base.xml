@@ -1,8 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
+    <group android:id="@+id/group_action_profile" android:visible="false">
+        <item
+            android:id="@+id/action_settings"
+            android:title="@string/action_settings"
+            android:icon="@drawable/ic_settings"/>
+        <item
+            android:id="@+id/action_logout"
+            android:title="@string/action_logout"
+            android:icon="@drawable/ic_logout"/>
+    </group>
+
     <item
-        android:id="@+id/action_settings"
-        android:title="@string/action_settings"
-        android:icon="@drawable/ic_settings"/>
+        android:id="@+id/action_editAccount"
+        android:title="@string/action_editAccount"
+        android:icon="@drawable/ic_edit"
+        app:showAsAction="always"
+        android:visible="false"/>
+
+    <group android:id="@+id/group_action_order_initiative" android:visible="false">
+        <item
+            android:id="@+id/action_order_initiative_by_date"
+            android:title="@string/action_order_initiative_by_date"
+            />
+        <item
+            android:id="@+id/action_order_initiative_by_location"
+            android:title="@string/action_order_initiative_by_location"
+            />
+        <item
+            android:id="@+id/action_order_initiative_by_users_joined"
+            android:title="@string/action_order_initiative_by_users_joined"
+            />
+    </group>
+    <group android:id="@+id/group_action_order_favorite" android:visible="false">
+        <item
+            android:id="@+id/action_order_favorite_by_name"
+            android:title="@string/action_order_favorite_by_name"
+            />
+        <item
+            android:id="@+id/action_order_favorite_by_location"
+            android:title="@string/action_order_favorite_by_location"
+           />
+        <item
+            android:id="@+id/action_order_favorite_by_users_follows"
+            android:title="@string/action_order_favorite_by_follows"
+            />
+    </group>
 </menu>

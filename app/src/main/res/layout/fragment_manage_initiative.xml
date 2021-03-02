@@ -8,19 +8,35 @@
     android:id="@+id/manageInitiativeContent"
     android:paddingBottom="10dp">
 
+    <ImageButton
+        android:id="@+id/imgBtnInitiative"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:padding="10dp"
+        android:cropToPadding="true"
+        android:scaleType="centerCrop"
+        android:src="@drawable/ic_add_photo_initiative"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/guideline2"
+        app:layout_constraintHorizontal_bias="0.18"
+        app:layout_constraintStart_toStartOf="@+id/guideline"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.060000002"
+        android:background="@drawable/shape_button_galery"
+        />
+
     <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/tilTitle"
+        android:id="@+id/tilNameInitiative"
         style="@style/TextInputLayout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="10dp"
         app:helperText="*Requerido"
         app:helperTextEnabled="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/guideline2"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="@+id/guideline"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imgBtnInitiative"
         app:layout_constraintVertical_bias="0.024">
 
         <com.google.android.material.textfield.TextInputEditText
@@ -40,11 +56,10 @@
         style="@style/TextInputLayout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
         app:layout_constraintEnd_toStartOf="@+id/guideline2"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="@+id/guideline"
-        app:layout_constraintTop_toBottomOf="@+id/tilTitle"
+        app:layout_constraintTop_toBottomOf="@+id/tilNameInitiative"
         android:textAlignment="viewStart">
 
         <com.google.android.material.textfield.TextInputEditText
@@ -53,8 +68,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/tieDescription"
-            android:inputType="textMultiLine"
-            android:lines="6"/>
+            android:inputType="textMultiLine"/>
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
@@ -62,7 +76,6 @@
         style="@style/TextInputLayout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
         app:layout_constraintEnd_toStartOf="@+id/guideline2"
         app:layout_constraintStart_toStartOf="@+id/guideline"
         app:layout_constraintTop_toBottomOf="@+id/tilDescription"
@@ -84,7 +97,6 @@
         style="@style/TextInputLayout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
         app:layout_constraintEnd_toStartOf="@+id/guideline2"
         app:layout_constraintStart_toStartOf="@+id/guideline"
         app:layout_constraintTop_toBottomOf="@+id/tilLocation"
@@ -105,7 +117,6 @@
         style="@style/TextInputLayout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
         app:layout_constraintEnd_toStartOf="@+id/guideline2"
         app:layout_constraintStart_toStartOf="@+id/guideline"
         app:layout_constraintTop_toBottomOf="@+id/tilTargetArea"
@@ -129,7 +140,6 @@
         style="@style/TextInputLayout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
         app:layout_constraintEnd_toStartOf="@+id/guideline2"
         app:layout_constraintStart_toStartOf="@+id/guideline"
         app:layout_constraintTop_toBottomOf="@+id/tilTargetDate"
@@ -153,7 +163,6 @@
         style="@style/TextInputLayout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
         app:layout_constraintEnd_toStartOf="@+id/guideline2"
         app:layout_constraintStart_toStartOf="@+id/guideline"
         app:layout_constraintTop_toBottomOf="@+id/tilTargetTime"
@@ -161,7 +170,8 @@
         app:suffixText="kg"
         app:suffixTextColor="@color/primaryTextColor"
         app:helperTextEnabled="true"
-        app:helperText="*Requerido">
+        app:helperText="*Requerido"
+        app:startIconDrawable="@drawable/ic_amount">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/tieTargetAmount"

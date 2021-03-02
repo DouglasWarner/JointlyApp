@@ -14,9 +14,14 @@ public class FavoritePresenter implements FavoriteContract.Presenter, FavoriteIn
     }
 
     @Override
-    public void load(User user) {
+    public void load() {
         view.showProgress();
-        interactor.loadData(user);
+        interactor.loadData();
+    }
+
+    @Override
+    public void followUser(User user) {
+        interactor.followUser(user);
     }
 
     @Override
@@ -35,5 +40,15 @@ public class FavoritePresenter implements FavoriteContract.Presenter, FavoriteIn
     public void onSuccess(List<User> list) {
         view.hideProgress();
         view.onSuccess(list);
+    }
+
+    @Override
+    public void onSuccessUnFollow() {
+        view.setSuccessUnFollow();
+    }
+
+    @Override
+    public void onSuccessFollow() {
+        view.setSuccessFollow();
     }
 }
