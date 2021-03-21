@@ -13,9 +13,13 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
 import com.douglas.jointlyapp.R;
 import com.douglas.jointlyapp.ui.preferences.JointlyPreferences;
+import com.firebase.ui.auth.AuthUI;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -105,6 +109,12 @@ public class JointlyActivity extends AppCompatActivity  {
                 Navigation.findNavController(this, R.id.nav_host_fragment).navigate(R.id.settingFragment);
                 break;
             case R.id.action_logout:
+                AuthUI.getInstance().signOut(this).addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        Toast.makeText(JointlyActivity.this, "Sesion cerrada", Toast.LENGTH_SHORT).show();
+                    }
+                });
                 JointlyPreferences.getInstance().putRemember(false);
                 finish();
                 break;

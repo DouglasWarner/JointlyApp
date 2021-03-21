@@ -4,7 +4,7 @@
     <dimen name="margin_top_chbRemember">8dp</dimen>
     <dimen name="margin_top_btnSignIn">24dp</dimen>
     <dimen name="margin_top_btnGoogle">8dp</dimen>
-    <dimen name="icon_size_btnGoogle">30dp</dimen>
+    <dimen name="icon_size_btnGoogle">10dp</dimen>
     <dimen name="icon_size_btnFacebook">30dp</dimen>
     <dimen name="titleSignUp">30sp</dimen>
 </resources>

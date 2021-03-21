@@ -90,4 +90,7 @@
     <string name="tvChatNoData">No ha escrito nadie ningun mensaje</string>
     <string name="tvNoUserData">Se tu el primero en unirte</string>
     <string name="tvNoInitiativeUserData">Este usuario no tiene iniciativas en curso</string>
+
+    <string name="facebook_application_id" translatable="false">299641768192910</string>
+    <string name="facebook_login_protocol_scheme" translatable="false">fb299641768192910</string>
 </resources>
