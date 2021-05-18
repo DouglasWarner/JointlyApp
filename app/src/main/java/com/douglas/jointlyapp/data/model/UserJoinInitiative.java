@@ -4,13 +4,14 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
+import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.ForeignKey;
 import androidx.room.Ignore;
 import androidx.room.Index;
 
 
-@Entity(tableName = "userJoinInitiative", primaryKeys = {"idInitiative","idUser","joined_at"},
+@Entity(tableName = "userJoinInitiative", primaryKeys = {"idInitiative","idUser"},
     foreignKeys = {@ForeignKey(entity = Initiative.class, parentColumns = "id", childColumns = "idInitiative"),
                 @ForeignKey(entity = User.class, parentColumns = "email", childColumns = "idUser")},
     indices = @Index("idUser"))
@@ -24,15 +25,25 @@ public class UserJoinInitiative implements Parcelable {
     private String idUser;
     @NonNull
     private String joined_at;
+    @ColumnInfo(defaultValue = "0")
+    private int type;
 
     @Ignore
     public UserJoinInitiative() {
     }
 
-    public UserJoinInitiative(int idInitiative, String idUser, @NonNull String joined_at) {
+    /**
+     * Create a new user join initiative
+     * @param idInitiative
+     * @param idUser
+     * @param joined_at
+     * @param type
+     */
+    public UserJoinInitiative(int idInitiative, String idUser, String joined_at, int type) {
         this.idInitiative = idInitiative;
         this.idUser = idUser;
         this.joined_at = joined_at;
+        this.type = type;
     }
 
     @Ignore
@@ -40,6 +51,7 @@ public class UserJoinInitiative implements Parcelable {
         idInitiative = in.readInt();
         idUser = in.readString();
         joined_at = in.readString();
+        type = in.readInt();
     }
 
     public static final Creator<UserJoinInitiative> CREATOR = new Creator<UserJoinInitiative>() {
@@ -80,6 +92,14 @@ public class UserJoinInitiative implements Parcelable {
         this.joined_at = joined_at;
     }
 
+    public int getType() {
+        return type;
+    }
+
+    public void setType(int type) {
+        this.type = type;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -88,15 +108,13 @@ public class UserJoinInitiative implements Parcelable {
         UserJoinInitiative that = (UserJoinInitiative) o;
 
         if (idInitiative != that.idInitiative) return false;
-        if (!idUser.equals(that.idUser)) return false;
-        return joined_at.equals(that.joined_at);
+        return idUser.equals(that.idUser);
     }
 
     @Override
     public int hashCode() {
         int result = idInitiative;
         result = 31 * result + idUser.hashCode();
-        result = 31 * result + joined_at.hashCode();
         return result;
     }
 
@@ -106,9 +124,9 @@ public class UserJoinInitiative implements Parcelable {
                 "idInitiative=" + idInitiative +
                 ", idUser='" + idUser + '\'' +
                 ", joined_at='" + joined_at + '\'' +
+                ", type=" + type +
                 '}';
     }
-
 
     @Override
     public int describeContents() {
@@ -120,5 +138,6 @@ public class UserJoinInitiative implements Parcelable {
         dest.writeInt(idInitiative);
         dest.writeString(idUser);
         dest.writeString(joined_at);
+        dest.writeInt(type);
     }
 }

@@ -41,14 +41,14 @@ public class ManageInitiativeInteractorImpl {
 
     public void addInitiative(final String name, final String targetDate, final String targetTime,
                               final String description, final String targetArea, final String location, final Bitmap imagen, final String targetAmount,
-                              final String status, final String createdBy)
+                              final String status, final String created_by)
     {
         if (isNotValidInitiative(name, targetDate, targetTime, targetArea, location, targetAmount))
             return;
 
         InitiativeRepository repository = InitiativeRepository.getInstance();
 
-        Initiative addInitiative = new Initiative(name, CommonUtils.getDateNow(), targetDate, targetTime, description, targetArea, location, imagen, targetAmount, status, createdBy);
+        Initiative addInitiative = new Initiative(name, CommonUtils.getDateNow(), targetDate, description, targetArea, location, imagen, targetAmount, status, created_by);
 
         int result = (int) repository.insert(addInitiative);
 
@@ -57,16 +57,16 @@ public class ManageInitiativeInteractorImpl {
         interactor.onSuccess(initiative);
     }
 
-    public void editInitiative(final int id, final String name, final String createAt, final String targetDate, final String targetTime,
-                               final String description, final String targetArea, final String location, final Bitmap imagen, final String targetAmount,
-                               final String status, final String createdBy)
+    public void editInitiative(final int id, final String name, final String createAt, final String targetDate, final String targetTime, final String description,
+                               final String targetArea, final String location, final Bitmap imagen, final String targetAmount,
+                               final String status, final String created_by, final String ref_code)
     {
         if (isNotValidInitiative(targetDate, targetTime, targetArea, location))
             return;
 
         InitiativeRepository repository = InitiativeRepository.getInstance();
 
-        Initiative editInitiative = new Initiative(id, name, createAt, targetDate, targetTime, description, targetArea, location, imagen, targetAmount, status, createdBy);
+        Initiative editInitiative = new Initiative(id, name, createAt, String.format("%s %s", targetDate, targetTime), description, targetArea, location, imagen, targetAmount, status, created_by, ref_code);
 
         repository.update(editInitiative);
 

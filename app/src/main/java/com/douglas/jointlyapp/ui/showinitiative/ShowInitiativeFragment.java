@@ -13,8 +13,6 @@ import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.os.PersistableBundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -111,8 +109,8 @@ public class ShowInitiativeFragment extends Fragment implements ShowInitiativeCo
         tvDescription.setText(init.getDescription());
         tvLocation.setText(init.getLocation());
         tvTargetArea.setText(init.getTargetArea());
-        tvTargetDate.setText(init.getTargetDate());
-        tvTargetTime.setText(init.getTargetTime());
+        tvTargetDate.setText(init.getTargetDate().split(" ")[0]);
+        tvTargetTime.setText(init.getTargetDate().split(" ")[1]);
         tvTargetAmount.setText(init.getTargetAmount());
     }
 

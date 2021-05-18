@@ -178,8 +178,8 @@ public class ManageInitiativeFragment extends Fragment implements ManageInitiati
         tieDescription.setText(init.getDescription());
         tieLocation.setText(init.getLocation());
         tieTargetArea.setText(init.getTargetArea());
-        tieTargetDate.setText(init.getTargetDate());
-        tieTargetTime.setText(init.getTargetTime());
+        tieTargetDate.setText(init.getTargetDate().split(" ")[0]);
+        tieTargetTime.setText(init.getTargetDate().split(" ")[1]);
         tieTargetAmount.setText(init.getTargetAmount());
 
         initiative = init;
@@ -211,7 +211,7 @@ public class ManageInitiativeFragment extends Fragment implements ManageInitiati
 
         presenter.editInitiative(initiative.getId(), initiative.getName(), initiative.getCreatedAt(), tieTargetDate.getText().toString(),
                 tieTargetTime.getText().toString(), tieDescription.getText().toString(), tieTargetArea.getText().toString(), tieLocation.getText().toString(),
-                initiative.getImagen(), initiative.getTargetAmount(), initiative.getStatus(), user);
+                initiative.getImagen(), initiative.getTargetAmount(), initiative.getStatus(), user, initiative.getRefCode());
 
     }
 
@@ -222,8 +222,7 @@ public class ManageInitiativeFragment extends Fragment implements ManageInitiati
         if(imageInitiative == null)
                 imageInitiative = new BitmapDrawable(CommonUtils.getImagenInitiativeDefault(getActivity()));
 
-        initiative = new Initiative(tieName.getText().toString(), CommonUtils.getDateNow(), tieTargetDate.getText().toString(),
-                tieTargetTime.getText().toString(), tieDescription.getText().toString(), tieTargetArea.getText().toString(), tieLocation.getText().toString(),
+        initiative = new Initiative(tieName.getText().toString(), CommonUtils.getDateNow(), String.format("%s %s", tieTargetDate.getText().toString(), tieTargetTime.getText().toString()), tieDescription.getText().toString(), tieTargetArea.getText().toString(), tieLocation.getText().toString(),
                 imageInitiative.getBitmap(), tieTargetAmount.getText().toString(), "A", user);
 
         presenter.addInitiative(tieName.getText().toString(), tieTargetDate.getText().toString(),

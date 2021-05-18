@@ -26,6 +26,11 @@ public class UserFollowUser implements Parcelable {
     public UserFollowUser() {
     }
 
+    /**
+     * Create a new follow
+     * @param idUser
+     * @param idUserFollowed
+     */
     public UserFollowUser(String idUser, String idUserFollowed) {
         this.idUser = idUser;
         this.idUserFollowed = idUserFollowed;

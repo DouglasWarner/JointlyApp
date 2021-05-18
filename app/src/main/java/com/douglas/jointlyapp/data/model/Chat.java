@@ -27,6 +27,13 @@ public class Chat implements Parcelable {
     public Chat() {
     }
 
+    /**
+     * Create a new chat
+     * @param dateMessage
+     * @param idInitiative
+     * @param userEmail
+     * @param message
+     */
     public Chat(String dateMessage, int idInitiative, String userEmail, String message) {
         this.dateMessage = dateMessage;
         this.idInitiative = idInitiative;

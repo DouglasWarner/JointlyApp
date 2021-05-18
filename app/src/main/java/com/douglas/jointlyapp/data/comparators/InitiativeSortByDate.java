@@ -1,16 +1,10 @@
 package com.douglas.jointlyapp.data.comparators;
 
-import android.icu.util.GregorianCalendar;
-import android.text.format.DateUtils;
-
 import com.douglas.jointlyapp.data.model.Initiative;
-import com.douglas.jointlyapp.data.model.User;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Comparator;
-import java.util.HashMap;
 
 public class InitiativeSortByDate implements Comparator<Initiative>{
     @Override

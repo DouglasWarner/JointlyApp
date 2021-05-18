@@ -50,7 +50,7 @@ public class ShowInitiativeInteractorImpl {
     public void joinInitiative(final Initiative initiative) {
         String user = JointlyPreferences.getInstance().getUser();
 
-        UserJoinInitiative userJoinInitiative = new UserJoinInitiative(initiative.getId(), user, CommonUtils.getDateNow());
+        UserJoinInitiative userJoinInitiative = new UserJoinInitiative(initiative.getId(), user, CommonUtils.getDateNow(), 0);
 
         InitiativeRepository.getInstance().insertUserJoin(userJoinInitiative);
 

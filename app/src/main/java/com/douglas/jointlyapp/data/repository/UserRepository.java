@@ -1,17 +1,13 @@
 package com.douglas.jointlyapp.data.repository;
 
-import android.graphics.Bitmap;
-import android.net.Uri;
-import android.text.BoringLayout;
 import android.util.Log;
 
 import com.douglas.jointlyapp.data.JointlyDatabase;
 import com.douglas.jointlyapp.data.dao.UserDao;
 import com.douglas.jointlyapp.data.dao.UserFollowUserDao;
+import com.douglas.jointlyapp.data.dao.UserReviewUserDao;
 import com.douglas.jointlyapp.data.model.User;
 import com.douglas.jointlyapp.data.model.UserFollowUser;
-import com.douglas.jointlyapp.ui.JointlyApplication;
-import com.douglas.jointlyapp.ui.utils.CommonUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +19,7 @@ public class UserRepository {
     private JointlyDatabase db;
     private UserDao userDao;
     private UserFollowUserDao userFollowUserDao;
+    private UserReviewUserDao userReviewUserDao;
     private List<User> list;
     private int countUserFollowers;
 
@@ -36,12 +33,15 @@ public class UserRepository {
         db = JointlyDatabase.getDatabase();
         userDao = db.userDao();
         userFollowUserDao = db.userFollowUserDao();
+        userReviewUserDao = db.UserReviewUserDao();
     }
 
     public static UserRepository getInstance()
     {
         return userRepository;
     }
+
+    //region User
 
     /**
      * Devuelve la lista de usuarios
@@ -80,42 +80,6 @@ public class UserRepository {
     public void update(User user)
     {
         JointlyDatabase.DATABASE_WRITE_EXECUTOR.submit(() -> userDao.update(user));
-    }
-
-    /**
-     * Inserta un usuario que sigue a otro
-     * @param userFollowUser
-     */
-    public void insertUserFollowed(UserFollowUser userFollowUser)
-    {
-        JointlyDatabase.DATABASE_WRITE_EXECUTOR.submit(() -> userFollowUserDao.insert(userFollowUser));
-    }
-
-    /**
-     * Borra el seguimiento de un usuario a otro
-     * @param userFollowUser
-     */
-    public void deleteUserFollowed(UserFollowUser userFollowUser)
-    {
-        JointlyDatabase.DATABASE_WRITE_EXECUTOR.submit(() -> userFollowUserDao.delete(userFollowUser));
-
-    }
-
-    /**
-     * Devuelve la cantidad de usuarios que le siguen
-     * @param userEmail
-     * @return
-     */
-    public int getCountUserFollowers(String userEmail)
-    {
-        try {
-            countUserFollowers = JointlyDatabase.DATABASE_WRITE_EXECUTOR.submit(() -> userFollowUserDao.getCountUserFollowers(userEmail)).get();
-        } catch (ExecutionException | InterruptedException e) {
-            e.printStackTrace();
-        }
-        finally {
-            return countUserFollowers;
-        }
     }
 
     /**
@@ -179,44 +143,6 @@ public class UserRepository {
                 return false;
             else
                 return true;
-        }
-    }
-
-    /**
-     * Devuelve la lista de usuarios seguidores
-     * @param userEmail
-     * @return
-     */
-    public List<String> getListUserFollows(String userEmail)
-    {
-        List<String> list = null;
-        try {
-            list = JointlyDatabase.DATABASE_WRITE_EXECUTOR.submit(() -> userFollowUserDao.getListFollows(userEmail)).get();
-        } catch (ExecutionException | InterruptedException e) {
-            e.printStackTrace();
-        }
-        finally {
-            return list;
-        }
-    }
-
-    /**
-     * Devuelve el usuario que le sigue al otro
-     * @param userEmail
-     * @param userFollowed
-     * @return
-     */
-    public UserFollowUser getUserFollowUser(String userEmail, String userFollowed)
-    {
-        UserFollowUser userFollowUser = null;
-
-        try {
-            userFollowUser = JointlyDatabase.DATABASE_WRITE_EXECUTOR.submit(() -> userFollowUserDao.getUserFollowUser(userEmail, userFollowed)).get();
-        } catch (ExecutionException | InterruptedException e) {
-            e.printStackTrace();
-        }
-        finally {
-            return userFollowUser;
         }
     }
 
@@ -286,4 +212,90 @@ public class UserRepository {
             return list;
         }
     }
+
+    //endregion
+
+    //region UserFollowUser
+
+    /**
+     * Inserta un usuario que sigue a otro
+     * @param userFollowUser
+     */
+    public void insertUserFollowed(UserFollowUser userFollowUser)
+    {
+        JointlyDatabase.DATABASE_WRITE_EXECUTOR.submit(() -> userFollowUserDao.insert(userFollowUser));
+    }
+
+    /**
+     * Borra el seguimiento de un usuario a otro
+     * @param userFollowUser
+     */
+    public void deleteUserFollowed(UserFollowUser userFollowUser)
+    {
+        JointlyDatabase.DATABASE_WRITE_EXECUTOR.submit(() -> userFollowUserDao.delete(userFollowUser));
+
+    }
+
+    /**
+     * Devuelve la cantidad de usuarios que le siguen
+     * @param userEmail
+     * @return
+     */
+    public int getCountUserFollowers(String userEmail)
+    {
+        try {
+            countUserFollowers = JointlyDatabase.DATABASE_WRITE_EXECUTOR.submit(() -> userFollowUserDao.getCountUserFollowers(userEmail)).get();
+        } catch (ExecutionException | InterruptedException e) {
+            e.printStackTrace();
+        }
+        finally {
+            return countUserFollowers;
+        }
+    }
+
+    /**
+     * Devuelve la lista de usuarios seguidores
+     * @param userEmail
+     * @return
+     */
+    public List<String> getListUserFollows(String userEmail)
+    {
+        List<String> list = null;
+        try {
+            list = JointlyDatabase.DATABASE_WRITE_EXECUTOR.submit(() -> userFollowUserDao.getListFollows(userEmail)).get();
+        } catch (ExecutionException | InterruptedException e) {
+            e.printStackTrace();
+        }
+        finally {
+            return list;
+        }
+    }
+
+    /**
+     * Devuelve el usuario que le sigue al otro
+     * @param userEmail
+     * @param userFollowed
+     * @return
+     */
+    public UserFollowUser getUserFollowUser(String userEmail, String userFollowed)
+    {
+        UserFollowUser userFollowUser = null;
+
+        try {
+            userFollowUser = JointlyDatabase.DATABASE_WRITE_EXECUTOR.submit(() -> userFollowUserDao.getUserFollowUser(userEmail, userFollowed)).get();
+        } catch (ExecutionException | InterruptedException e) {
+            e.printStackTrace();
+        }
+        finally {
+            return userFollowUser;
+        }
+    }
+
+    //endregion
+
+    //region UserReviewUser
+
+    //TODO implementar llamadas a base de datos local
+
+    //endregion
 }

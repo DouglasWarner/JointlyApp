@@ -20,13 +20,13 @@ public class ManageInitiativePresenter implements ManageInitiativeContract.Prese
     }
 
     @Override
-    public void addInitiative(String name, String targetDate, String targetTime, String description, String targetArea, String location, Bitmap imagen, String targetAmount, String status, String createdBy) {
-        interactor.addInitiative(name, targetDate, targetTime, description,targetArea,location,imagen,targetAmount,status,createdBy);
+    public void addInitiative(String name, String targetDate, String targetTime, String description, String targetArea, String location, Bitmap imagen, String targetAmount, String status, String created_by) {
+        interactor.addInitiative(name, targetDate, targetTime, description,targetArea,location,imagen,targetAmount,status,created_by);
     }
 
     @Override
-    public void editInitiative(int id, String name, String createAt, String targetDate, String targetTime, String description, String targetArea, String location, Bitmap imagen, String targetAmount, String status, String createdBy) {
-        interactor.editInitiative(id,name, createAt, targetDate,targetTime,description,targetArea,location,imagen,targetAmount,status,createdBy);
+    public void editInitiative(int id, String name, String createAt, String targetDate, String targetTime, String description, String targetArea, String location, Bitmap imagen, String targetAmount, String status, String created_by, String ref_code) {
+        interactor.editInitiative(id,name, createAt, targetDate, targetTime, description,targetArea,location,imagen,targetAmount,status,created_by, ref_code);
     }
 
     @Override

@@ -1,10 +1,8 @@
 package com.douglas.jointlyapp.data.model;
 
 import android.graphics.Bitmap;
-import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.widget.TableRow;
 
 import androidx.annotation.NonNull;
 import androidx.room.Entity;
@@ -14,8 +12,6 @@ import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity(tableName = "initiative",
         foreignKeys = {@ForeignKey(entity = User.class, parentColumns = "email", childColumns = "createdBy")},
@@ -33,8 +29,6 @@ public class Initiative implements Comparable<Initiative>, Serializable, Parcela
     private String createdAt;
     @NonNull
     private String targetDate;
-    @NonNull
-    private String targetTime;
     private String description;
     @NonNull
     private String targetArea;
@@ -46,6 +40,9 @@ public class Initiative implements Comparable<Initiative>, Serializable, Parcela
     private String status;
     @NonNull
     private String createdBy;
+    @NonNull
+    private String refCode;
+
     @Ignore
     private int countUserJoined;
 
@@ -54,23 +51,21 @@ public class Initiative implements Comparable<Initiative>, Serializable, Parcela
     }
 
     @Ignore
-    public Initiative(int id, String name, String createdAt, String targetDate, String targetTime, String description, String targetArea, String location) {
+    public Initiative(int id, String name, String createdAt, String targetDate, String description, String targetArea, String location) {
         this.id = id;
         this.name = name;
         this.createdAt = createdAt;
         this.targetDate = targetDate;
-        this.targetTime = targetTime;
         this.description = description;
         this.targetArea = targetArea;
         this.location = location;
     }
 
     @Ignore
-    public Initiative(String name, String createdAt, String targetDate, String targetTime, String description, String targetArea, String location, Bitmap imagen, String targetAmount, String status, String createdBy) {
+    public Initiative(String name, String createdAt, String targetDate, String description, String targetArea, String location, Bitmap imagen, String targetAmount, String status, String createdBy) {
         this.name = name;
         this.createdAt = createdAt;
         this.targetDate = targetDate;
-        this.targetTime = targetTime;
         this.description = description;
         this.targetArea = targetArea;
         this.location = location;
@@ -86,7 +81,6 @@ public class Initiative implements Comparable<Initiative>, Serializable, Parcela
      * @param name
      * @param createdAt
      * @param targetDate
-     * @param targetTime
      * @param description
      * @param targetArea
      * @param location
@@ -95,12 +89,11 @@ public class Initiative implements Comparable<Initiative>, Serializable, Parcela
      * @param status
      * @param createdBy
      */
-    public Initiative(int id, String name, String createdAt, String targetDate, String targetTime, String description, String targetArea, String location, Bitmap imagen, String targetAmount, String status, String createdBy) {
+    public Initiative(int id, String name, String createdAt, String targetDate, String description, String targetArea, String location, Bitmap imagen, String targetAmount, String status, String createdBy, String refCode) {
         this.id = id;
         this.name = name;
         this.createdAt = createdAt;
         this.targetDate = targetDate;
-        this.targetTime = targetTime;
         this.description = description;
         this.targetArea = targetArea;
         this.location = location;
@@ -108,6 +101,7 @@ public class Initiative implements Comparable<Initiative>, Serializable, Parcela
         this.targetAmount = targetAmount;
         this.status = status;
         this.createdBy = createdBy;
+        this.refCode = refCode;
     }
 
     @Ignore
@@ -116,7 +110,6 @@ public class Initiative implements Comparable<Initiative>, Serializable, Parcela
         name = in.readString();
         createdAt = in.readString();
         targetDate = in.readString();
-        targetTime = in.readString();
         description = in.readString();
         targetArea = in.readString();
         location = in.readString();
@@ -124,6 +117,7 @@ public class Initiative implements Comparable<Initiative>, Serializable, Parcela
         targetAmount = in.readString();
         status = in.readString();
         createdBy = in.readString();
+        refCode = in.readString();
     }
 
     public static final Creator<Initiative> CREATOR = new Creator<Initiative>() {
@@ -168,14 +162,6 @@ public class Initiative implements Comparable<Initiative>, Serializable, Parcela
 
     public void setTargetDate(String targetDate) {
         this.targetDate = targetDate;
-    }
-
-    public String getTargetTime() {
-        return targetTime;
-    }
-
-    public void setTargetTime(String targetTime) {
-        this.targetTime = targetTime;
     }
 
     public String getDescription() {
@@ -236,6 +222,14 @@ public class Initiative implements Comparable<Initiative>, Serializable, Parcela
         this.createdBy = createdBy;
     }
 
+    public String getRefCode() {
+        return refCode;
+    }
+
+    public void setRefCode(String refCode) {
+        this.refCode = refCode;
+    }
+
     public int getCountUserJoined() {
         return countUserJoined;
     }
@@ -266,14 +260,14 @@ public class Initiative implements Comparable<Initiative>, Serializable, Parcela
                 ", name='" + name + '\'' +
                 ", createdAt='" + createdAt + '\'' +
                 ", targetDate='" + targetDate + '\'' +
-                ", targetTime='" + targetTime + '\'' +
                 ", description='" + description + '\'' +
                 ", targetArea='" + targetArea + '\'' +
                 ", location='" + location + '\'' +
                 ", imagen=" + imagen +
                 ", targetAmount='" + targetAmount + '\'' +
                 ", status='" + status + '\'' +
-                ", createdBy='" + createdBy + '\'' +
+                ", created_by='" + createdBy + '\'' +
+                ", ref_code='" + refCode + '\'' +
                 '}';
     }
 
@@ -293,7 +287,6 @@ public class Initiative implements Comparable<Initiative>, Serializable, Parcela
         dest.writeString(name);
         dest.writeString(createdAt);
         dest.writeString(targetDate);
-        dest.writeString(targetTime);
         dest.writeString(description);
         dest.writeString(targetArea);
         dest.writeString(location);
@@ -301,5 +294,6 @@ public class Initiative implements Comparable<Initiative>, Serializable, Parcela
         dest.writeString(targetAmount);
         dest.writeString(status);
         dest.writeString(createdBy);
+        dest.writeString(refCode);
     }
 }

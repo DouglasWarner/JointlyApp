@@ -3,9 +3,7 @@ package com.douglas.jointlyapp.ui.initiative;
 import android.os.Handler;
 
 import com.douglas.jointlyapp.data.model.Initiative;
-import com.douglas.jointlyapp.data.model.User;
 import com.douglas.jointlyapp.data.repository.InitiativeRepository;
-import com.douglas.jointlyapp.data.repository.UserRepository;
 import com.douglas.jointlyapp.ui.preferences.JointlyPreferences;
 
 import java.text.ParseException;

@@ -1,16 +1,10 @@
 package com.douglas.jointlyapp.data.repository;
 
-import android.graphics.Bitmap;
-import android.net.Uri;
-
 import com.douglas.jointlyapp.data.JointlyDatabase;
 import com.douglas.jointlyapp.data.dao.InitiativeDao;
 import com.douglas.jointlyapp.data.dao.UserJoinInitiativeDao;
 import com.douglas.jointlyapp.data.model.Initiative;
-import com.douglas.jointlyapp.data.model.User;
 import com.douglas.jointlyapp.data.model.UserJoinInitiative;
-import com.douglas.jointlyapp.ui.JointlyApplication;
-import com.douglas.jointlyapp.ui.utils.CommonUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,6 +35,8 @@ public class InitiativeRepository {
     {
         return initiativeRepository;
     }
+
+    //region Initiative
 
     /**
      * Devuelve toda la lista de iniciativas
@@ -213,6 +209,27 @@ public class InitiativeRepository {
     }
 
     /**
+     * Devuelve la iniciativa
+     * @param idInitiative
+     * @return
+     */
+    public Initiative getInitiative(int idInitiative) {
+        Initiative initiative = null;
+        try {
+            initiative = JointlyDatabase.DATABASE_WRITE_EXECUTOR.submit(() -> initiativeDao.getInitiative(idInitiative)).get();
+        } catch (ExecutionException | InterruptedException e) {
+            e.printStackTrace();
+        }
+        finally {
+            return initiative;
+        }
+    }
+
+    //endregion
+
+    //region UserJoinInitiative
+
+    /**
      * Devuelve el usuario unido a la iniciativa
      * @param idInitiative
      * @param userEmail
@@ -247,20 +264,5 @@ public class InitiativeRepository {
         JointlyDatabase.DATABASE_WRITE_EXECUTOR.submit(()-> userJoinInitiativeDao.delete(userJoinInitiative));
     }
 
-    /**
-     * Devuelve la iniciativa
-     * @param idInitiative
-     * @return
-     */
-    public Initiative getInitiative(int idInitiative) {
-        Initiative initiative = null;
-        try {
-            initiative = JointlyDatabase.DATABASE_WRITE_EXECUTOR.submit(() -> initiativeDao.getInitiative(idInitiative)).get();
-        } catch (ExecutionException | InterruptedException e) {
-            e.printStackTrace();
-        }
-        finally {
-            return initiative;
-        }
-    }
+    //endregion
 }

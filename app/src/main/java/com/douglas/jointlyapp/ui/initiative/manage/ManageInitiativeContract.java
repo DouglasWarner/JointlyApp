@@ -33,10 +33,10 @@ public interface ManageInitiativeContract {
         void loadInitiative(int idInitiative);
 
         void addInitiative(String name, String targetDate, String targetTime, String description, String targetArea,
-                           String location, Bitmap imagen, String targetAmount, String status, String createdBy);
+                           String location, Bitmap imagen, String targetAmount, String status, String created_by);
 
         void editInitiative(int id, String name, String createAt, String targetDate, String targetTime, String description, String targetArea,
-                            String location, Bitmap imagen, String targetAmount, String status, String createdBy);
+                            String location, Bitmap imagen, String targetAmount, String status, String created_by, String ref_code);
 
         void delete(Initiative initiative);
     }
