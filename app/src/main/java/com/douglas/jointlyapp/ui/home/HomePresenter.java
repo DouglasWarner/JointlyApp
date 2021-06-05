@@ -22,6 +22,11 @@ public class HomePresenter implements HomeContract.Presenter, HomeInteractorImpl
     }
 
     @Override
+    public void syncData() {
+        interactor.syncData();
+    }
+
+    @Override
     public void onDestroy() {
         view = null;
         interactor = null;
@@ -37,5 +42,10 @@ public class HomePresenter implements HomeContract.Presenter, HomeInteractorImpl
     public void onSuccess(List<Initiative> list, List<User> userOwners) {
         view.hideProgress();
         view.onSuccess(list, userOwners);
+    }
+
+    @Override
+    public void onError(String message) {
+        view.showOnError(message);
     }
 }

@@ -1,6 +1,13 @@
 package com.douglas.jointlyapp.ui.home;
 
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -10,18 +17,13 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.LinearLayout;
-
 import com.douglas.jointlyapp.R;
 import com.douglas.jointlyapp.data.model.Initiative;
 import com.douglas.jointlyapp.data.model.User;
+import com.douglas.jointlyapp.ui.JointlyApplication;
 import com.douglas.jointlyapp.ui.adapter.HomeAdapter;
 import com.douglas.jointlyapp.ui.preferences.JointlyPreferences;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,7 +33,7 @@ import java.util.List;
 /**
  * La ventana home con todas la iniciativas
  */
-public class HomeFragment extends Fragment implements HomeContract.View, HomeAdapter.ManageInitiative{
+public class HomeFragment extends Fragment implements HomeContract.View, HomeAdapter.ManageInitiative {
 
     private LinearLayout llLoading;
     private LinearLayout llNoData;
@@ -40,6 +42,7 @@ public class HomeFragment extends Fragment implements HomeContract.View, HomeAda
     private HomePresenter presenter;
     private Initiative initiative;
     private SwipeRefreshLayout swipeRefreshLayout;
+    private TextView tvNoConnection;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -65,8 +68,15 @@ public class HomeFragment extends Fragment implements HomeContract.View, HomeAda
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                presenter.load();
-                swipeRefreshLayout.setRefreshing(false);
+                Thread sync = new Thread(() -> {
+                    presenter.syncData();
+
+                    getActivity().runOnUiThread(() -> {
+                        presenter.load();
+                        swipeRefreshLayout.setRefreshing(false);
+                    });
+                });
+                sync.start();
             }
         });
 
@@ -75,9 +85,10 @@ public class HomeFragment extends Fragment implements HomeContract.View, HomeAda
 
     private void initUI(@NonNull View view) {
         llLoading = view.findViewById(R.id.llLoading);
-        llNoData = view.findViewById(R.id.llNoDataInitiativeCreated);
+        llNoData = view.findViewById(R.id.llNoDataCreatedInProgress);
         rvInitiative = view.findViewById(R.id.rvInitiativeCreated);
         swipeRefreshLayout = view.findViewById(R.id.swipe_refresh);
+        tvNoConnection = getActivity().findViewById(R.id.tvNoConnection);
     }
 
     private void initRecycler() {
@@ -97,6 +108,7 @@ public class HomeFragment extends Fragment implements HomeContract.View, HomeAda
     @Override
     public void setNoData() {
         llNoData.setVisibility(View.VISIBLE);
+        tvNoConnection.setVisibility(JointlyApplication.getConnection() ? View.GONE : View.VISIBLE);
     }
 
     @Override
@@ -114,8 +126,15 @@ public class HomeFragment extends Fragment implements HomeContract.View, HomeAda
         if(llNoData.getVisibility() == View.VISIBLE)
             llNoData.setVisibility(View.GONE);
 
+        tvNoConnection.setVisibility(JointlyApplication.getConnection() ? View.GONE : View.VISIBLE);
+
         adapter.update(list, userOwners);
         updateListOrderByDefault();
+    }
+
+    @Override
+    public void showOnError(String message) {
+        Snackbar.make(getView(), message != null ? message : getString(R.string.default_error), Snackbar.LENGTH_SHORT).show();
     }
 
     private void updateListOrderByDefault() {
@@ -142,7 +161,7 @@ public class HomeFragment extends Fragment implements HomeContract.View, HomeAda
     @Override
     public void onClick(View initiative) {
         Bundle bundle = new Bundle();
-        bundle.putInt(Initiative.TAG, adapter.getInitiativeItem(rvInitiative.getChildAdapterPosition(initiative)).getId());
+        bundle.putSerializable(Initiative.TAG, adapter.getInitiativeItem(rvInitiative.getChildAdapterPosition(initiative)));
         NavHostFragment.findNavController(this).navigate(R.id.action_homeFragment_to_showInitiativeFragment, bundle);
     }
 

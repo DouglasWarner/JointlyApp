@@ -1,12 +1,9 @@
 package com.douglas.jointlyapp.ui;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.preference.PreferenceManager;
-
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.os.Handler;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.douglas.jointlyapp.R;
 import com.douglas.jointlyapp.ui.login.LoginActivity;
@@ -30,18 +27,26 @@ public class SplashActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                //Sólo si el checkbox recuerdame no está seleccionado se muestra login y no existe
-                //ningún usuario
 
-                if(!JointlyPreferences.getInstance().getRemember())
-                    initLogin();
-                else
-                    initJointlyApp();
+        new Thread(() -> {
+            JointlyApplication.setConnection(JointlyApplication.syncDataFromAPI());
+
+            if(!JointlyApplication.getConnection()) {
+                initNoConnectionActivity();
+                return;
             }
-        },WAIT_TIME);
+
+            if(!JointlyPreferences.getInstance().getRemember())
+                initLogin();
+            else
+                initJointlyApp();
+        }).start();
+    }
+
+    private void initNoConnectionActivity() {
+        startActivity(new Intent(this, NoConnectionActivity.class));
+
+        finish();
     }
 
     private void initLogin() {
@@ -51,8 +56,7 @@ public class SplashActivity extends AppCompatActivity {
         finish();
     }
 
-    private void initJointlyApp()
-    {
+    private void initJointlyApp() {
         startActivity(new Intent(this, JointlyActivity.class));
 
         finish();

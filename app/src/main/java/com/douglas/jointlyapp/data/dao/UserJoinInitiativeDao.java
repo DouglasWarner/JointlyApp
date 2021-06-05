@@ -12,7 +12,7 @@ import com.douglas.jointlyapp.data.model.UserJoinInitiative;
 import java.util.List;
 
 @Dao
-public interface UserJoinInitiativeDao {
+public interface UserJoinInitiativeDao extends BaseDao<UserJoinInitiative> {
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     long insert(UserJoinInitiative userJoinInitiative);
@@ -26,12 +26,18 @@ public interface UserJoinInitiativeDao {
     @Query("SELECT * FROM userJoinInitiative")
     List<UserJoinInitiative> getList();
 
+    @Query("SELECT * FROM userJoinInitiative WHERE is_deleted=:isDeleted")
+    List<UserJoinInitiative> getListDeleted(boolean isDeleted);
+
     @Query("SELECT COUNT(*) FROM userJoinInitiative")
     int getRowCount();
 
-    @Query("SELECT idInitiative FROM userJoinInitiative WHERE idUser=:userEmail")
+    @Query("SELECT id_initiative FROM userJoinInitiative WHERE user_email=:userEmail")
     List<Integer> getListInitiativeByUserJoined(String userEmail);
 
-    @Query("SELECT * FROM userJoinInitiative where idInitiative=:idInitiative AND idUser=:userEmail")
-    UserJoinInitiative getUserJoinInitiative(int idInitiative, String userEmail);
+    @Query("SELECT * FROM userJoinInitiative where id_initiative=:idInitiative AND user_email=:userEmail")
+    UserJoinInitiative getUserJoinInitiative(long idInitiative, String userEmail);
+
+    @Query("DELETE FROM userJoinInitiative")
+    void deleteAll();
 }

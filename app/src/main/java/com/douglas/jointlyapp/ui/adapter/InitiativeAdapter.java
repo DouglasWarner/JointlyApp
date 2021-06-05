@@ -1,5 +1,7 @@
 package com.douglas.jointlyapp.ui.adapter;
 
+import android.content.Context;
+import android.graphics.Bitmap;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.douglas.jointlyapp.R;
 import com.douglas.jointlyapp.data.model.Initiative;
+import com.douglas.jointlyapp.ui.utils.CommonUtils;
 
 import java.util.List;
 
@@ -21,11 +24,13 @@ public class InitiativeAdapter extends RecyclerView.Adapter<InitiativeAdapter.Vi
         void onClick(View initiative, String status);
     }
 
+    private Context context;
     private List<Initiative> list;
     private ManageInitiative listener;
     private String type;
 
-    public InitiativeAdapter(List<Initiative> list, ManageInitiative listener, String type) {
+    public InitiativeAdapter(Context context, List<Initiative> list, ManageInitiative listener, String type) {
+        this.context = context;
         this.list = list;
         this.listener = listener;
         this.type = type;
@@ -40,8 +45,8 @@ public class InitiativeAdapter extends RecyclerView.Adapter<InitiativeAdapter.Vi
 
     @Override
     public void onBindViewHolder(@NonNull InitiativeAdapter.ViewHolder holder, int position) {
-        holder.imgInitiative.setImageBitmap(list.get(position).getImagen());
-//        holder.imgInitiative.setImageBitmap(BitmapFactory.decodeByteArray(list.get(position).getImagen(), 0, list.get(position).getImagen().length));
+        Bitmap bitmap = list.get(position).getImagen();
+        holder.imgInitiative.setImageBitmap((bitmap != null) ? bitmap : CommonUtils.getImagenInitiativeDefault(context));
         holder.tvInitiativeName.setText(list.get(position).getName());
     }
 

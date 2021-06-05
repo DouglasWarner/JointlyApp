@@ -15,13 +15,13 @@ public class ChatPresenter implements ChatContract.Presenter, ChatInteractorImpl
     }
 
     @Override
-    public void loadChat(int idInitiative) {
+    public void loadChat(long idInitiative) {
         view.showProgress();
         interactor.loadChat(idInitiative);
     }
 
     @Override
-    public void sendMessage(int idInitiative, String userEmail, String message) {
+    public void sendMessage(long idInitiative, String userEmail, String message) {
         interactor.sendMessage(idInitiative, userEmail, message);
     }
 

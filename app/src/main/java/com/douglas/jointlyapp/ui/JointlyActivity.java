@@ -1,22 +1,28 @@
 package com.douglas.jointlyapp.ui;
 
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.TextView;
+import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.widget.NestedScrollView;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
-import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
-import android.widget.Toast;
-
 import com.douglas.jointlyapp.R;
+import com.douglas.jointlyapp.ui.broadcast.CheckConnectionBroadCast;
 import com.douglas.jointlyapp.ui.preferences.JointlyPreferences;
+import com.douglas.jointlyapp.ui.service.CheckConnectionService;
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -24,7 +30,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-public class JointlyActivity extends AppCompatActivity  {
+public class JointlyActivity extends AppCompatActivity {
 
     private BottomNavigationView bottomNavigationView;
     private Toolbar toolbar;
@@ -34,6 +40,9 @@ public class JointlyActivity extends AppCompatActivity  {
     private FloatingActionButton floatingActionButton;
     private View viewBottomSheet;
     private BottomSheetBehavior<View> bottomSheetBehavior;
+    private TextView tvNoConnection;
+    private Intent intentCheckConnection;
+    private CheckConnectionBroadCast checkConnectionBroadCast;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +54,7 @@ public class JointlyActivity extends AppCompatActivity  {
         nestedScrollView = findViewById(R.id.nestedScrollView);
         floatingActionButton = findViewById(R.id.faButton);
         viewBottomSheet = findViewById(R.id.bottomSheetJoinInitiative);
+        tvNoConnection = findViewById(R.id.tvNoConnection);
 
         setSupportActionBar(toolbar);
 
@@ -92,6 +102,14 @@ public class JointlyActivity extends AppCompatActivity  {
             }
             nestedScrollView.scrollTo(0,0);
         });
+
+        // set info connection
+        tvNoConnection.setVisibility(JointlyApplication.getConnection() ? View.GONE : View.VISIBLE);
+
+        checkConnectionBroadCast = new CheckConnectionBroadCast(tvNoConnection);
+        LocalBroadcastManager.getInstance(this).registerReceiver(checkConnectionBroadCast, new IntentFilter(JointlyApplication.CHECK_CONNECTION_BROADCAST));
+        intentCheckConnection = new Intent(getApplicationContext(), CheckConnectionService.class);
+        startService(intentCheckConnection);
     }
 
     @Override
@@ -129,5 +147,13 @@ public class JointlyActivity extends AppCompatActivity  {
     @Override
     public boolean onSupportNavigateUp() {
         return NavigationUI.navigateUp(navController, appBarConfiguration) || super.onSupportNavigateUp();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        stopService(intentCheckConnection);
+        checkConnectionBroadCast = null;
+        intentCheckConnection = null;
     }
 }

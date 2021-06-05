@@ -16,11 +16,6 @@ public class ShowInitiativePresenter implements ShowInitiativeContract.Presenter
     }
 
     @Override
-    public void loadInitiative(int idInitiative) {
-        interactor.loadInitiative(idInitiative);
-    }
-
-    @Override
     public void joinInitiative(Initiative initiative) {
         interactor.joinInitiative(initiative);
     }
@@ -31,18 +26,18 @@ public class ShowInitiativePresenter implements ShowInitiativeContract.Presenter
     }
 
     @Override
-    public void loadListUserJoined(int idInitiative) {
+    public void loadListUserJoined(long idInitiative) {
         interactor.loadListUserJoined(idInitiative);
     }
 
     @Override
-    public void loadUserStateJoined(int idInitiative) {
-        interactor.loadUserStateJoined(idInitiative);
+    public void loadUserStateJoined(String email) {
+        interactor.loadUserStateJoined(email, 0);
     }
 
     @Override
-    public void loadUserOwner(int idInitiative) {
-        interactor.loadUserOwner(idInitiative);
+    public void loadUserOwner(String email) {
+        interactor.loadUserOwner(email);
     }
 
     @Override
@@ -79,5 +74,10 @@ public class ShowInitiativePresenter implements ShowInitiativeContract.Presenter
     @Override
     public void onSuccessLoad(Initiative initiative) {
         view.onSuccessLoad(initiative);
+    }
+
+    @Override
+    public void onError(String message) {
+        view.onError(message);
     }
 }

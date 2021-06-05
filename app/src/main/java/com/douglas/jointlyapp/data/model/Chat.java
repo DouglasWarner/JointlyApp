@@ -15,10 +15,13 @@ import androidx.room.Index;
         indices = {@Index("userEmail")})
 public class Chat implements Parcelable {
 
+    public static final String TAG = "Chat";
+    public static final String TABLE_NAME = "chat";
+
     @NonNull
     private String dateMessage;
     @NonNull
-    private int idInitiative;
+    private long idInitiative;
     @NonNull
     private String userEmail;
     private String message;
@@ -27,7 +30,14 @@ public class Chat implements Parcelable {
     public Chat() {
     }
 
-    public Chat(String dateMessage, int idInitiative, String userEmail, String message) {
+    /**
+     * Create a new chat
+     * @param dateMessage
+     * @param idInitiative
+     * @param userEmail
+     * @param message
+     */
+    public Chat(String dateMessage, long idInitiative, String userEmail, String message) {
         this.dateMessage = dateMessage;
         this.idInitiative = idInitiative;
         this.userEmail = userEmail;
@@ -37,7 +47,7 @@ public class Chat implements Parcelable {
     @Ignore
     protected Chat(Parcel in) {
         dateMessage = in.readString();
-        idInitiative = in.readInt();
+        idInitiative = in.readLong();
         userEmail = in.readString();
         message = in.readString();
     }
@@ -62,11 +72,11 @@ public class Chat implements Parcelable {
         this.dateMessage = dateMessage;
     }
 
-    public int getIdInitiative() {
+    public long getIdInitiative() {
         return idInitiative;
     }
 
-    public void setIdInitiative(int idInitiative) {
+    public void setIdInitiative(long idInitiative) {
         this.idInitiative = idInitiative;
     }
 
@@ -94,16 +104,15 @@ public class Chat implements Parcelable {
         Chat chat = (Chat) o;
 
         if (idInitiative != chat.idInitiative) return false;
-        if (dateMessage != null ? !dateMessage.equals(chat.dateMessage) : chat.dateMessage != null)
-            return false;
-        return userEmail != null ? userEmail.equals(chat.userEmail) : chat.userEmail == null;
+        if (!dateMessage.equals(chat.dateMessage)) return false;
+        return userEmail.equals(chat.userEmail);
     }
 
     @Override
     public int hashCode() {
-        int result = dateMessage != null ? dateMessage.hashCode() : 0;
-        result = 31 * result + idInitiative;
-        result = 31 * result + (userEmail != null ? userEmail.hashCode() : 0);
+        int result = dateMessage.hashCode();
+        result = 31 * result + (int) (idInitiative ^ (idInitiative >>> 32));
+        result = 31 * result + userEmail.hashCode();
         return result;
     }
 
@@ -125,7 +134,7 @@ public class Chat implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(dateMessage);
-        dest.writeInt(idInitiative);
+        dest.writeLong(idInitiative);
         dest.writeString(userEmail);
         dest.writeString(message);
     }

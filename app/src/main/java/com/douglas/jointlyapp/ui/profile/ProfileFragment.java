@@ -15,7 +15,6 @@ import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
@@ -27,7 +26,6 @@ import com.douglas.jointlyapp.R;
 import com.douglas.jointlyapp.data.model.User;
 import com.douglas.jointlyapp.ui.JointlyApplication;
 import com.douglas.jointlyapp.ui.preferences.JointlyPreferences;
-import com.douglas.jointlyapp.ui.utils.CommonUtils;
 import com.google.android.material.imageview.ShapeableImageView;
 
 /**
@@ -209,7 +207,7 @@ public class ProfileFragment extends Fragment implements ProfileContract.View{
         tvUserFollows.setText(String.format(getString(R.string.tvUserFollowsFormat), countUserFollowers));
         tvUserInitiativeJoineds.setText(String.valueOf(initiativeJoined));
         tvUserInitiativeCreateds.setText(String.valueOf(initiativeCreated));
-        tvUserCreatedAt.setText(user.getCreatedAt());
+        tvUserCreatedAt.setText(user.getCreated_at());
 
         this.user = user;
     }

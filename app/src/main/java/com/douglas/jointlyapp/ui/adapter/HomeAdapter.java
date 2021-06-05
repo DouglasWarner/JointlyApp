@@ -48,10 +48,15 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ViewHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull HomeAdapter.ViewHolder holder, int position) {
-        holder.imgInitiative.setImageBitmap(list.get(position).getImagen());
-        User u = userOwners.stream().findFirst().filter(x -> x.getEmail().equals(list.get(position).getCreatedBy())).orElse(null);
+        if(list.get(position).getImagen() != null) {
+            holder.imgInitiative.setImageBitmap(list.get(position).getImagen());
+        } else {
+            holder.imgInitiative.setImageBitmap(CommonUtils.getImagenInitiativeDefault(JointlyApplication.getContext()));
+        }
 
-        if(u != null)
+        User u = userOwners.stream().findAny().filter(x -> x.getEmail().equals(list.get(position).getCreated_by())).orElse(null);
+
+        if(u != null && u.getImagen() != null)
             holder.imgUser.setImageBitmap(u.getImagen());
         else
             holder.imgUser.setImageBitmap(CommonUtils.getImagenUserDefault(JointlyApplication.getContext()));

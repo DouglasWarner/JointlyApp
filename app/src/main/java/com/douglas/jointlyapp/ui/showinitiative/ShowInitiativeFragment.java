@@ -5,16 +5,6 @@ import android.app.job.JobScheduler;
 import android.content.ComponentName;
 import android.content.Context;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.navigation.fragment.NavHostFragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
-import android.os.PersistableBundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,11 +14,19 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.navigation.fragment.NavHostFragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.douglas.jointlyapp.R;
 import com.douglas.jointlyapp.data.model.Initiative;
 import com.douglas.jointlyapp.data.model.User;
 import com.douglas.jointlyapp.ui.JointlyApplication;
 import com.douglas.jointlyapp.ui.adapter.UserJoinedAdapter;
+import com.douglas.jointlyapp.ui.initiative.InitiativeFragment;
 import com.douglas.jointlyapp.ui.preferences.JointlyPreferences;
 import com.douglas.jointlyapp.ui.service.BackgroundJobService;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
@@ -51,7 +49,7 @@ public class ShowInitiativeFragment extends Fragment implements ShowInitiativeCo
     private TextView tvTargetAmount;
     private ImageView imgUserCreator;
     private Initiative initiative;
-    private int idInitiative;
+
 
     private TextView tvNoUserData;
     private RecyclerView rvUserJoined;
@@ -80,7 +78,7 @@ public class ShowInitiativeFragment extends Fragment implements ShowInitiativeCo
         super.onViewCreated(view, savedInstanceState);
 
         Bundle bundle = getArguments();
-        idInitiative = bundle.getInt(Initiative.TAG);
+        initiative = (Initiative) (bundle != null ? bundle.getSerializable(Initiative.TAG) : null);
 
         initUI(view);
         initRecycler();
@@ -110,10 +108,10 @@ public class ShowInitiativeFragment extends Fragment implements ShowInitiativeCo
         tvTitle.setText(init.getName());
         tvDescription.setText(init.getDescription());
         tvLocation.setText(init.getLocation());
-        tvTargetArea.setText(init.getTargetArea());
-        tvTargetDate.setText(init.getTargetDate());
-        tvTargetTime.setText(init.getTargetTime());
-        tvTargetAmount.setText(init.getTargetAmount());
+        tvTargetArea.setText(init.getTarget_area());
+        tvTargetDate.setText(init.getTarget_date().split(" ")[0]);
+        tvTargetTime.setText(init.getTarget_date().split(" ")[1]);
+        tvTargetAmount.setText(init.getTarget_amount());
     }
 
     private void initRecycler() {
@@ -125,7 +123,7 @@ public class ShowInitiativeFragment extends Fragment implements ShowInitiativeCo
 
     private void setOnClickUI() {
         imgUserCreator.setOnClickListener(v -> {
-            goToUserProfile(initiative.getCreatedBy());
+            goToUserProfile(initiative.getCreated_by());
         });
     }
 
@@ -148,7 +146,7 @@ public class ShowInitiativeFragment extends Fragment implements ShowInitiativeCo
         chat.setOnClickListener(v -> {
             Bundle bundle = new Bundle();
 
-            bundle.putInt(Initiative.TAG, initiative.getId());
+            bundle.putLong(Initiative.TAG, initiative.getId());
 
             NavHostFragment.findNavController(this).navigate(R.id.action_showInitiativeFragment_to_chatFragment, bundle);
         });
@@ -186,13 +184,17 @@ public class ShowInitiativeFragment extends Fragment implements ShowInitiativeCo
     public void onStart() {
         super.onStart();
         //Si vengo de Mis iniciativas
-        if(!getArguments().getBoolean("history"))
+        if(getArguments().getBoolean(InitiativeFragment.TYPE_HISTORY))
             showBottomSheetBehavior();
 
-        presenter.loadInitiative(idInitiative);
-        presenter.loadUserStateJoined(idInitiative);
-        presenter.loadUserOwner(idInitiative);
-        presenter.loadListUserJoined(idInitiative);
+//        presenter.loadInitiative(idInitiative);
+        String email = JointlyPreferences.getInstance().getUser();
+
+        if(email != null) {
+            presenter.loadUserStateJoined(email);
+            presenter.loadUserOwner(initiative.getCreated_by());
+            presenter.loadListUserJoined(initiative.getId());
+        }
     }
 
     @Override
@@ -252,6 +254,11 @@ public class ShowInitiativeFragment extends Fragment implements ShowInitiativeCo
     @Override
     public void onSuccessLoad(Initiative initiative) {
         setInitiative(initiative);
+    }
+
+    @Override
+    public void onError(String message) {
+        Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
     }
 
     @Override

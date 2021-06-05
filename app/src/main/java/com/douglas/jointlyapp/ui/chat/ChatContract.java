@@ -16,7 +16,7 @@ public interface ChatContract {
 
     interface Presenter extends BasePresenter
     {
-        void loadChat(int idInitiative);
-        void sendMessage(int idInitiative, String userEmail, String message);
+        void loadChat(long idInitiative);
+        void sendMessage(long idInitiative, String userEmail, String message);
     }
 }

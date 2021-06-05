@@ -25,7 +25,7 @@ public class ChatInteractorImpl {
         this.interactor = interactor;
     }
 
-    public void loadChat(final int idInitiative)
+    public void loadChat(final long idInitiative)
     {
         //TODO implementar el jobschelude para leer cada cierto tiempo si hay mensajes nuevos
         new Handler().postDelayed(() -> {
@@ -41,7 +41,7 @@ public class ChatInteractorImpl {
         },100);
     }
 
-    public void sendMessage(final int idInitiative, final String userEmail, final String message)
+    public void sendMessage(final long idInitiative, final String userEmail, final String message)
     {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy hh:mm:ss");
 

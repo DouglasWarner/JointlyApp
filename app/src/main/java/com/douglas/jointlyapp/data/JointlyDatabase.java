@@ -12,16 +12,18 @@ import com.douglas.jointlyapp.data.dao.InitiativeDao;
 import com.douglas.jointlyapp.data.dao.UserDao;
 import com.douglas.jointlyapp.data.dao.UserFollowUserDao;
 import com.douglas.jointlyapp.data.dao.UserJoinInitiativeDao;
+import com.douglas.jointlyapp.data.dao.UserReviewUserDao;
 import com.douglas.jointlyapp.data.model.Chat;
 import com.douglas.jointlyapp.data.model.Initiative;
 import com.douglas.jointlyapp.data.model.User;
 import com.douglas.jointlyapp.data.model.UserFollowUser;
 import com.douglas.jointlyapp.data.model.UserJoinInitiative;
+import com.douglas.jointlyapp.data.model.UserReviewUser;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-@Database(entities = {User.class, Initiative.class, UserFollowUser.class, UserJoinInitiative.class, Chat.class}, version = 4, exportSchema = false)
+@Database(entities = {User.class, Initiative.class, UserFollowUser.class, UserJoinInitiative.class, Chat.class, UserReviewUser.class}, version = 8, exportSchema = false)
 @TypeConverters(Converters.class)
 public abstract class JointlyDatabase extends RoomDatabase {
 
@@ -30,6 +32,7 @@ public abstract class JointlyDatabase extends RoomDatabase {
     public abstract UserFollowUserDao userFollowUserDao();
     public abstract UserJoinInitiativeDao userJoinInitiativeDao();
     public abstract ChatDao chatDao();
+    public abstract UserReviewUserDao UserReviewUserDao();
 
     public static volatile JointlyDatabase instance;
     public static final int NUMBER_OF_THREADS = 4;
@@ -43,7 +46,7 @@ public abstract class JointlyDatabase extends RoomDatabase {
             {
                 if(instance == null)
                     instance = Room.databaseBuilder(context.getApplicationContext(),
-                            JointlyDatabase.class, "jointlyapp").build();
+                            JointlyDatabase.class, "jointlyapp").fallbackToDestructiveMigration().build();
             }
         }
     }

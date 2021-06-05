@@ -6,7 +6,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".ui.initiative.manage.ManageInitiativeFragment"
     android:id="@+id/manageInitiativeContent"
-    android:paddingBottom="10dp">
+    android:paddingBottom="20dp">
 
     <ImageButton
         android:id="@+id/imgBtnInitiative"

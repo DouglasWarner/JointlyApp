@@ -11,7 +11,15 @@
         <item name="android:fontFamily">@font/raleway</item>
         <item name="android:textColor">@color/primaryTextColor</item>
     </style>
+    <style name="TextOnSecondary" parent="TextAppearance.AppCompat">
+        <item name="android:fontFamily">@font/raleway</item>
+        <item name="android:textColor">@color/secondaryTextColor</item>
+    </style>
     <style name="SubTextOnPrimary" parent="TextAppearance.AppCompat">
+        <item name="android:fontFamily">@font/raleway</item>
+        <item name="android:textColor">@color/primaryDarkColor</item>
+    </style>
+    <style name="SubTextOnSecondary" parent="TextAppearance.AppCompat">
         <item name="android:fontFamily">@font/raleway</item>
         <item name="android:textColor">@color/secondaryDarkColor</item>
     </style>
@@ -24,5 +32,8 @@
     </style>
     <style name="imageCircular">
         <item name="cornerSize">50%</item>
+    </style>
+    <style name="dateTimePickerDialog" parent="Theme.AppCompat.Light.Dialog">
+        <item name="android:background">@color/secondaryColor</item>
     </style>
 </resources>

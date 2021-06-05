@@ -61,7 +61,7 @@ public class ShowUserProfileInteractorImpl {
 
     public void loadListInitiativeInProgress(final String userEmail)
     {
-        List<Initiative> list = InitiativeRepository.getInstance().getListCreatedInProgressByUser(userEmail);
+        List<Initiative> list = InitiativeRepository.getInstance().getListCreatedByUser(userEmail);
 
         if(list.isEmpty()) {
             interactor.onInitiativeInProgressEmptyError();

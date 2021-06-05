@@ -7,7 +7,11 @@ import android.os.Handler;
 import androidx.room.Ignore;
 import androidx.room.TypeConverter;
 
+import com.douglas.jointlyapp.ui.utils.CommonUtils;
+
 import java.io.ByteArrayOutputStream;
+
+import okhttp3.internal.Util;
 
 public class Converters {
 
@@ -20,20 +24,20 @@ public class Converters {
     public byte[] fromBitmap(Bitmap bitmap)
     {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
 
-        final BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inJustDecodeBounds = true;
+            final BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inJustDecodeBounds = true;
 
-        BitmapFactory.decodeByteArray(outputStream.toByteArray(), 0, outputStream.toByteArray().length, options);
-        options.inSampleSize = calculateInSampleSize(options, 100, 100);
-        options.inJustDecodeBounds = false;
+            BitmapFactory.decodeByteArray(outputStream.toByteArray(), 0, outputStream.toByteArray().length, options);
+            options.inSampleSize = calculateInSampleSize(options, 100, 100);
+            options.inJustDecodeBounds = false;
 
-        Bitmap result = BitmapFactory.decodeByteArray(outputStream.toByteArray(), 0, outputStream.toByteArray().length, options);
-        outputStream = new ByteArrayOutputStream();
-        result.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
+            Bitmap result = BitmapFactory.decodeByteArray(outputStream.toByteArray(), 0, outputStream.toByteArray().length, options);
+            outputStream = new ByteArrayOutputStream();
+            result.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
 
-        return outputStream.toByteArray();
+            return outputStream.toByteArray();
     }
 
     /**

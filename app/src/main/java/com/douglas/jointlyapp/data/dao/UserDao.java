@@ -12,7 +12,7 @@ import com.douglas.jointlyapp.data.model.User;
 import java.util.List;
 
 @Dao
-public interface UserDao {
+public interface UserDao extends BaseDao<User> {
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     long insert(User user);
@@ -38,18 +38,21 @@ public interface UserDao {
     @Query("SELECT * FROM user ORDER BY location")
     List<User> getListOrderByLocation();
 
-    @Query("SELECT * FROM user u ORDER BY (SELECT COUNT(*) FROM userFollowUser f WHERE u.email=f.idUser)")
+    @Query("SELECT * FROM user u ORDER BY (SELECT COUNT(*) FROM userFollowUser f WHERE u.email=f.user)")
     List<User> getListOrderByMaxUserFollowers();
 
-    @Query("SELECT * FROM user WHERE email IN (SELECT idUserFollowed FROM userFollowUser WHERE idUser=:userEmail)")
+    @Query("SELECT * FROM user WHERE email IN (SELECT user_follow FROM userFollowUser WHERE user=:userEmail)")
     List<User> getListUserFollowed(String userEmail);
 
-    @Query("SELECT * FROM user WHERE email IN (SELECT idUser FROM userJoinInitiative WHERE idInitiative=:idInitiative)")
-    List<User> getListUserJoined(int idInitiative);
+    @Query("SELECT * FROM user WHERE email IN (SELECT user_email FROM userJoinInitiative WHERE id_initiative=:idInitiative)")
+    List<User> getListUserJoined(long idInitiative);
 
-    @Query("SELECT * FROM user WHERE email in (SELECT createdBy FROM initiative WHERE id=:idInitiative)")
+    @Query("SELECT * FROM user WHERE email in (SELECT created_by FROM initiative WHERE id=:idInitiative)")
     User getUserOwner(int idInitiative);
 
-    @Query("SELECT * FROM user WHERE email in (SELECT createdBy FROM initiative)")
+    @Query("SELECT * FROM user WHERE email in (SELECT created_by FROM initiative)")
     List<User> getListInitiativeOwners();
+
+    @Query("DELETE FROM user")
+    void deleteAll();
 }

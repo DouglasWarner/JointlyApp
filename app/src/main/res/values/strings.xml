@@ -93,4 +93,23 @@
 
     <string name="facebook_application_id" translatable="false">299641768192910</string>
     <string name="facebook_login_protocol_scheme" translatable="false">fb299641768192910</string>
+    <string name="created">Creados</string>
+    <string name="joined">Unidos</string>
+    <string name="tvNoDataCreatedInProgress">Crea una iniciativa</string>
+    <string name="tvCreatedInProgress">En curso</string>
+    <string name="tvCreated">Creados</string>
+    <string name="tvCreatedHistory">Historial</string>
+    <string name="tvNoDataCreatedHistory">No hay historial de iniciativas creadas</string>
+    <string name="tvJoined">Unidos</string>
+    <string name="tvJoinedInProgress">En curso</string>
+    <string name="tvJoinedHistory">Historial</string>
+    <string name="tvNoDataJoinedInProgress">Unete a una iniciativa</string>
+    <string name="tvNoDataJoinedHistory">No hay historial de iniciativas unidas</string>
+    <string name="error_insert_initiative">Error al crear la iniciativa</string>
+    <string name="error_update_initiative">Error al editar la iniciativa</string>
+    <string name="error_no_connection">Se ha perdido la conexion</string>
+    <string name="refresh_for_sync">Refresca para sincronizar</string>
+    <string name="default_error">Valla algo salio mal</string>
+    <string name="tvNoConnection">No hay conexion a internet</string>
+    <string name="btnExit">Salir</string>
 </resources>

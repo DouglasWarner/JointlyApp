@@ -7,7 +7,6 @@ import android.os.Handler;
 
 import com.douglas.jointlyapp.data.model.Initiative;
 import com.douglas.jointlyapp.data.repository.ChatRepository;
-import com.douglas.jointlyapp.ui.initiative.InitiativeInteractorImpl;
 
 public class BackgroundJobService extends JobService {
 

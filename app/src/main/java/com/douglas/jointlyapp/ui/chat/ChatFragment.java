@@ -61,7 +61,7 @@ public class ChatFragment extends Fragment implements ChatContract.View {
 
         Bundle bundle = getArguments();
 
-        int idInitiative = bundle.getInt(Initiative.TAG);
+        long idInitiative = bundle.getLong(Initiative.TAG);
         String userEmail = JointlyPreferences.getInstance().getUser();
 
         initUI(view);

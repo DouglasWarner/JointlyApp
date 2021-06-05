@@ -15,39 +15,39 @@ public class InitiativePresenter implements InitiativeContract.Presenter, Initia
     }
 
     @Override
-    public void loadCreatedInProgress() {
+    public void loadCreated(String history) {
         view.showProgress();
-        interactor.loadInitiativeCreatedInProgress();
+        interactor.loadCreated(history);
     }
 
     @Override
-    public void loadJoinedInProgress() {
+    public void loadJoined(String history, int type) {
         view.showProgress();
-        interactor.loadInitiativeJoinedInProgress();
+        interactor.loadJoined(history, type);
     }
 
     @Override
-    public void loadCreatedHistory() {
-        view.showProgress();
-        interactor.loadInitiativeCreatedHistory();
-    }
-
-    @Override
-    public void loadJoinedHistory() {
-        view.showProgress();
-        interactor.loadInitiativeJoinedHistory();
-    }
-
-    @Override
-    public void onDestroy() {
-        view = null;
-        interactor = null;
-    }
-
-    @Override
-    public void onNoData() {
+    public void onNoDataCreatedInProgress() {
         view.hideProgress();
-        view.setNoData();
+        view.onNoDataCreatedInProgress();
+    }
+
+    @Override
+    public void onNoDataCreatedHistory() {
+        view.hideProgress();
+        view.onNoDataCreatedHistory();
+    }
+
+    @Override
+    public void onNoDataJoinedInProgress() {
+        view.hideProgress();
+        view.onNoDataJoinedInProgress();
+    }
+
+    @Override
+    public void onNoDataJoinedHistory() {
+        view.hideProgress();
+        view.onNoDataJoinedHistory();
     }
 
     @Override
@@ -60,7 +60,6 @@ public class InitiativePresenter implements InitiativeContract.Presenter, Initia
     public void onSuccessJoinedInProgress(List<Initiative> list) {
         view.hideProgress();
         view.onSuccessJoinedInProgress(list);
-
     }
 
     @Override
@@ -70,8 +69,19 @@ public class InitiativePresenter implements InitiativeContract.Presenter, Initia
     }
 
     @Override
-    public void onSuccessJoinedInHistory(List<Initiative> list) {
+    public void onSuccessJoinedHistory(List<Initiative> list) {
         view.hideProgress();
         view.onSuccessJoinedHistory(list);
+    }
+
+    @Override
+    public void onError(String message) {
+        view.onError(message);
+    }
+
+    @Override
+    public void onDestroy() {
+        view = null;
+        interactor = null;
     }
 }
