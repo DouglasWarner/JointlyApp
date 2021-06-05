@@ -1,7 +1,6 @@
 package com.douglas.jointlyapp.ui.showuserprofile;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -21,9 +20,8 @@ import com.douglas.jointlyapp.R;
 import com.douglas.jointlyapp.data.model.Initiative;
 import com.douglas.jointlyapp.data.model.User;
 import com.douglas.jointlyapp.ui.adapter.InitiativeAdapter;
+import com.douglas.jointlyapp.ui.initiative.InitiativeFragment;
 import com.google.android.material.imageview.ShapeableImageView;
-
-import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,7 +32,6 @@ import java.util.List;
 public class ShowUserProfileFragment extends Fragment implements InitiativeAdapter.ManageInitiative, ShowUserProfileContract.View {
 
 //region Variables
-    private static final String TYPE_JOINED_INPROGRESS = "joinedInProgress";
 
     private ShapeableImageView imgUser;
     private TextView tvUserName;
@@ -102,7 +99,7 @@ public class ShowUserProfileFragment extends Fragment implements InitiativeAdapt
     }
 
     private void initRecycler() {
-        adapter = new InitiativeAdapter(new ArrayList<>(), this, TYPE_JOINED_INPROGRESS);
+        adapter = new InitiativeAdapter(getContext(), new ArrayList<>(), this, InitiativeFragment.TYPE_JOINED + InitiativeFragment.TYPE_INPROGRESS);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext(), RecyclerView.HORIZONTAL, false);
         rvInitiativeCreateds.setLayoutManager(layoutManager);
         rvInitiativeCreateds.setAdapter(adapter);
@@ -120,7 +117,7 @@ public class ShowUserProfileFragment extends Fragment implements InitiativeAdapt
     public void onClick(View initiative, String type) {
         Bundle b = new Bundle();
         Initiative i = (Initiative)adapter.getInitiativeItem(rvInitiativeCreateds.getChildAdapterPosition(initiative));
-        b.putInt(Initiative.TAG, i.getId());
+        b.putSerializable(Initiative.TAG, i);
 
         NavHostFragment.findNavController(this).navigate(R.id.action_userProfileFragment_to_showInitiativeFragment2, b);
     }
@@ -186,7 +183,7 @@ public class ShowUserProfileFragment extends Fragment implements InitiativeAdapt
         tvUserFollows.setText(String.format(getString(R.string.tvUserProfileFollowsFormat), countUserFollowers));
         tvUserInitiativeJoineds.setText(String.valueOf(initiativeJoined));
         tvUserInitiativeCreateds.setText(String.valueOf(initiativeCreated));
-        tvUserCreatedAt.setText(user.getCreatedAt());
+        tvUserCreatedAt.setText(user.getCreated_at());
     }
 
     @Override

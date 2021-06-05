@@ -12,7 +12,7 @@ public class InitiativeSortByDate implements Comparator<Initiative>{
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
         int result = 0;
         try {
-            result = simpleDateFormat.parse(o1.getTargetDate()).compareTo(simpleDateFormat.parse(o2.getTargetDate()));
+            result = simpleDateFormat.parse(o1.getTarget_date()).compareTo(simpleDateFormat.parse(o2.getTarget_date()));
         } catch (ParseException e) {
             e.printStackTrace();
         }

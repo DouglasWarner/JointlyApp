@@ -9,18 +9,26 @@ import androidx.room.ForeignKey;
 import androidx.room.Ignore;
 import androidx.room.Index;
 
-@Entity(tableName = "userFollowUser", primaryKeys = {"idUser","idUserFollowed"},
-foreignKeys = {@ForeignKey(entity = User.class, parentColumns = "email", childColumns = "idUser"),
-            @ForeignKey(entity = User.class, parentColumns = "email", childColumns = "idUserFollowed")},
-            indices = {@Index("idUser"), @Index("idUserFollowed")})
+@Entity(tableName = "userFollowUser", primaryKeys = {"user","user_follow"},
+foreignKeys = {@ForeignKey(entity = User.class, parentColumns = "email", childColumns = "user"),
+            @ForeignKey(entity = User.class, parentColumns = "email", childColumns = "user_follow")},
+            indices = {@Index("user"), @Index("user_follow")})
 public class UserFollowUser implements Parcelable {
 
     public static final String TAG = "UserFollowUser";
+    public static final String TABLE_NAME = "userFollowUser";
+
+    //region Variables
 
     @NonNull
-    private String idUser;
+    private String user;
     @NonNull
-    private String idUserFollowed;
+    private String user_follow;
+    private boolean is_deleted;
+
+    //endregion
+
+    //region Contructs
 
     @Ignore
     public UserFollowUser() {
@@ -28,19 +36,23 @@ public class UserFollowUser implements Parcelable {
 
     /**
      * Create a new follow
-     * @param idUser
-     * @param idUserFollowed
+     * @param user
+     * @param user_follow
      */
-    public UserFollowUser(String idUser, String idUserFollowed) {
-        this.idUser = idUser;
-        this.idUserFollowed = idUserFollowed;
+    public UserFollowUser(String user, String user_follow, boolean is_deleted) {
+        this.user = user;
+        this.user_follow = user_follow;
+        this.is_deleted = is_deleted;
     }
 
     @Ignore
     protected UserFollowUser(Parcel in) {
-        idUser = in.readString();
-        idUserFollowed = in.readString();
+        user = in.readString();
+        user_follow = in.readString();
+        is_deleted = in.readByte() != 0;
     }
+
+    //endregion
 
     public static final Creator<UserFollowUser> CREATOR = new Creator<UserFollowUser>() {
         @Override
@@ -54,21 +66,33 @@ public class UserFollowUser implements Parcelable {
         }
     };
 
-    public String getIdUser() {
-        return idUser;
+    //region GETTERs and SETTERs
+
+    public String getUser() {
+        return user;
     }
 
-    public void setIdUser(String idUser) {
-        this.idUser = idUser;
+    public void setUser(String user) {
+        this.user = user;
     }
 
-    public String getIdUserFollowed() {
-        return idUserFollowed;
+    public String getUser_follow() {
+        return user_follow;
     }
 
-    public void setIdUserFollowed(String idUserFollowed) {
-        this.idUserFollowed = idUserFollowed;
+    public void setUser_follow(String user_follow) {
+        this.user_follow = user_follow;
     }
+
+    public boolean isIs_deleted() {
+        return is_deleted;
+    }
+
+    public void setIs_deleted(boolean is_deleted) {
+        this.is_deleted = is_deleted;
+    }
+
+    //endregion
 
     @Override
     public boolean equals(Object o) {
@@ -77,22 +101,22 @@ public class UserFollowUser implements Parcelable {
 
         UserFollowUser that = (UserFollowUser) o;
 
-        if (idUser != that.idUser) return false;
-        return idUserFollowed == that.idUserFollowed;
+        if (user != that.user) return false;
+        return user_follow == that.user_follow;
     }
 
     @Override
     public int hashCode() {
-        int result = idUser.hashCode();
-        result = 31 * result + idUserFollowed.hashCode();
+        int result = user.hashCode();
+        result = 31 * result + user_follow.hashCode();
         return result;
     }
 
     @Override
     public String toString() {
         return "UserFollowUser{" +
-                "idUser=" + idUser +
-                ", idUserFollowed=" + idUserFollowed +
+                "idUser=" + user +
+                ", idUserFollowed=" + user_follow +
                 '}';
     }
 
@@ -103,7 +127,8 @@ public class UserFollowUser implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(idUser);
-        dest.writeString(idUserFollowed);
+        dest.writeString(user);
+        dest.writeString(user_follow);
+        dest.writeByte((byte)(is_deleted ? 1:0));
     }
 }

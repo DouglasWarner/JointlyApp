@@ -17,15 +17,15 @@ public interface ShowInitiativeContract {
         void setLoadListUserJoined(List<User> userList);
         void setLoadUserOwner(User user);
         void onSuccessLoad(Initiative initiative);
+        void onError(String message);
     }
 
     interface Presenter extends BasePresenter
     {
-        void loadInitiative(int idInitiative);
         void joinInitiative(Initiative initiative);
         void unJoinInitiative(Initiative initiative);
-        void loadListUserJoined(int idInitiative);
-        void loadUserStateJoined(int idInitiative);
-        void loadUserOwner(int idInitiative);
+        void loadListUserJoined(long idInitiative);
+        void loadUserStateJoined(String email);
+        void loadUserOwner(String email);
     }
 }

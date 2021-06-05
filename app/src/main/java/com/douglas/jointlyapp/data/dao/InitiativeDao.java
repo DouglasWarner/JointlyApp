@@ -8,12 +8,11 @@ import androidx.room.Query;
 import androidx.room.Update;
 
 import com.douglas.jointlyapp.data.model.Initiative;
-import com.douglas.jointlyapp.data.model.User;
 
 import java.util.List;
 
 @Dao
-public interface InitiativeDao {
+public interface InitiativeDao extends BaseDao<Initiative> {
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     long insert(Initiative initiative);
@@ -33,15 +32,21 @@ public interface InitiativeDao {
     @Query("SELECT * FROM initiative ORDER BY location")
     List<Initiative> getListOrderByLocation();
 
-    @Query("SELECT * FROM initiative i ORDER BY (SELECT COUNT(*) FROM userJoinInitiative u WHERE i.id=u.idInitiative)")
+    @Query("SELECT * FROM initiative i ORDER BY (SELECT COUNT(*) FROM userJoinInitiative u WHERE i.id=u.id_initiative)")
     List<Initiative> getListOrderByMaxUserJoined();
 
-    @Query("SELECT * FROM initiative WHERE createdBy=:userEmail")
+    @Query("SELECT * FROM initiative WHERE created_by=:userEmail")
     List<Initiative> getListUserCreated(String userEmail);
 
-    @Query("SELECT * FROM initiative WHERE id IN (SELECT idInitiative FROM userJoinInitiative WHERE idUser=:userEmail)")
+    @Query("SELECT * FROM initiative WHERE id IN (SELECT id_initiative FROM userJoinInitiative WHERE user_email=:userEmail)")
     List<Initiative> getListUserJoined(String userEmail);
 
     @Query("SELECT * FROM initiative WHERE id =:idInitiative")
-    Initiative getInitiative(int idInitiative);
+    Initiative getInitiative(long idInitiative);
+
+    @Query("DELETE FROM initiative")
+    void deleteAll();
+
+    @Query("SELECT * FROM initiative WHERE is_deleted=:isDeleted")
+    List<Initiative> getListDeleted(boolean isDeleted);
 }

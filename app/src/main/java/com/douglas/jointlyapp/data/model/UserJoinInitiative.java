@@ -11,22 +11,30 @@ import androidx.room.Ignore;
 import androidx.room.Index;
 
 
-@Entity(tableName = "userJoinInitiative", primaryKeys = {"idInitiative","idUser"},
-    foreignKeys = {@ForeignKey(entity = Initiative.class, parentColumns = "id", childColumns = "idInitiative"),
-                @ForeignKey(entity = User.class, parentColumns = "email", childColumns = "idUser")},
-    indices = @Index("idUser"))
+@Entity(tableName = "userJoinInitiative", primaryKeys = {"id_initiative","user_email"},
+    foreignKeys = {@ForeignKey(entity = Initiative.class, parentColumns = "id", childColumns = "id_initiative"),
+                @ForeignKey(entity = User.class, parentColumns = "email", childColumns = "user_email")},
+    indices = @Index("user_email"))
 public class UserJoinInitiative implements Parcelable {
 
     public static final String TAG = "UserJoinInitiative";
+    public static final String TABLE_NAME = "userJoinInitiative";
+
+    //region Variables
 
     @NonNull
-    private int idInitiative;
+    private long id_initiative;
     @NonNull
-    private String idUser;
+    private String user_email;
     @NonNull
-    private String joined_at;
+    private String date;
     @ColumnInfo(defaultValue = "0")
     private int type;
+    private boolean is_deleted;
+
+    //endregion
+
+    //region Contructs
 
     @Ignore
     public UserJoinInitiative() {
@@ -34,25 +42,29 @@ public class UserJoinInitiative implements Parcelable {
 
     /**
      * Create a new user join initiative
-     * @param idInitiative
-     * @param idUser
-     * @param joined_at
+     * @param id_initiative
+     * @param user_email
+     * @param date
      * @param type
      */
-    public UserJoinInitiative(int idInitiative, String idUser, String joined_at, int type) {
-        this.idInitiative = idInitiative;
-        this.idUser = idUser;
-        this.joined_at = joined_at;
+    public UserJoinInitiative(long id_initiative, String user_email, String date, int type, boolean is_deleted) {
+        this.id_initiative = id_initiative;
+        this.user_email = user_email;
+        this.date = date;
         this.type = type;
+        this.is_deleted = is_deleted;
     }
 
     @Ignore
     protected UserJoinInitiative(Parcel in) {
-        idInitiative = in.readInt();
-        idUser = in.readString();
-        joined_at = in.readString();
+        id_initiative = in.readLong();
+        user_email = in.readString();
+        date = in.readString();
         type = in.readInt();
+        is_deleted = in.readByte() != 0;
     }
+
+    //endregion
 
     public static final Creator<UserJoinInitiative> CREATOR = new Creator<UserJoinInitiative>() {
         @Override
@@ -66,30 +78,32 @@ public class UserJoinInitiative implements Parcelable {
         }
     };
 
-    public int getIdInitiative() {
-        return idInitiative;
+    //region GETTERs and SETTERs
+
+    public long getId_initiative() {
+        return id_initiative;
     }
 
-    public void setIdInitiative(int idInitiative) {
-        this.idInitiative = idInitiative;
-    }
-
-    @NonNull
-    public String getIdUser() {
-        return idUser;
-    }
-
-    public void setIdUser(@NonNull String idUser) {
-        this.idUser = idUser;
+    public void setId_initiative(long id_initiative) {
+        this.id_initiative = id_initiative;
     }
 
     @NonNull
-    public String getJoined_at() {
-        return joined_at;
+    public String getUser_email() {
+        return user_email;
     }
 
-    public void setJoined_at(@NonNull String joined_at) {
-        this.joined_at = joined_at;
+    public void setUser_email(@NonNull String user_email) {
+        this.user_email = user_email;
+    }
+
+    @NonNull
+    public String getDate() {
+        return date;
+    }
+
+    public void setDate(@NonNull String date) {
+        this.date = date;
     }
 
     public int getType() {
@@ -100,6 +114,16 @@ public class UserJoinInitiative implements Parcelable {
         this.type = type;
     }
 
+    public boolean isIs_deleted() {
+        return is_deleted;
+    }
+
+    public void setIs_deleted(boolean is_deleted) {
+        this.is_deleted = is_deleted;
+    }
+
+    //endregion
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -107,23 +131,23 @@ public class UserJoinInitiative implements Parcelable {
 
         UserJoinInitiative that = (UserJoinInitiative) o;
 
-        if (idInitiative != that.idInitiative) return false;
-        return idUser.equals(that.idUser);
+        if (id_initiative != that.id_initiative) return false;
+        return user_email.equals(that.user_email);
     }
 
     @Override
     public int hashCode() {
-        int result = idInitiative;
-        result = 31 * result + idUser.hashCode();
+        int result = (int) (id_initiative ^ (id_initiative >>> 32));
+        result = 31 * result + user_email.hashCode();
         return result;
     }
 
     @Override
     public String toString() {
         return "UserJoinInitiative{" +
-                "idInitiative=" + idInitiative +
-                ", idUser='" + idUser + '\'' +
-                ", joined_at='" + joined_at + '\'' +
+                "idInitiative=" + id_initiative +
+                ", idUser='" + user_email + '\'' +
+                ", joined_at='" + date + '\'' +
                 ", type=" + type +
                 '}';
     }
@@ -135,9 +159,10 @@ public class UserJoinInitiative implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeInt(idInitiative);
-        dest.writeString(idUser);
-        dest.writeString(joined_at);
+        dest.writeLong(id_initiative);
+        dest.writeString(user_email);
+        dest.writeString(date);
         dest.writeInt(type);
+        dest.writeByte((byte)(is_deleted? 1:0));
     }
 }

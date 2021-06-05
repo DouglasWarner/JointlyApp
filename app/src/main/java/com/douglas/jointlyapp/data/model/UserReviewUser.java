@@ -11,23 +11,31 @@ import androidx.room.Index;
 
 import java.io.Serializable;
 
-@Entity(tableName = "userReviewUser", primaryKeys = {"idUser", "idUserReview"},
-    foreignKeys = {@ForeignKey(entity = User.class, parentColumns = "email", childColumns = "idUser"),
-                @ForeignKey(entity = User.class, parentColumns = "email", childColumns = "idUserReview")},
-    indices = {@Index("idUser"), @Index("idUserReview")})
+@Entity(tableName = "userReviewUser", primaryKeys = {"user", "user_review"},
+    foreignKeys = {@ForeignKey(entity = User.class, parentColumns = "email", childColumns = "user"),
+                @ForeignKey(entity = User.class, parentColumns = "email", childColumns = "user_review")},
+    indices = {@Index("user"), @Index("user_review")})
 public class UserReviewUser implements Serializable, Parcelable {
 
     public static final String TAG = "UserReviewUser";
+    public static final String TABLE_NAME = "userReviewUser";
+
+    //region Variables
 
     @NonNull
-    private String idUser;
+    private String user;
     @NonNull
-    private String idUserReview;
+    private String user_review;
     @NonNull
     private String date;
     private String review;
     @NonNull
     private int stars;
+    private boolean is_deleted;
+
+    //endregion
+
+    //region Contructs
 
     @Ignore
     public UserReviewUser() {
@@ -35,28 +43,32 @@ public class UserReviewUser implements Serializable, Parcelable {
 
     /**
      * Create a new review
-     * @param idUser
-     * @param idUserReview
+     * @param user
+     * @param user_review
      * @param date
      * @param review
      * @param stars
      */
-    public UserReviewUser(String idUser, String idUserReview, String date, String review, int stars) {
-        this.idUser = idUser;
-        this.idUserReview = idUserReview;
+    public UserReviewUser(String user, String user_review, String date, String review, int stars, boolean is_deleted) {
+        this.user = user;
+        this.user_review = user_review;
         this.date = date;
         this.review = review;
         this.stars = stars;
+        this.is_deleted = is_deleted;
     }
 
     @Ignore
     protected UserReviewUser(Parcel in) {
-        idUser = in.readString();
-        idUserReview = in.readString();
+        user = in.readString();
+        user_review = in.readString();
         date = in.readString();
         review = in.readString();
         stars = in.readInt();
+        is_deleted = in.readByte() != 0;
     }
+
+    //endregion
 
     public static final Creator<UserReviewUser> CREATOR = new Creator<UserReviewUser>() {
         @Override
@@ -70,20 +82,22 @@ public class UserReviewUser implements Serializable, Parcelable {
         }
     };
 
-    public String getIdUser() {
-        return idUser;
+    //region GETTERs and SETTERs
+
+    public String getUser() {
+        return user;
     }
 
-    public void setIdUser(String idUser) {
-        this.idUser = idUser;
+    public void setUser(String user) {
+        this.user = user;
     }
 
-    public String getIdUserReview() {
-        return idUserReview;
+    public String getUser_review() {
+        return user_review;
     }
 
-    public void setIdUserReview(String idUserReview) {
-        this.idUserReview = idUserReview;
+    public void setUser_review(String user_review) {
+        this.user_review = user_review;
     }
 
     public String getDate() {
@@ -110,6 +124,16 @@ public class UserReviewUser implements Serializable, Parcelable {
         this.stars = stars;
     }
 
+    public boolean isIs_deleted() {
+        return is_deleted;
+    }
+
+    public void setIs_deleted(boolean is_deleted) {
+        this.is_deleted = is_deleted;
+    }
+
+    //endregion
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -117,22 +141,22 @@ public class UserReviewUser implements Serializable, Parcelable {
 
         UserReviewUser that = (UserReviewUser) o;
 
-        if (idUser != null ? !idUser.equals(that.idUser) : that.idUser != null) return false;
-        return idUserReview != null ? idUserReview.equals(that.idUserReview) : that.idUserReview == null;
+        if (user != null ? !user.equals(that.user) : that.user != null) return false;
+        return user_review != null ? user_review.equals(that.user_review) : that.user_review == null;
     }
 
     @Override
     public int hashCode() {
-        int result = idUser != null ? idUser.hashCode() : 0;
-        result = 31 * result + (idUserReview != null ? idUserReview.hashCode() : 0);
+        int result = user != null ? user.hashCode() : 0;
+        result = 31 * result + (user_review != null ? user_review.hashCode() : 0);
         return result;
     }
 
     @Override
     public String toString() {
         return "UserReviewUser{" +
-                "idUser='" + idUser + '\'' +
-                ", idUserReview='" + idUserReview + '\'' +
+                "idUser='" + user + '\'' +
+                ", idUserReview='" + user_review + '\'' +
                 ", date='" + date + '\'' +
                 ", review='" + review + '\'' +
                 ", stars=" + stars +
@@ -146,10 +170,11 @@ public class UserReviewUser implements Serializable, Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(idUser);
-        dest.writeString(idUserReview);
+        dest.writeString(user);
+        dest.writeString(user_review);
         dest.writeString(date);
         dest.writeString(review);
         dest.writeInt(stars);
+        dest.writeByte((byte)(is_deleted? 1:0));
     }
 }

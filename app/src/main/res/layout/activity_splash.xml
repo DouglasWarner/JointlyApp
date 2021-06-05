@@ -12,6 +12,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:srcCompat="@mipmap/ic_app_foreground"
-        tools:layout_editor_absoluteY="623dp"
+        android:scaleType="fitCenter"
         tools:srcCompat="@mipmap/ic_app_foreground" />
 </androidx.constraintlayout.widget.ConstraintLayout>

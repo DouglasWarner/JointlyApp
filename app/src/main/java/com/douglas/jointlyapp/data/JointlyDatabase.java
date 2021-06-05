@@ -23,7 +23,7 @@ import com.douglas.jointlyapp.data.model.UserReviewUser;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-@Database(entities = {User.class, Initiative.class, UserFollowUser.class, UserJoinInitiative.class, Chat.class, UserReviewUser.class}, version = 5, exportSchema = false)
+@Database(entities = {User.class, Initiative.class, UserFollowUser.class, UserJoinInitiative.class, Chat.class, UserReviewUser.class}, version = 8, exportSchema = false)
 @TypeConverters(Converters.class)
 public abstract class JointlyDatabase extends RoomDatabase {
 
@@ -46,7 +46,7 @@ public abstract class JointlyDatabase extends RoomDatabase {
             {
                 if(instance == null)
                     instance = Room.databaseBuilder(context.getApplicationContext(),
-                            JointlyDatabase.class, "jointlyapp").build();
+                            JointlyDatabase.class, "jointlyapp").fallbackToDestructiveMigration().build();
             }
         }
     }

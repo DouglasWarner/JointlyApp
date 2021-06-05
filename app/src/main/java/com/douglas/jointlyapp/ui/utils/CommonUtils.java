@@ -1,40 +1,41 @@
 package com.douglas.jointlyapp.ui.utils;
 
 import android.app.ProgressDialog;
-import android.content.ContentResolver;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
-import android.graphics.ImageDecoder;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.Drawable;
 import android.icu.text.SimpleDateFormat;
-import android.media.Image;
-import android.net.Uri;
-import android.provider.MediaStore;
+import android.util.Log;
 
-import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.core.graphics.BitmapCompat;
-import androidx.core.graphics.drawable.DrawableCompat;
-
-import com.bumptech.glide.load.engine.bitmap_recycle.BitmapPool;
-import com.bumptech.glide.load.resource.bitmap.BitmapDrawableResource;
-import com.bumptech.glide.load.resource.bitmap.BitmapEncoder;
-import com.bumptech.glide.load.resource.bitmap.BitmapResource;
-import com.bumptech.glide.load.resource.bitmap.BitmapTransformation;
-import com.bumptech.glide.load.resource.drawable.DrawableResource;
 import com.douglas.jointlyapp.R;
+import com.douglas.jointlyapp.data.JointlyDatabase;
+import com.douglas.jointlyapp.data.model.Initiative;
+import com.douglas.jointlyapp.data.model.User;
+import com.douglas.jointlyapp.data.model.UserFollowUser;
+import com.douglas.jointlyapp.data.model.UserJoinInitiative;
+import com.douglas.jointlyapp.data.model.UserReviewUser;
+import com.douglas.jointlyapp.data.repository.InitiativeRepository;
+import com.douglas.jointlyapp.data.repository.UserRepository;
+import com.douglas.jointlyapp.services.APIResponse;
+import com.douglas.jointlyapp.ui.JointlyApplication;
+import com.douglas.jointlyapp.ui.utils.service.Apis;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 import java.util.TimeZone;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.FutureTask;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class CommonUtils {
 
@@ -114,10 +115,121 @@ public class CommonUtils {
 
     public static String getDateNow()
     {
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(JointlyApplication.DATETIMEFORMAT);
 
-        Date now = Calendar.getInstance().getTime();
+        Date now = Calendar.getInstance(Locale.getDefault()).getTime();
 
         return simpleDateFormat.format(now);
+    }
+
+    //TODO quizar eliminar
+    public static void aSyncDataUser() {
+        Call<APIResponse<User>> userCall = Apis.getInstance().getUserService().getListUser();
+        userCall.enqueue(new Callback<APIResponse<User>>() {
+            @Override
+            public void onResponse(Call<APIResponse<User>> call, Response<APIResponse<User>> response) {
+                Log.e("TAG", response.message());
+                if(response.isSuccessful() && response.body() != null) {
+                    if(!response.body().isError()) {
+                        response.body().getData().stream().forEach(x -> x.setImagen(
+                                x.getImagen() == null ? CommonUtils.getImagenUserDefault(JointlyApplication.getContext()) : x.getImagen()
+                        ));
+                        UserRepository.getInstance().upsertUser(response.body().getData());
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<APIResponse<User>> call, Throwable t) {
+                Log.e("ERR", t.getMessage());
+                call.cancel();
+            }
+        });
+    }
+
+    public static void aSyncDataInitiative() {
+        Call<APIResponse<Initiative>> initiativeCall = Apis.getInstance().getInitiativeService().getListInitiative();
+        initiativeCall.enqueue(new Callback<APIResponse<Initiative>>() {
+            @Override
+            public void onResponse(Call<APIResponse<Initiative>> call, Response<APIResponse<Initiative>> response) {
+                Log.e("TAG", response.message());
+                if (response.isSuccessful() && response.body() != null) {
+                    if (!response.body().isError()) {
+                        response.body().getData().stream().forEach(x -> x.setImagen(
+                                x.getImagen() == null ? CommonUtils.getImagenInitiativeDefault(JointlyApplication.getContext()) : x.getImagen()
+                        ));
+                        InitiativeRepository.getInstance().upsertInitiative(response.body().getData());
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<APIResponse<Initiative>> call, Throwable t) {
+                Log.e("ERR", t.getMessage());
+                call.cancel();
+            }
+        });
+    }
+
+    public static void aSyncDataUserJoinInitiative() {
+        Call<APIResponse<UserJoinInitiative>> userJoinCall = Apis.getInstance().getInitiativeService().getListUserJoined();
+        userJoinCall.enqueue(new Callback<APIResponse<UserJoinInitiative>>() {
+            @Override
+            public void onResponse(Call<APIResponse<UserJoinInitiative>> call, Response<APIResponse<UserJoinInitiative>> response) {
+                Log.e("TAG", response.message());
+                if (response.isSuccessful() && response.body() != null) {
+                    if (!response.body().isError())
+                        InitiativeRepository.getInstance().upsertUserJoinInitiative(response.body().getData());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<APIResponse<UserJoinInitiative>> call, Throwable t) {
+                Log.e("ERR", t.getMessage());
+                call.cancel();
+            }
+        });
+    }
+
+    public static void aSyncDataUserFollowUser() {
+        Call<APIResponse<UserFollowUser>> userFollowCall = Apis.getInstance().getUserService().getListUserFollow();
+        userFollowCall.enqueue(new Callback<APIResponse<UserFollowUser>>() {
+            @Override
+            public void onResponse(Call<APIResponse<UserFollowUser>> call, Response<APIResponse<UserFollowUser>> response) {
+                Log.e("TAG", response.message());
+                if (response.isSuccessful() && response.body() != null) {
+                    if (!response.body().isError()) {
+                        UserRepository.getInstance().upsertUserFollowUser(response.body().getData());
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<APIResponse<UserFollowUser>> call, Throwable t) {
+                Log.e("ERR", t.getMessage());
+                call.cancel();
+            }
+        });
+    }
+
+    public static void aSyncDataUserReviewUser() {
+        Call<APIResponse<UserReviewUser>> userReviewCall = Apis.getInstance().getUserService().getListUserReview();
+        userReviewCall.enqueue(new Callback<APIResponse<UserReviewUser>>() {
+            @Override
+            public void onResponse(Call<APIResponse<UserReviewUser>> call, Response<APIResponse<UserReviewUser>> response) {
+                Log.e("TAG", response.message());
+                if (response.isSuccessful() && response.body() != null) {
+                    if (!response.body().isError()) {
+                        UserRepository.getInstance().upsertUserReviewUser(response.body().getData());
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<APIResponse<UserReviewUser>> call, Throwable t) {
+                Log.e("ERR", t.getMessage());
+                call.cancel();
+            }
+        });
     }
 }

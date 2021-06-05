@@ -59,7 +59,7 @@ public class FavoriteFragment extends Fragment implements FavoriteContract.View,
 
     private void initUI(@NonNull View view) {
         llLoading = view.findViewById(R.id.llLoading);
-        llNoData = view.findViewById(R.id.llNoDataInitiativeCreated);
+        llNoData = view.findViewById(R.id.llNoDataCreatedInProgress);
 
         rvUserFavorite = view.findViewById(R.id.rvUserFavorite);
     }

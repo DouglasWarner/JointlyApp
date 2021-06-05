@@ -28,7 +28,6 @@ public class FavoriteInteractorImpl {
     public void loadData()
     {
         new Handler().postDelayed(() -> {
-
             User user = UserRepository.getInstance().getUser(JointlyPreferences.getInstance().getUser());
 
             List<User> listUserFollowed = UserRepository.getInstance().getListUserFollowed(user.getEmail());

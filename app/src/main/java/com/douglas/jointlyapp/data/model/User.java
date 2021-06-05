@@ -1,12 +1,10 @@
 package com.douglas.jointlyapp.data.model;
 
 import android.graphics.Bitmap;
-import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.Ignore;
@@ -14,18 +12,17 @@ import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity(tableName = "user",
         indices = {@Index(value = "email", unique = true)})
 public class User implements Comparable<User>, Serializable, Parcelable {
 
     public static final String TAG = "User";
+    public static final String TABLE_NAME = "user";
 
     @NonNull
-    @PrimaryKey(autoGenerate = true)
-    private int id;
+    @PrimaryKey
+    private long id;
     @NonNull
     @ColumnInfo(name = "email")
     private String email;
@@ -38,7 +35,7 @@ public class User implements Comparable<User>, Serializable, Parcelable {
     private String location;
     private String description;
     @NonNull
-    private String createdAt;
+    private String created_at;
 
     @Ignore
     private int userFollows;
@@ -48,7 +45,7 @@ public class User implements Comparable<User>, Serializable, Parcelable {
     }
 
     @Ignore
-    public User(@NonNull String email, @NonNull String password, @NonNull String name, String phone, Bitmap imagen, String location, String description, @NonNull String createdAt) {
+    public User(@NonNull String email, @NonNull String password, @NonNull String name, String phone, Bitmap imagen, String location, String description, @NonNull String created_at) {
         this.email = email;
         this.password = password;
         this.name = name;
@@ -56,7 +53,7 @@ public class User implements Comparable<User>, Serializable, Parcelable {
         this.imagen = imagen;
         this.location = location;
         this.description = description;
-        this.createdAt = createdAt;
+        this.created_at = created_at;
     }
 
     /**
@@ -69,9 +66,9 @@ public class User implements Comparable<User>, Serializable, Parcelable {
      * @param imagen
      * @param location
      * @param description
-     * @param createdAt
+     * @param created_at
      */
-    public User(int id, @NonNull String email, @NonNull String password, @NonNull String name, String phone, Bitmap imagen, String location, String description, @NonNull String createdAt) {
+    public User(long id, @NonNull String email, @NonNull String password, @NonNull String name, String phone, Bitmap imagen, String location, String description, @NonNull String created_at) {
         this.id = id;
         this.email = email;
         this.password = password;
@@ -80,12 +77,12 @@ public class User implements Comparable<User>, Serializable, Parcelable {
         this.imagen = imagen;
         this.location = location;
         this.description = description;
-        this.createdAt = createdAt;
+        this.created_at = created_at;
     }
 
     @Ignore
     protected User(Parcel in) {
-        id = in.readInt();
+        id = in.readLong();
         email = in.readString();
         password = in.readString();
         name = in.readString();
@@ -93,7 +90,7 @@ public class User implements Comparable<User>, Serializable, Parcelable {
         imagen = in.readParcelable(Bitmap.class.getClassLoader());
         location = in.readString();
         description = in.readString();
-        createdAt = in.readString();
+        created_at = in.readString();
     }
 
     public static final Creator<User> CREATOR = new Creator<User>() {
@@ -108,11 +105,11 @@ public class User implements Comparable<User>, Serializable, Parcelable {
         }
     };
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(long id) {
         this.id = id;
     }
 
@@ -172,12 +169,12 @@ public class User implements Comparable<User>, Serializable, Parcelable {
         this.description = description;
     }
 
-    public String getCreatedAt() {
-        return createdAt;
+    public String getCreated_at() {
+        return created_at;
     }
 
-    public void setCreatedAt(String createdAt) {
-        this.createdAt = createdAt;
+    public void setCreated_at(String created_at) {
+        this.created_at = created_at;
     }
 
     public int getUserFollows() {
@@ -214,7 +211,7 @@ public class User implements Comparable<User>, Serializable, Parcelable {
                 ", imagen=" + imagen +
                 ", location='" + location + '\'' +
                 ", description='" + description + '\'' +
-                ", createdAt='" + createdAt + '\'' +
+                ", createdAt='" + created_at + '\'' +
                 '}';
     }
 
@@ -230,7 +227,7 @@ public class User implements Comparable<User>, Serializable, Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeInt(id);
+        dest.writeLong(id);
         dest.writeString(email);
         dest.writeString(password);
         dest.writeString(name);
@@ -238,6 +235,6 @@ public class User implements Comparable<User>, Serializable, Parcelable {
         imagen.writeToParcel(dest, flags);
         dest.writeString(location);
         dest.writeString(description);
-        dest.writeString(createdAt);
+        dest.writeString(created_at);
     }
 }

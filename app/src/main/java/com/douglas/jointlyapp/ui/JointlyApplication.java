@@ -1,30 +1,49 @@
 package com.douglas.jointlyapp.ui;
 
 import android.app.Application;
-import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
-import android.app.job.JobInfo;
 import android.app.job.JobScheduler;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.IntentFilter;
 import android.graphics.Color;
-import android.graphics.Paint;
 import android.os.Build;
+import android.util.Log;
 
 import com.douglas.jointlyapp.data.JointlyDatabase;
+import com.douglas.jointlyapp.data.model.Initiative;
+import com.douglas.jointlyapp.data.model.User;
+import com.douglas.jointlyapp.data.model.UserFollowUser;
+import com.douglas.jointlyapp.data.model.UserJoinInitiative;
+import com.douglas.jointlyapp.data.model.UserReviewUser;
+import com.douglas.jointlyapp.data.repository.InitiativeRepository;
+import com.douglas.jointlyapp.data.repository.UserRepository;
+import com.douglas.jointlyapp.services.APIResponse;
 import com.douglas.jointlyapp.ui.broadcast.NotificationNewMessageChatBroadCast;
 import com.douglas.jointlyapp.ui.preferences.JointlyPreferences;
-import com.douglas.jointlyapp.ui.service.BackgroundJobService;
+import com.douglas.jointlyapp.ui.utils.CommonUtils;
+import com.douglas.jointlyapp.ui.utils.service.Apis;
+
+import java.io.IOException;
+import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Response;
 
 public class JointlyApplication extends Application {
+
+    public static final String DATEFORMAT = "yyyy/MM/dd";
+    public static final String DATEFORMAT2 = "dd/MM/yyyy";
+    public static final String DATETIMEFORMAT = "dd/MM/yyyy hh:mm";
+    public static final String CHECK_CONNECTION_BROADCAST = "com.douglas.check_internet_connection";
 
     public static final int REQUEST_IMAGE_GALLERY = 101;
     public static final int REQUEST_PERMISSION_CODE = 100;
     public static final String CHANNEL_ID = "1234";
-    private static Context context;
     public static JobScheduler jobScheduler;
+
+    private static boolean connection;
+    private static Context context;
 
     @Override
     public void onCreate() {
@@ -62,4 +81,11 @@ public class JointlyApplication extends Application {
     }
 
 
+    public static boolean getConnection() {
+        return connection;
+    }
+
+    public static void setConnection(boolean isConnectionAvailable) {
+        connection = isConnectionAvailable;
+    }
 }

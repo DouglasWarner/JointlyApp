@@ -15,10 +15,10 @@ import java.util.Random;
 
 public class Notifications {
 
-    public static void showNotificationAddInitiative(Context context, int initiative)
+    public static void showNotificationAddInitiative(Context context, long initiative)
     {
         Bundle bundle = new Bundle();
-        bundle.putInt(Initiative.TAG, initiative);
+        bundle.putLong(Initiative.TAG, initiative);
 
         PendingIntent pendingIntent = new NavDeepLinkBuilder(context)
                 .setGraph(R.navigation.nav_graph)
@@ -39,10 +39,10 @@ public class Notifications {
         notificationManager.notify(new Random().nextInt(1000), builder.build());
     }
 
-    public static void showNotificationNewMessageChat(Context context, int initiative)
+    public static void showNotificationNewMessageChat(Context context, long initiative)
     {
         Bundle bundle = new Bundle();
-        bundle.putInt(Initiative.TAG, initiative);
+        bundle.putLong(Initiative.TAG, initiative);
 
         PendingIntent pendingIntent = new NavDeepLinkBuilder(context)
                 .setGraph(R.navigation.nav_graph)
