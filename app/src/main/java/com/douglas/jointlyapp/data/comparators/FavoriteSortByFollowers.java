@@ -8,6 +8,7 @@ public class FavoriteSortByFollowers implements Comparator<User> {
 
     @Override
     public int compare(User o1, User o2) {
-        return Integer.compare(o1.getUserFollows(), o2.getUserFollows());
+        return 0;
+//        return Integer.compare(o1.getUserFollows(), o2.getUserFollows());
     }
 }

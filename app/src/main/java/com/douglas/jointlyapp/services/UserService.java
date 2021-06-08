@@ -5,17 +5,14 @@ import com.douglas.jointlyapp.data.model.User;
 import com.douglas.jointlyapp.data.model.UserFollowUser;
 import com.douglas.jointlyapp.data.model.UserReviewUser;
 
+import java.util.List;
+
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.DELETE;
-import retrofit2.http.Field;
-import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
-import retrofit2.http.Multipart;
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
-import retrofit2.http.Part;
-import retrofit2.http.Path;
 import retrofit2.http.Query;
 
 public interface UserService {
@@ -23,10 +20,10 @@ public interface UserService {
     //region USER
 
     @GET("api/users/")
-    Call<APIResponse<User>> getListUser();
+    Call<APIResponse<List<User>>> getListUser();
 
     @GET("api/users/user/")
-    Call<APIResponse<User>> getUserByEmail(@Body String email);
+    Call<APIResponse<User>> getUserByEmail(@Query("email") String email);
 
     @POST("api/users/user/")
     Call<APIResponse<User>> postUser(@Body String email, @Body String password, @Body String name,
@@ -39,40 +36,40 @@ public interface UserService {
                        @Body String description, @Body int id);
 
     @GET("api/users/initiatives/created/")
-    Call<APIResponse<Initiative>> getListInitiativeCreated(@Query("email") String email);
+    Call<APIResponse<List<Initiative>>> getListInitiativeCreated(@Query("email") String email);
 
     //endregion
 
     //region UserJoin
 
     @GET("api/users/initiatives/joined/")
-    Call<APIResponse<Initiative>> getListInitiativeJoinedByUser(@Query("email") String email, @Query("type") int type);
+    Call<APIResponse<List<Initiative>>> getListInitiativeJoinedByUser(@Query("email") String email, @Query("type") int type);
 
     //endregion
 
     //region UserFollow
 
     @GET("api/users/follows/")
-    Call<APIResponse<UserFollowUser>> getListUserFollow();
+    Call<APIResponse<List<UserFollowUser>>> getListUserFollow();
 
     @GET("api/users/followed/")
-    Call<APIResponse<UserFollowUser>> getUserFollowed(@Body String email);
+    Call<APIResponse<List<User>>> getUserFollowed(@Query("email") String email);
 
     @GET("api/users/followers/")
-    Call<APIResponse<UserFollowUser>> getUserFollowers(@Body String email);
+    Call<APIResponse<User>> getUserFollowers(@Query("email") String email);
 
     @POST("api/users/followed/")
-    Call<APIResponse<UserFollowUser>> postUserFollow(@Body String userEmail, @Body String userFollowEmail);
+    Call<APIResponse<UserFollowUser>> postUserFollow(@Query("userEmail") String userEmail, @Query("userFollowEmail") String userFollowEmail);
 
     @DELETE("api/users/followed/")
-    Call<APIResponse<UserFollowUser>> delUserFollow(@Body String userEmail, @Body String userFollowEmail);
+    Call<APIResponse<UserFollowUser>> delUserFollow(@Query("userEmail") String userEmail, @Query("userFollowEmail") String userFollowEmail);
 
     //endregion
 
     //region UserReview
 
     @GET("api/users/reviews/")
-    Call<APIResponse<UserReviewUser>> getListUserReview();
+    Call<APIResponse<List<UserReviewUser>>> getListUserReview();
 
     @GET("api/users/reviews/")
     Call<APIResponse<UserReviewUser>> getUserReview(@Body String email);
@@ -81,6 +78,9 @@ public interface UserService {
     Call<APIResponse<UserReviewUser>> postUserReview(@Body String date, @Body String userEmail,
                                         @Body String userReviewEmail,
                                         @Body String review, @Body int stars);
+
+    @POST("api/users/follows/sync/")
+    Call<APIResponse<UserFollowUser>> syncToAPI(@Body List<UserFollowUser> followUserList);
 
     //endregion
 }

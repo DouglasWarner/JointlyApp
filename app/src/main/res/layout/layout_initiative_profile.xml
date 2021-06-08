@@ -5,33 +5,73 @@
     android:id="@+id/linearLayoutIniciativas"
     android:layout_width="0dp"
     android:layout_height="wrap_content"
-    android:layout_margin="10dp"
+    android:layout_margin="@dimen/default_margin_medium"
     android:orientation="vertical"
     app:layout_constraintEnd_toStartOf="@+id/guideline13"
     app:layout_constraintStart_toStartOf="@+id/guideline12"
-    app:layout_constraintTop_toBottomOf="@+id/linearLayoutDescripcion"
+    app:layout_constraintTop_toBottomOf="@+id/divider3"
+    app:layout_constraintBottom_toTopOf="@+id/divider4"
     tools:showIn="@layout/fragment_profile">
 
     <TextView
         style="@style/TextOnPrimary"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="10dp"
-        android:text="@string/tvUserInitiativeCreateds"
-        android:textSize="20dp"
-        android:textStyle="bold" />
+        android:layout_marginStart="@dimen/default_margin_medium"
+        android:text="@string/tvUserInitiative"
+        android:textSize="@dimen/default_text_size_large"
+        android:textStyle="bold"/>
 
     <TextView
+        style="@style/SubTextOnSecondary"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/tvNoInitiativeUserData"
-        android:text="@string/tvNoInitiativeUserData"
-        android:visibility="gone"/>
+        android:layout_marginStart="@dimen/default_margin_medium"
+        android:layout_marginTop="@dimen/default_margin_medium"
+        android:text="@string/tvUserInitiativeCreateds"
+        android:textSize="@dimen/default_text_size_medium"
+        android:textStyle="bold"/>
+
+    <TextView
+        android:id="@+id/tvNoInitiativeCreatedUserData"
+        style="@style/TextOnPrimary"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/default_margin_medium"
+        android:text="@string/tvNoInitiativeCreatedUserData"
+        android:textSize="@dimen/default_text_size_small"
+        android:visibility="gone" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvUserInitiativeCreated"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_margin="10dp" />
+        android:layout_margin="@dimen/default_margin_medium" />
+
+    <TextView
+        style="@style/SubTextOnSecondary"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/default_margin_medium"
+        android:layout_marginTop="@dimen/default_margin_medium"
+        android:text="@string/tvUserInitiativeJoineds"
+        android:textSize="@dimen/default_text_size_medium"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/tvNoInitiativeJoinedUserData"
+        style="@style/TextOnPrimary"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/default_margin_medium"
+        android:text="@string/tvNoInitiativeJoinedUserData"
+        android:textSize="@dimen/default_text_size_small"
+        android:visibility="gone" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvUserInitiativeJoined"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="@dimen/default_margin_medium" />
 
 </LinearLayout>

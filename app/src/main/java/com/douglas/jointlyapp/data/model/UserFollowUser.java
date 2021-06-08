@@ -4,10 +4,14 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
+import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.ForeignKey;
 import androidx.room.Ignore;
 import androidx.room.Index;
+
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 
 @Entity(tableName = "userFollowUser", primaryKeys = {"user","user_follow"},
 foreignKeys = {@ForeignKey(entity = User.class, parentColumns = "email", childColumns = "user"),
@@ -20,11 +24,21 @@ public class UserFollowUser implements Parcelable {
 
     //region Variables
 
+    @SerializedName("user")
     @NonNull
     private String user;
+
+    @SerializedName("user_follow")
     @NonNull
     private String user_follow;
+
+    @SerializedName("is_deleted")
+    @ColumnInfo(defaultValue = "0")
     private boolean is_deleted;
+
+    @SerializedName("is_sync")
+    @ColumnInfo(defaultValue = "0")
+    private boolean is_sync;
 
     //endregion
 
@@ -39,10 +53,17 @@ public class UserFollowUser implements Parcelable {
      * @param user
      * @param user_follow
      */
-    public UserFollowUser(String user, String user_follow, boolean is_deleted) {
+    public UserFollowUser(String user, String user_follow, boolean is_deleted, boolean is_sync) {
         this.user = user;
         this.user_follow = user_follow;
         this.is_deleted = is_deleted;
+        this.is_sync = is_sync;
+    }
+
+    @Ignore
+    public UserFollowUser(String user, String user_follow) {
+        this.user = user;
+        this.user_follow = user_follow;
     }
 
     @Ignore
@@ -50,6 +71,7 @@ public class UserFollowUser implements Parcelable {
         user = in.readString();
         user_follow = in.readString();
         is_deleted = in.readByte() != 0;
+        is_sync = in.readByte() != 0;
     }
 
     //endregion
@@ -68,20 +90,30 @@ public class UserFollowUser implements Parcelable {
 
     //region GETTERs and SETTERs
 
+    @NonNull
     public String getUser() {
         return user;
     }
 
-    public void setUser(String user) {
+    public void setUser(@NonNull String user) {
         this.user = user;
     }
 
+    @NonNull
     public String getUser_follow() {
         return user_follow;
     }
 
-    public void setUser_follow(String user_follow) {
+    public void setUser_follow(@NonNull String user_follow) {
         this.user_follow = user_follow;
+    }
+
+    public boolean isIs_sync() {
+        return is_sync;
+    }
+
+    public void setIs_sync(boolean is_sync) {
+        this.is_sync = is_sync;
     }
 
     public boolean isIs_deleted() {
@@ -92,7 +124,7 @@ public class UserFollowUser implements Parcelable {
         this.is_deleted = is_deleted;
     }
 
-    //endregion
+//endregion
 
     @Override
     public boolean equals(Object o) {
@@ -101,8 +133,8 @@ public class UserFollowUser implements Parcelable {
 
         UserFollowUser that = (UserFollowUser) o;
 
-        if (user != that.user) return false;
-        return user_follow == that.user_follow;
+        if (!user.equals(that.user)) return false;
+        return user_follow.equals(that.user_follow);
     }
 
     @Override
@@ -115,8 +147,10 @@ public class UserFollowUser implements Parcelable {
     @Override
     public String toString() {
         return "UserFollowUser{" +
-                "idUser=" + user +
-                ", idUserFollowed=" + user_follow +
+                "user='" + user + '\'' +
+                ", user_follow='" + user_follow + '\'' +
+                ", is_deleted=" + is_deleted +
+                ", is_sync=" + is_sync +
                 '}';
     }
 
@@ -130,5 +164,6 @@ public class UserFollowUser implements Parcelable {
         dest.writeString(user);
         dest.writeString(user_follow);
         dest.writeByte((byte)(is_deleted ? 1:0));
+        dest.writeByte((byte)(is_sync ? 1:0));
     }
 }

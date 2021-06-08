@@ -54,15 +54,13 @@ public class JointlyPreferences {
         return true;
     }
 
-    public String getUser()
-    {
+    public String getUser() {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
 
         return sharedPreferences.getString(KEY_USER, "");
     }
 
-    public boolean putRemember(boolean remember)
-    {
+    public boolean putRemember(boolean remember) {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
 
         SharedPreferences.Editor editor = sharedPreferences.edit();
@@ -74,8 +72,7 @@ public class JointlyPreferences {
         return true;
     }
 
-    public boolean getRemember()
-    {
+    public boolean getRemember() {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
 
         return sharedPreferences.getBoolean(KEY_REMEMBER, false);

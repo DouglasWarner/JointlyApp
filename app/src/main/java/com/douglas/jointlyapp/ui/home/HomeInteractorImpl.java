@@ -4,6 +4,7 @@ import android.util.Log;
 
 import com.douglas.jointlyapp.data.model.Initiative;
 import com.douglas.jointlyapp.data.model.User;
+import com.douglas.jointlyapp.data.model.UserJoinInitiative;
 import com.douglas.jointlyapp.data.repository.InitiativeRepository;
 import com.douglas.jointlyapp.data.repository.UserRepository;
 import com.douglas.jointlyapp.services.APIResponse;
@@ -11,8 +12,9 @@ import com.douglas.jointlyapp.services.InitiativeService;
 import com.douglas.jointlyapp.services.UserService;
 import com.douglas.jointlyapp.ui.JointlyApplication;
 import com.douglas.jointlyapp.ui.preferences.JointlyPreferences;
-import com.douglas.jointlyapp.ui.utils.service.Apis;
+import com.douglas.jointlyapp.services.Apis;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -23,14 +25,10 @@ import retrofit2.Response;
 public class HomeInteractorImpl {
 
     interface ListInitiativeInteractor {
-
         void onNoData();
-
-        void onSuccess(List<Initiative> list, List<User> userOwners);
-
+        void onSuccess(List<Initiative> list, List<User> userOwners, List<Long> usersJoined);
         void onError(String message);
-
-        //TODO call for the count of users joined
+        void onSync();
         //TODO mirar todas las llamadas onError para mandar mensajes
     }
 
@@ -44,8 +42,13 @@ public class HomeInteractorImpl {
         userService = Apis.getInstance().getUserService();
     }
 
+    //region loadData
+
+    /**
+     *
+     */
     public void loadData() {
-        if (JointlyApplication.getConnection()) {
+        if (JointlyApplication.getConnection() && JointlyApplication.isIsSyncronized()) {
             fromAPI();
         } else {
             fromLocal();
@@ -56,10 +59,10 @@ public class HomeInteractorImpl {
      * Get the data from the API Service
      */
     private void fromAPI() {
-        Call<APIResponse<Initiative>> initiativeCall = initiativeService.getListInitiative();
-        initiativeCall.enqueue(new Callback<APIResponse<Initiative>>() {
+        Call<APIResponse<List<Initiative>>> initiativeCall = initiativeService.getListInitiative();
+        initiativeCall.enqueue(new Callback<APIResponse<List<Initiative>>>() {
             @Override
-            public void onResponse(Call<APIResponse<Initiative>> call, Response<APIResponse<Initiative>> response) {
+            public void onResponse(Call<APIResponse<List<Initiative>>> call, Response<APIResponse<List<Initiative>>> response) {
                 Log.e("TAG", response.message());
                 if (response.isSuccessful() && response.body() != null) {
                     if (!response.body().isError()) {
@@ -78,9 +81,10 @@ public class HomeInteractorImpl {
             }
 
             @Override
-            public void onFailure(Call<APIResponse<Initiative>> call, Throwable t) {
+            public void onFailure(Call<APIResponse<List<Initiative>>> call, Throwable t) {
                 Log.e("ERR", t.getMessage());
                 interactor.onError(null);
+                initiativeCall.cancel();
             }
         });
     }
@@ -89,29 +93,34 @@ public class HomeInteractorImpl {
      * Get the data from the local DB
      */
     private void fromLocal() {
-        InitiativeRepository repository = InitiativeRepository.getInstance();
+        //TODO Quizas obtener de firebase
         String user = JointlyPreferences.getInstance().getUser();
-        List<Initiative> list = repository.getList();
+        List<Initiative> list = InitiativeRepository.getInstance().getList();
         List<User> userOwner = UserRepository.getInstance().getListInitiativeOwners();
+        List<Long> listCountUsersJoined = InitiativeRepository.getInstance().getListCountUsersJoinedByInitiative();
 
         if (list.isEmpty()) {
             interactor.onNoData();
         } else {
-            interactor.onSuccess(list, userOwner);
+            interactor.onSuccess(list, userOwner, listCountUsersJoined);
         }
     }
+
+    //endregion
+
+    //region getUserOwners and getCountUsersJoined
 
     /**
      * Get the list of users by the list of initiatives
      * @param initiatives
      */
     public void getUserOwners(List<Initiative> initiatives) {
-        Call<APIResponse<User>> userCall = userService.getListUser();
-        userCall.enqueue(new Callback<APIResponse<User>>() {
+        Call<APIResponse<List<User>>> userCall = userService.getListUser();
+        userCall.enqueue(new Callback<APIResponse<List<User>>>() {
             @Override
-            public void onResponse(Call<APIResponse<User>> call, Response<APIResponse<User>> response) {
-                Log.e("TAG", response.message());
+            public void onResponse(Call<APIResponse<List<User>>> call, Response<APIResponse<List<User>>> response) {
                 if (response.isSuccessful() && response.body() != null) {
+                    Log.e("TAG", response.message());
                     if (!response.body().isError()) {
                         List<User> list = response.body().getData();
                         List<User> userList = list.stream().filter(x ->
@@ -119,8 +128,7 @@ public class HomeInteractorImpl {
                                             y.getCreated_by().equals(x.getEmail())
                                     )
                                 ).collect(Collectors.toList());
-
-                        interactor.onSuccess(initiatives, userList);
+                        getCountUsersJoined(initiatives, userList);
                     } else {
                         interactor.onError(response.body().getMessage());
                     }
@@ -130,16 +138,70 @@ public class HomeInteractorImpl {
             }
 
             @Override
-            public void onFailure(Call<APIResponse<User>> call, Throwable t) {
+            public void onFailure(Call<APIResponse<List<User>>> call, Throwable t) {
                 Log.e("ERR", t.getMessage());
                 interactor.onError(null);
+                userCall.cancel();
             }
         });
     }
 
-    public void syncData() {
-        boolean isSuccessful = JointlyApplication.syncDataFromAPI();
+    private void getCountUsersJoined(List<Initiative> initiatives, List<User> listUserOwner) {
+        Call<APIResponse<List<UserJoinInitiative>>> userCall = initiativeService.getListUserJoined();
+        userCall.enqueue(new Callback<APIResponse<List<UserJoinInitiative>>>() {
+            @Override
+            public void onResponse(Call<APIResponse<List<UserJoinInitiative>>> call, Response<APIResponse<List<UserJoinInitiative>>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    Log.e("TAG", response.message());
+                    if (!response.body().isError()) {
+                        List<UserJoinInitiative> userJoinInitiatives = response.body().getData();
+                        List<Long> countUsersJoined = new ArrayList<>();
+                        initiatives.forEach(x -> countUsersJoined.add(userJoinInitiatives.stream().filter(y-> x.getId()==y.getId_initiative()).count()));
+                        interactor.onSuccess(initiatives, listUserOwner, countUsersJoined);
+                    } else {
+                        interactor.onError(response.body().getMessage());
+                    }
+                } else {
+                    interactor.onError(null);
+                }
+            }
 
-        JointlyApplication.setConnection(isSuccessful);
+            @Override
+            public void onFailure(Call<APIResponse<List<UserJoinInitiative>>> call, Throwable t) {
+                Log.e("ERR", t.getMessage());
+                interactor.onError(null);
+                userCall.cancel();
+            }
+        });
+    }
+
+    //endregion
+
+    public void syncData() {
+
+        InitiativeRepository.getInstance().tmpInsert();
+//        SyncToAPI syncToAPI = new SyncToAPI(() -> null);
+//        syncToAPI.run();
+//
+//        SyncFromAPI syncFromAPI = new SyncFromAPI(() -> null);
+//        syncFromAPI.run();
+
+        interactor.onSync();
+    }
+
+    private List<Long> getCountUserJoined() {
+        List<UserJoinInitiative> tmp = new ArrayList<>();
+//        List<Long> count = new ArrayList<>();
+//
+//        for (UserJoinInitiative t : tmp) {
+//            long c = 0;
+//            for (Initiative i : initiatives) {
+//                if(t.getId_initiative() == i.getId())
+//                    c++;
+//            }
+//            count.add(c);
+//        }
+
+        return null;
     }
 }

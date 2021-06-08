@@ -2,8 +2,6 @@ package com.douglas.jointlyapp.services;
 
 import com.google.gson.annotations.SerializedName;
 
-import java.util.List;
-
 public class APIResponse<T> {
 
     @SerializedName("error")
@@ -11,7 +9,7 @@ public class APIResponse<T> {
     @SerializedName("message")
     private String message;
     @SerializedName("data")
-    private List<T> data;
+    private T data;
 
     public boolean isError() {
         return error;
@@ -21,7 +19,7 @@ public class APIResponse<T> {
         return message;
     }
 
-    public List<T> getData() {
+    public T getData() {
         return data;
     }
 }

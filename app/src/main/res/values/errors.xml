@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="default_error_action">ERROR - Vuelve a intentarlo</string>
+    <string name="default_error_load">ERROR - Algo salio mal, vuelve a intentarlo</string>
+    <string name="error_no_connection">Se ha perdido la conexion</string>
+    <string name="error_insert_initiative">Error al crear la iniciativa</string>
+    <string name="error_edit_initiative">Error al editar la iniciativa</string>
+    <string name="error_initiative_name_empty">Se requiere un nombre</string>
+    <string name="error_initiative_name_format">El nombre debe tener entre 5 y 40 caracteres</string>
+    <string name="error_initiative_location_empty">Se requiere una localidad</string>
+    <string name="error_initiative_area_empty">Se requiere un area objetivo</string>
+    <string name="error_initiative_date_empty">Se requiere una fecha</string>
+    <string name="error_initiative_date_valid">La fecha debe ser de hoy hacia el futuro</string>
+    <string name="error_initiative_time_empty">Se requiere una hora</string>
+    <string name="error_initiative_amount_empty">Se requiere una cantidad prevista a modo de información</string>
+    <string name="error_initiative_amount_format">No puede ser 0 o inferior</string>
+    <string name="error_initiative_user_joined">Imposible eliminar porque ya hay usuarios unidos</string>
+</resources>

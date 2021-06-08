@@ -11,6 +11,8 @@ import androidx.room.Ignore;
 import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.io.Serializable;
 
 @Entity(tableName = "user",
@@ -20,25 +22,49 @@ public class User implements Comparable<User>, Serializable, Parcelable {
     public static final String TAG = "User";
     public static final String TABLE_NAME = "user";
 
+    //region Variables
+
+    @SerializedName("id")
     @NonNull
     @PrimaryKey
     private long id;
+
+    @SerializedName("email")
     @NonNull
     @ColumnInfo(name = "email")
     private String email;
+
+    @SerializedName("password")
     @NonNull
     private String password;
+
+    @SerializedName("name")
     @NonNull
     private String name;
+
+    @SerializedName("phone")
     private String phone;
+
+    @SerializedName("imagen")
     private Bitmap imagen;
+
+    @SerializedName("location")
     private String location;
+
+    @SerializedName("description")
     private String description;
-    @NonNull
+
+    @SerializedName("created_at")
+    @ColumnInfo(defaultValue = "CURRENT_TIMESTAMP")
     private String created_at;
 
-    @Ignore
-    private int userFollows;
+    @SerializedName("is_sync")
+    @ColumnInfo(defaultValue = "0")
+    private boolean is_sync;
+
+    //endregion
+
+    //region Contructs
 
     @Ignore
     public User() {
@@ -68,7 +94,9 @@ public class User implements Comparable<User>, Serializable, Parcelable {
      * @param description
      * @param created_at
      */
-    public User(long id, @NonNull String email, @NonNull String password, @NonNull String name, String phone, Bitmap imagen, String location, String description, @NonNull String created_at) {
+    public User(long id, @NonNull String email, @NonNull String password, @NonNull String name, String phone,
+                Bitmap imagen, String location, String description, @NonNull String created_at,
+                boolean is_sync) {
         this.id = id;
         this.email = email;
         this.password = password;
@@ -78,6 +106,7 @@ public class User implements Comparable<User>, Serializable, Parcelable {
         this.location = location;
         this.description = description;
         this.created_at = created_at;
+        this.is_sync = is_sync;
     }
 
     @Ignore
@@ -91,7 +120,10 @@ public class User implements Comparable<User>, Serializable, Parcelable {
         location = in.readString();
         description = in.readString();
         created_at = in.readString();
+        is_sync = in.readByte() != 0;
     }
+
+    //endregion
 
     public static final Creator<User> CREATOR = new Creator<User>() {
         @Override
@@ -104,6 +136,8 @@ public class User implements Comparable<User>, Serializable, Parcelable {
             return new User[size];
         }
     };
+
+    //region GETTERs and SETTERs
 
     public long getId() {
         return id;
@@ -177,13 +211,15 @@ public class User implements Comparable<User>, Serializable, Parcelable {
         this.created_at = created_at;
     }
 
-    public int getUserFollows() {
-        return userFollows;
+    public boolean getIs_sync() {
+        return is_sync;
     }
 
-    public void setUserFollows(int userFollows) {
-        this.userFollows = userFollows;
+    public void setIs_sync(boolean is_sync) {
+        this.is_sync = is_sync;
     }
+
+    //endregion
 
     @Override
     public boolean equals(Object o) {
@@ -211,7 +247,8 @@ public class User implements Comparable<User>, Serializable, Parcelable {
                 ", imagen=" + imagen +
                 ", location='" + location + '\'' +
                 ", description='" + description + '\'' +
-                ", createdAt='" + created_at + '\'' +
+                ", created_at='" + created_at + '\'' +
+                ", is_sync=" + is_sync +
                 '}';
     }
 
@@ -236,5 +273,6 @@ public class User implements Comparable<User>, Serializable, Parcelable {
         dest.writeString(location);
         dest.writeString(description);
         dest.writeString(created_at);
+        dest.writeByte((byte)(is_sync ? 1:0));
     }
 }

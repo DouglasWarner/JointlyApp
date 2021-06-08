@@ -21,18 +21,13 @@ public class ShowInitiativePresenter implements ShowInitiativeContract.Presenter
     }
 
     @Override
-    public void unJoinInitiative(Initiative initiative) {
-        interactor.unJoinInitiative(initiative);
-    }
-
-    @Override
     public void loadListUserJoined(long idInitiative) {
         interactor.loadListUserJoined(idInitiative);
     }
 
     @Override
-    public void loadUserStateJoined(String email) {
-        interactor.loadUserStateJoined(email, 0);
+    public void loadUserStateJoined(String email, long idInitiative) {
+        interactor.loadUserStateJoined(email, idInitiative);
     }
 
     @Override
@@ -41,9 +36,8 @@ public class ShowInitiativePresenter implements ShowInitiativeContract.Presenter
     }
 
     @Override
-    public void onDestroy() {
-        view = null;
-        interactor = null;
+    public void delete(Initiative initiative) {
+        interactor.deleteInitiative(initiative);
     }
 
     @Override
@@ -62,6 +56,11 @@ public class ShowInitiativePresenter implements ShowInitiativeContract.Presenter
     }
 
     @Override
+    public void onLoadUserStateJoined(boolean joined) {
+        view.setLoadUserStateJoined(joined);
+    }
+
+    @Override
     public void onLoadListUserJoined(List<User> userList) {
         view.setLoadListUserJoined(userList);
     }
@@ -72,12 +71,23 @@ public class ShowInitiativePresenter implements ShowInitiativeContract.Presenter
     }
 
     @Override
-    public void onSuccessLoad(Initiative initiative) {
-        view.onSuccessLoad(initiative);
+    public void onCannotDeleted() {
+        view.setCannotDeleted();
+    }
+
+    @Override
+    public void onSuccessDeleted() {
+        view.setSuccessDeleted();
     }
 
     @Override
     public void onError(String message) {
         view.onError(message);
+    }
+
+    @Override
+    public void onDestroy() {
+        view = null;
+        interactor = null;
     }
 }

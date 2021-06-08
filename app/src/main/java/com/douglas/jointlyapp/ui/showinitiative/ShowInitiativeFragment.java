@@ -1,18 +1,21 @@
 package com.douglas.jointlyapp.ui.showinitiative;
 
+import android.app.AlertDialog;
 import android.app.job.JobInfo;
 import android.app.job.JobScheduler;
 import android.content.ComponentName;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -29,7 +32,9 @@ import com.douglas.jointlyapp.ui.adapter.UserJoinedAdapter;
 import com.douglas.jointlyapp.ui.initiative.InitiativeFragment;
 import com.douglas.jointlyapp.ui.preferences.JointlyPreferences;
 import com.douglas.jointlyapp.ui.service.BackgroundJobService;
+import com.douglas.jointlyapp.ui.utils.CommonUtils;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,6 +43,8 @@ import java.util.List;
  * La ventada de la iniciativa en particular
  */
 public class ShowInitiativeFragment extends Fragment implements ShowInitiativeContract.View, UserJoinedAdapter.ManageInitiative {
+
+    //region Variables
 
     private ImageView imgInitiative;
     private TextView tvTitle;
@@ -49,27 +56,35 @@ public class ShowInitiativeFragment extends Fragment implements ShowInitiativeCo
     private TextView tvTargetAmount;
     private ImageView imgUserCreator;
     private Initiative initiative;
-
+    private User userOwner;
 
     private TextView tvNoUserData;
     private RecyclerView rvUserJoined;
     private UserJoinedAdapter adapter;
 
+    private View coordinatorLayout;
     private View viewBottomSheet;
     private BottomSheetBehavior<View> bottomSheetBehavior;
-    private Button join;
-    private ImageButton chat;
+    private Button btnJoin;
+    private ImageButton imgBtnChat;
+
+    private boolean isHistory;
+    private boolean isCreated;
 
     private ShowInitiativeContract.Presenter presenter;
+
+    //endregion
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        //TODO Quizas quitar algo de CardView
         return inflater.inflate(R.layout.fragment_show_initiative, container, false);
     }
 
@@ -79,15 +94,32 @@ public class ShowInitiativeFragment extends Fragment implements ShowInitiativeCo
 
         Bundle bundle = getArguments();
         initiative = (Initiative) (bundle != null ? bundle.getSerializable(Initiative.TAG) : null);
+        isHistory = bundle != null && bundle.getBoolean(InitiativeFragment.TYPE_HISTORY);
+        isCreated = bundle != null && bundle.getBoolean(InitiativeFragment.TYPE_CREATED);
 
         initUI(view);
         initRecycler();
 
+        // When I come from InitiativeFragment
+        if(!isHistory)
+            showBottomSheetBehavior();
+        if(isCreated) {
+            imgBtnChat.setVisibility(View.GONE);
+            btnJoin.setText(R.string.show_initiative_go_to_chat);
+            btnJoin.setPaddingRelative((int) getResources().getDimension(R.dimen.default_dimen_large), 0, 0, 0);
+            btnJoin.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_chat,0,0,0);
+        }
+
+        setInitiative(initiative);
         setOnClickUI();
 
         presenter = new ShowInitiativePresenter(this);
     }
 
+    /**
+     *
+     * @param view
+     */
     private void initUI(@NonNull View view) {
         imgInitiative = view.findViewById(R.id.imgBtnInitiative);
         imgUserCreator = view.findViewById(R.id.imgUserCreator);
@@ -100,11 +132,21 @@ public class ShowInitiativeFragment extends Fragment implements ShowInitiativeCo
         tvTargetAmount = view.findViewById(R.id.tvTargetAmount);
         rvUserJoined = view.findViewById(R.id.rvUserJoined);
         tvNoUserData = view.findViewById(R.id.tvNoUserData);
+
+        coordinatorLayout = getActivity().findViewById(R.id.coordinator_main);
+        viewBottomSheet = coordinatorLayout.findViewById(R.id.bottomSheetJoinInitiative);
+        btnJoin = viewBottomSheet.findViewById(R.id.btnJoin);
+        imgBtnChat = viewBottomSheet.findViewById(R.id.btnChat);
+        bottomSheetBehavior = BottomSheetBehavior.from(viewBottomSheet);
     }
 
+    /**
+     *
+     * @param init
+     */
     private void setInitiative(Initiative init) {
         initiative = init;
-        imgInitiative.setImageBitmap(init.getImagen());
+        imgInitiative.setImageBitmap(init.getImagen() != null ? init.getImagen() : CommonUtils.getImagenInitiativeDefault(JointlyApplication.getContext()));
         tvTitle.setText(init.getName());
         tvDescription.setText(init.getDescription());
         tvLocation.setText(init.getLocation());
@@ -114,6 +156,9 @@ public class ShowInitiativeFragment extends Fragment implements ShowInitiativeCo
         tvTargetAmount.setText(init.getTarget_amount());
     }
 
+    /**
+     *
+     */
     private void initRecycler() {
         adapter = new UserJoinedAdapter(new ArrayList<>(), this);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext(), RecyclerView.HORIZONTAL, false);
@@ -121,40 +166,54 @@ public class ShowInitiativeFragment extends Fragment implements ShowInitiativeCo
         rvUserJoined.setAdapter(adapter);
     }
 
+    /**
+     *
+     */
     private void setOnClickUI() {
         imgUserCreator.setOnClickListener(v -> {
-            goToUserProfile(initiative.getCreated_by());
+            goToUserProfile(userOwner);
         });
-    }
 
-    private void showBottomSheetBehavior() {
-        viewBottomSheet = getActivity().findViewById(R.id.bottomSheetJoinInitiative);
-        join = viewBottomSheet.findViewById(R.id.btnJoin);
-        chat = viewBottomSheet.findViewById(R.id.btnChat);
-        bottomSheetBehavior = BottomSheetBehavior.from(viewBottomSheet);
-
-        join.setOnClickListener(v -> {
-            if (join.getText().toString().equals("Unirme")) {
-                presenter.joinInitiative(initiative);
-                Toast.makeText(getContext(), "Se ha unido a la iniciativa", Toast.LENGTH_SHORT).show();
+        btnJoin.setOnClickListener(v -> {
+            if(isCreated) {
+                goToChatFragment();
             } else {
-                presenter.unJoinInitiative(initiative);
-                Toast.makeText(getContext(), "Ha cancelado la participación a la iniciativa", Toast.LENGTH_SHORT).show();
+                presenter.joinInitiative(initiative);
             }
         });
 
-        chat.setOnClickListener(v -> {
-            Bundle bundle = new Bundle();
-
-            bundle.putLong(Initiative.TAG, initiative.getId());
-
-            NavHostFragment.findNavController(this).navigate(R.id.action_showInitiativeFragment_to_chatFragment, bundle);
+        imgBtnChat.setOnClickListener(v -> {
+            goToChatFragment();
         });
+    }
 
+    /**
+     *
+     */
+    private void goToChatFragment() {
+        Bundle bundle = new Bundle();
+        bundle.putLong(Initiative.TAG, initiative.getId());
+        NavHostFragment.findNavController(this).navigate(R.id.action_showInitiativeFragment_to_chatFragment, bundle);
+    }
+
+    /**
+     *
+     */
+    private void showBottomSheetBehavior() {
         if(bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_HIDDEN || bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_COLLAPSED)
             bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
     }
 
+    /**
+     *
+     */
+    private void hideBottomSheetBehavior() {
+        if(bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED) {
+            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+        }
+    }
+
+    //TODO no se que es esto, quizas para lo de notificaciones de chat
     private void initScheludeJob(Initiative initiative) {
         ComponentName serviceComponentName = new ComponentName(getContext(), BackgroundJobService.class);
         JobInfo.Builder builder = new JobInfo.Builder(0, serviceComponentName);
@@ -166,32 +225,20 @@ public class ShowInitiativeFragment extends Fragment implements ShowInitiativeCo
         JointlyApplication.jobScheduler = (JobScheduler) getContext().getSystemService(Context.JOB_SCHEDULER_SERVICE);
         JointlyApplication.jobScheduler.schedule(builder.build());
     }
-
-    private void cancelScheludeJob()
-    {
+    private void cancelScheludeJob() {
         if(JointlyApplication.jobScheduler != null)
             JointlyApplication.jobScheduler.cancel(0);
-    }
-
-    private void hideBottomSheetBehavior() {
-        bottomSheetBehavior = BottomSheetBehavior.from(viewBottomSheet);
-        if(bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED) {
-            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
-        }
     }
 
     @Override
     public void onStart() {
         super.onStart();
-        //Si vengo de Mis iniciativas
-        if(getArguments().getBoolean(InitiativeFragment.TYPE_HISTORY))
-            showBottomSheetBehavior();
 
-//        presenter.loadInitiative(idInitiative);
+        //TODO Quizar obtener desde firebase
         String email = JointlyPreferences.getInstance().getUser();
 
         if(email != null) {
-            presenter.loadUserStateJoined(email);
+            presenter.loadUserStateJoined(email, initiative.getId());
             presenter.loadUserOwner(initiative.getCreated_by());
             presenter.loadListUserJoined(initiative.getId());
         }
@@ -204,38 +251,96 @@ public class ShowInitiativeFragment extends Fragment implements ShowInitiativeCo
     }
 
     @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        menu.clear();
+        if(isCreated) {
+            menu.add(0, 1, 0, getString(R.string.menu_item_title_delete)).setIcon(R.drawable.ic_delete).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+            menu.add(0, 1, 1, getString(R.string.menu_item_title_edit)).setIcon(R.drawable.ic_edit).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+            menu.getItem(0).setOnMenuItemClickListener(item -> {
+                deleteInitiative();
+                return true;
+            });
+            menu.getItem(1).setOnMenuItemClickListener(item -> {
+                goToEditInitiative();
+                return true;
+            });
+        }
+    }
+
+    @Override
     public void onClick(View item) {
         User user = adapter.getUserItem(rvUserJoined.getChildAdapterPosition(item));
 
-        goToUserProfile(user.getEmail());
+        goToUserProfile(user);
     }
 
-    private void goToUserProfile(String user)
-    {
+    /**
+     *
+     * @param user
+     */
+    private void goToUserProfile(User user) {
         Bundle bundle = new Bundle();
-        bundle.putString(User.TAG, user);
+        bundle.putSerializable(User.TAG, user);
 
-        if(user.equals(JointlyPreferences.getInstance().getUser()))
+        //TODO Quizas obtener desde firebase
+        if(user.getEmail().equals(JointlyPreferences.getInstance().getUser()))
             NavHostFragment.findNavController(this).navigate(R.id.action_showInitiativeFragment_to_profileFragment);
         else
             NavHostFragment.findNavController(this).navigate(R.id.action_showInitiativeFragment_to_userProfileFragment, bundle);
     }
 
+    /**
+     *
+     * @param bundle
+     */
+    private void goToEditInitiative() {
+        Bundle bundle = new Bundle();
+        bundle.putSerializable(Initiative.TAG, initiative);
+        NavHostFragment.findNavController(this).navigate(R.id.action_initiativeFragment_to_manageInitiativeFragment, bundle);
+    }
+
+    /**
+     *
+     */
+    private void deleteInitiative() {
+        AlertDialog.Builder dialog = new AlertDialog.Builder(getActivity())
+                .setTitle(R.string.dialog_title_delete_initiative)
+                .setMessage(getString(R.string.dialog_message_delete_initiative) + initiative.getName())
+                .setIcon(R.drawable.ic_alert)
+                .setPositiveButton(R.string.dialog_positive_btn_delete_initiative, (dialog1, which) -> {
+                    presenter.delete(initiative);
+                })
+                .setNegativeButton(R.string.dialog_negative_btn_delete_initiative, (dialog1, which) -> {
+                    dialog1.dismiss();
+                });
+
+        dialog.show();
+    }
+
     @Override
     public void setJoined() {
-//        initScheludeJob(initiative);
-        join.setText("Cancelar");
+        btnJoin.setText(R.string.undo_user_join);
+        Snackbar.make(coordinatorLayout, getString(R.string.add_user_joined), Snackbar.LENGTH_SHORT).show();
+        imgBtnChat.setEnabled(true);
     }
 
     @Override
     public void setUnJoined() {
-//        cancelScheludeJob();
-        join.setText("Unirme");
+        btnJoin.setText(R.string.join_user_join);
+        Snackbar.make(coordinatorLayout, getString(R.string.delete_user_joined), Snackbar.LENGTH_SHORT).show();
+        imgBtnChat.setEnabled(true);
     }
 
     @Override
     public void setUserListEmpty() {
         tvNoUserData.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void setLoadUserStateJoined(boolean joined) {
+        imgBtnChat.setEnabled(joined);
+        btnJoin.setText((joined) ? R.string.undo_user_join : R.string.join_user_join);
     }
 
     @Override
@@ -248,17 +353,24 @@ public class ShowInitiativeFragment extends Fragment implements ShowInitiativeCo
 
     @Override
     public void setLoadUserOwner(User user) {
-        imgUserCreator.setImageBitmap(user.getImagen());
+        this.userOwner = user;
+        imgUserCreator.setImageBitmap(user.getImagen() != null ? user.getImagen() : CommonUtils.getImagenUserDefault(JointlyApplication.getContext()));
     }
 
     @Override
-    public void onSuccessLoad(Initiative initiative) {
-        setInitiative(initiative);
+    public void setCannotDeleted() {
+        Snackbar.make(coordinatorLayout, getString(R.string.error_initiative_user_joined), Snackbar.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void setSuccessDeleted() {
+        Snackbar.make(coordinatorLayout, String.format(getString(R.string.initiative_success_deleted), initiative.getName()), Snackbar.LENGTH_SHORT).show();
+        NavHostFragment.findNavController(this).popBackStack();
     }
 
     @Override
     public void onError(String message) {
-        Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
+        Snackbar.make(coordinatorLayout, message != null ? message : getString(R.string.default_error_action), Snackbar.LENGTH_SHORT).show();
     }
 
     @Override

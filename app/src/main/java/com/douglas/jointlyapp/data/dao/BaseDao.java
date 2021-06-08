@@ -1,5 +1,7 @@
 package com.douglas.jointlyapp.data.dao;
 
+import android.util.Log;
+
 import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
@@ -7,6 +9,8 @@ import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 import androidx.room.Transaction;
 import androidx.room.Update;
+
+import com.douglas.jointlyapp.data.model.UserFollowUser;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,7 +46,10 @@ public interface BaseDao<T> {
         List<Long> insertResult = insert(objList);
         List<T> updateList = new ArrayList<>();
 
+        insertResult.forEach(x-> Log.e("TAG", "Insert -------------------> " + x));
+
         for (int i = 0; i < insertResult.size(); i++) {
+            Log.e("TAG", "Tipo ------> "+objList.get(0).getClass().toString());
             if (insertResult.get(i) == -1) {
                 updateList.add(objList.get(i));
             }

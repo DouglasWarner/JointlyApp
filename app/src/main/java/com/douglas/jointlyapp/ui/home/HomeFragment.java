@@ -35,6 +35,8 @@ import java.util.List;
  */
 public class HomeFragment extends Fragment implements HomeContract.View, HomeAdapter.ManageInitiative {
 
+    //region Variables
+
     private LinearLayout llLoading;
     private LinearLayout llNoData;
     private RecyclerView rvInitiative;
@@ -43,6 +45,8 @@ public class HomeFragment extends Fragment implements HomeContract.View, HomeAda
     private Initiative initiative;
     private SwipeRefreshLayout swipeRefreshLayout;
     private TextView tvNoConnection;
+
+    //endregion
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -62,7 +66,6 @@ public class HomeFragment extends Fragment implements HomeContract.View, HomeAda
         super.onViewCreated(view, savedInstanceState);
 
         initUI(view);
-
         initRecycler();
 
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -83,6 +86,10 @@ public class HomeFragment extends Fragment implements HomeContract.View, HomeAda
         presenter = new HomePresenter(this);
     }
 
+    /**
+     *
+     * @param view
+     */
     private void initUI(@NonNull View view) {
         llLoading = view.findViewById(R.id.llLoading);
         llNoData = view.findViewById(R.id.llNoDataCreatedInProgress);
@@ -91,8 +98,11 @@ public class HomeFragment extends Fragment implements HomeContract.View, HomeAda
         tvNoConnection = getActivity().findViewById(R.id.tvNoConnection);
     }
 
+    /**
+     *
+     */
     private void initRecycler() {
-        adapter = new HomeAdapter(new ArrayList<>(), new ArrayList<>(), this);
+        adapter = new HomeAdapter(new ArrayList<>(), new ArrayList<>(), new ArrayList<>(),this);
 
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext(), RecyclerView.VERTICAL, false);
         rvInitiative.setLayoutManager(layoutManager);
@@ -108,7 +118,6 @@ public class HomeFragment extends Fragment implements HomeContract.View, HomeAda
     @Override
     public void setNoData() {
         llNoData.setVisibility(View.VISIBLE);
-        tvNoConnection.setVisibility(JointlyApplication.getConnection() ? View.GONE : View.VISIBLE);
     }
 
     @Override
@@ -122,24 +131,28 @@ public class HomeFragment extends Fragment implements HomeContract.View, HomeAda
     }
 
     @Override
-    public void onSuccess(List<Initiative> list, List<User> userOwners) {
+    public void onSuccess(List<Initiative> list, List<User> userOwners, List<Long> countUsersJoined) {
         if(llNoData.getVisibility() == View.VISIBLE)
             llNoData.setVisibility(View.GONE);
 
-        tvNoConnection.setVisibility(JointlyApplication.getConnection() ? View.GONE : View.VISIBLE);
+        tvNoConnection.setVisibility(JointlyApplication.getConnection() && JointlyApplication.isIsSyncronized() ? View.GONE : View.VISIBLE);
 
-        adapter.update(list, userOwners);
+        adapter.update(list, userOwners, countUsersJoined);
         updateListOrderByDefault();
     }
 
     @Override
     public void showOnError(String message) {
-        Snackbar.make(getView(), message != null ? message : getString(R.string.default_error), Snackbar.LENGTH_SHORT).show();
+        Snackbar.make(getActivity().findViewById(R.id.coordinator_main), message != null ? message : getString(R.string.default_error_action), Snackbar.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onSync() {
+        swipeRefreshLayout.setRefreshing(!swipeRefreshLayout.isRefreshing());
     }
 
     private void updateListOrderByDefault() {
-        switch (JointlyPreferences.getInstance().getOrderByFavorite())
-        {
+        switch (JointlyPreferences.getInstance().getOrderByFavorite()) {
             case "date":
                 adapter.sortByDate();
                 break;
@@ -173,9 +186,7 @@ public class HomeFragment extends Fragment implements HomeContract.View, HomeAda
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-
-        switch (item.getItemId())
-        {
+        switch (item.getItemId()) {
             case R.id.action_order_initiative_by_date:
                 adapter.sortByDate();
                 break;
@@ -186,7 +197,6 @@ public class HomeFragment extends Fragment implements HomeContract.View, HomeAda
                 adapter.sortByUsersJoineds();
                 break;
         }
-
         return super.onOptionsItemSelected(item);
     }
 }

@@ -8,12 +8,19 @@ import android.widget.TextView;
 
 import com.douglas.jointlyapp.R;
 import com.douglas.jointlyapp.ui.JointlyApplication;
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
 
 public class CheckConnectionBroadCast extends BroadcastReceiver {
 
     TextView tvNoConnection;
-    public CheckConnectionBroadCast(TextView tvNoConnection) {
+    BottomSheetBehavior<View> bottomSheet;
+
+    public CheckConnectionBroadCast() {
+    }
+
+    public CheckConnectionBroadCast(TextView tvNoConnection, BottomSheetBehavior<View> view) {
         this.tvNoConnection = tvNoConnection;
+        this.bottomSheet = view;
     }
 
     @Override

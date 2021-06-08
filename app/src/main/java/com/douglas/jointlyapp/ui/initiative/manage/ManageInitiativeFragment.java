@@ -2,22 +2,14 @@ package com.douglas.jointlyapp.ui.initiative.manage;
 
 import android.Manifest;
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Paint;
 import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
-import android.icu.text.TimeZoneFormat;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
-import android.os.Parcelable;
-import android.util.TimeUtils;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -33,14 +25,11 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
-import androidx.navigation.Navigation;
 import androidx.navigation.fragment.NavHostFragment;
-import androidx.navigation.ui.NavigationUI;
 
 import com.douglas.jointlyapp.R;
 import com.douglas.jointlyapp.data.model.Initiative;
 import com.douglas.jointlyapp.ui.JointlyApplication;
-import com.douglas.jointlyapp.ui.Notifications;
 import com.douglas.jointlyapp.ui.dialog.DatePickerFragment;
 import com.douglas.jointlyapp.ui.dialog.TimePickerFragment;
 import com.douglas.jointlyapp.ui.preferences.JointlyPreferences;
@@ -50,14 +39,9 @@ import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
-import java.sql.Time;
-import java.text.Format;
 import java.text.SimpleDateFormat;
-import java.time.format.DateTimeFormatter;
 import java.util.GregorianCalendar;
 import java.util.Locale;
-import java.util.TimeZone;
-import java.util.Timer;
 
 public class ManageInitiativeFragment extends Fragment implements ManageInitiativeContract.View {
 
@@ -85,6 +69,7 @@ public class ManageInitiativeFragment extends Fragment implements ManageInitiati
     private ManageInitiativePresenter presenter;
 
     private FloatingActionButton floatingActionButton;
+    private View coordinatorLayout;
     //endregion
 
     @Override
@@ -105,21 +90,27 @@ public class ManageInitiativeFragment extends Fragment implements ManageInitiati
 
         Bundle bundle = getArguments();
 
-        initiative = (Initiative) bundle.getSerializable(Initiative.TAG);
+        initiative = bundle != null ? (Initiative) bundle.getSerializable(Initiative.TAG) : null;
 
         isEditing = initiative != null;
 
         initUI(view);
         setOnClickUI();
 
+        if(isEditing) {
+            setInitiative(initiative);
+            setTextInputEditTextNoEnable();
+        }
+
         manageFloatingButton();
 
         presenter = new ManageInitiativePresenter(this);
-
-        if(isEditing)
-            setInitiative(initiative);
     }
 
+    /**
+     *
+     * @param view
+     */
     private void initUI(@NonNull View view) {
         imgBtnImagen = view.findViewById(R.id.imgBtnInitiative);
         tilName = view.findViewById(R.id.tilNameInitiative);
@@ -138,17 +129,19 @@ public class ManageInitiativeFragment extends Fragment implements ManageInitiati
         tieTargetTime = view.findViewById(R.id.tieTargetTime);
         tieTargetAmount = view.findViewById(R.id.tieTargetAmount);
 
-        floatingActionButton = getActivity().findViewById(R.id.faButton);
+        coordinatorLayout = getActivity().findViewById(R.id.coordinator_main);
+        floatingActionButton = coordinatorLayout.findViewById(R.id.faButton);
     }
 
+    /**
+     *
+     */
     private void setOnClickUI() {
         imgBtnImagen.setOnClickListener(v -> {
-            if(ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)
-            {
+            if(ActivityCompat.checkSelfPermission(JointlyApplication.getContext(), Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
                 openGallery();
             }
-            else
-            {
+            else {
                 requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, JointlyApplication.REQUEST_PERMISSION_CODE);
             }
         });
@@ -163,23 +156,23 @@ public class ManageInitiativeFragment extends Fragment implements ManageInitiati
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        if(requestCode == JointlyApplication.REQUEST_PERMISSION_CODE)
-        {
-            if(permissions.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
-            {
+        if(requestCode == JointlyApplication.REQUEST_PERMISSION_CODE) {
+            if(permissions.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 openGallery();
-            }
-            else
-            {
+            } else {
                 Toast.makeText(getActivity(), "Se necesitan los permisos para abrir la galeria", Toast.LENGTH_SHORT).show();
             }
         }
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
+    /**
+     *
+     * @param init
+     */
     private void setInitiative(Initiative init) {
         //TODO mirar porque me da exception de tamaño de memoria
-        init.setImagen(init.getImagen() != null ? init.getImagen() : CommonUtils.getImagenInitiativeDefault(getContext()));
+        init.setImagen(init.getImagen() != null ? init.getImagen() : CommonUtils.getImagenInitiativeDefault(JointlyApplication.getContext()));
 
         imgBtnImagen.setImageBitmap(init.getImagen());
         tieName.setText(init.getName());
@@ -193,6 +186,9 @@ public class ManageInitiativeFragment extends Fragment implements ManageInitiati
         initiative = init;
     }
 
+    /**
+     *
+     */
     private void setTextInputEditTextNoEnable() {
         tieName.setEnabled(false);
         tilName.setHelperTextEnabled(false);
@@ -200,58 +196,48 @@ public class ManageInitiativeFragment extends Fragment implements ManageInitiati
         tilTargetAmount.setHelperTextEnabled(false);
     }
 
+    /**
+     *
+     */
     private void manageFloatingButton() {
-        if(isEditing)
-        {
+        if(isEditing) {
             floatingActionButton.setOnClickListener(v -> {
                 editInitiative();
             });
-        }
-        else
-        {
+        } else {
             floatingActionButton.setVisibility(View.GONE);
         }
     }
 
+    //TODO quizas obtener el usuario de firebase
+    /**
+     *
+     */
     private void editInitiative() {
-
-        String user = JointlyPreferences.getInstance().getUser();
+        String created_by = JointlyPreferences.getInstance().getUser();
 
         presenter.editInitiative(initiative.getId(), initiative.getName(), initiative.getCreated_at(), tieTargetDate.getText().toString(),
                 tieTargetTime.getText().toString(), tieDescription.getText().toString(), tieTargetArea.getText().toString(), tieLocation.getText().toString(),
-                initiative.getImagen(), initiative.getTarget_amount(), initiative.getStatus(), user, initiative.getRef_code());
+                initiative.getImagen(), initiative.getTarget_amount(), created_by, initiative.getRef_code());
 
     }
 
-    private void addInitiative()
-    {
+    /**
+     *
+     */
+    private void addInitiative() {
         String user = JointlyPreferences.getInstance().getUser();
 
         if(imageInitiative == null)
-                imageInitiative = CommonUtils.getImagenInitiativeDefault(getActivity());
+            imageInitiative = CommonUtils.getImagenInitiativeDefault(JointlyApplication.getContext());
 
-        initiative = new Initiative(tieName.getText().toString(), CommonUtils.getDateNow(), String.format("%s %s", tieTargetDate.getText().toString(), tieTargetTime.getText().toString()), tieDescription.getText().toString(), tieTargetArea.getText().toString(), tieLocation.getText().toString(),
-                imageInitiative, tieTargetAmount.getText().toString(), "A", user, "");
+        initiative = new Initiative(tieName.getText().toString(), CommonUtils.getDateNow(), String.format("%s %s", tieTargetDate.getText().toString(), tieTargetTime.getText().toString()),
+                tieDescription.getText().toString(), tieTargetArea.getText().toString(), tieLocation.getText().toString(),
+                imageInitiative, tieTargetAmount.getText().toString(), user);
 
         presenter.addInitiative(tieName.getText().toString(), tieTargetDate.getText().toString(),
-                tieTargetTime.getText().toString(), tieDescription.getText().toString(), tieTargetArea.getText().toString(), tieLocation.getText().toString(),
-                imageInitiative, tieTargetAmount.getText().toString(), "A", user);
-    }
-
-    private void deleteInitiative()
-    {
-        AlertDialog.Builder dialog = new AlertDialog.Builder(getActivity())
-                .setTitle("Eliminando iniciativa")
-                .setMessage("Eliminar iniciativa: " + initiative.getName())
-                .setIcon(R.drawable.ic_alert)
-                .setPositiveButton("Aceptar", (dialog1, which) -> {
-                    presenter.delete(initiative);
-                })
-                .setNegativeButton("Cancelar", (dialog1, which) -> {
-                    dialog1.dismiss();
-                });
-
-        dialog.show();
+                tieTargetTime.getText().toString(), tieDescription.getText().toString(), tieTargetArea.getText().toString(),
+                tieLocation.getText().toString(), imageInitiative, tieTargetAmount.getText().toString(), user);
     }
 
     /**
@@ -269,7 +255,7 @@ public class ManageInitiativeFragment extends Fragment implements ManageInitiati
         timePickerFragment.show(getActivity().getSupportFragmentManager(), "timePicker");
     }
 
-
+    //TODO exception de memoria view
 //    public static StoreDetailFragment newInstance(Store store) {
 //        StoreDetailFragment fragment = new StoreDetailFragment();
 //        Bundle args = new Bundle();
@@ -295,6 +281,9 @@ public class ManageInitiativeFragment extends Fragment implements ManageInitiati
         datePickerFragment.show(getActivity().getSupportFragmentManager(), "datePicker");
     }
 
+    /**
+     *
+     */
     private void openGallery() {
         Intent intent = new Intent(Intent.ACTION_PICK);
         intent.setType("image/*");
@@ -303,16 +292,12 @@ public class ManageInitiativeFragment extends Fragment implements ManageInitiati
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        if(requestCode == JointlyApplication.REQUEST_IMAGE_GALLERY)
-        {
-            if(resultCode == Activity.RESULT_OK && data != null)
-            {
+        if(requestCode == JointlyApplication.REQUEST_IMAGE_GALLERY) {
+            if(resultCode == Activity.RESULT_OK && data != null) {
                 Uri imagen = data.getData();
                 imgBtnImagen.setImageURI(imagen);
                 imageInitiative = ((BitmapDrawable)imgBtnImagen.getDrawable()).getBitmap();
-            }
-            else
-            {
+            } else {
                 Toast.makeText(getActivity(), "No se ha seleccionado ninguna imagen", Toast.LENGTH_SHORT).show();
             }
         }
@@ -323,99 +308,73 @@ public class ManageInitiativeFragment extends Fragment implements ManageInitiati
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
         menu.clear();
-        if(!isEditing) {
-            menu.add(0, 1, 0, "Añadir").setIcon(R.drawable.ic_check).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
-            menu.getItem(0).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
-                @Override
-                public boolean onMenuItemClick(MenuItem item) {
-                    addInitiative();
-                    return true;
-                }
-            });
-        } else {
-            menu.add(0, 1, 0, "Eliminar").setIcon(R.drawable.ic_delete).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
-            menu.getItem(0).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
-                @Override
-                public boolean onMenuItemClick(MenuItem item) {
-                    deleteInitiative();
-                    return true;
-                }
-            });
-        }
+        menu.add(0, 1, 0, getString(R.string.menu_item_title_add)).setIcon(R.drawable.ic_check).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+        menu.getItem(0).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                addInitiative();
+                return true;
+            }
+        });
+
     }
 
     @Override
     public void setNameEmpty() {
-        tilName.setError("Se requiere un nombre");
+        tilName.setError(getString(R.string.error_initiative_name_empty));
     }
 
     @Override
     public void setNameFormatError() {
-        tilName.setError("El nombre debe tener entre 5 y 40 caracteres");
+        tilName.setError(getString(R.string.error_initiative_name_format));
     }
 
     @Override
     public void setLocationEmpty() {
-        tilLocation.setError("Se requiere una localidad");
+        tilLocation.setError(getString(R.string.error_initiative_location_empty));
     }
 
     @Override
     public void setTargetAreaEmpty() {
-        tilTargetArea.setError("Se requiere un area objetivo");
+        tilTargetArea.setError(getString(R.string.error_initiative_area_empty));
     }
 
     @Override
     public void setTargetDateEmpty() {
-        tilTargetDate.setError("Se requiere una fecha");
+        tilTargetDate.setError(getString(R.string.error_initiative_date_empty));
     }
 
     @Override
     public void setTargetDateBeforeNowError() {
-        tilTargetDate.setError("La fecha debe ser de hoy hacia el futuro");
+        tilTargetDate.setError(getString(R.string.error_initiative_date_valid));
     }
 
     @Override
     public void setTargetTimeEmpty() {
-        tilTargetTime.setError("Se requiere una hora");
+        tilTargetTime.setError(getString(R.string.error_initiative_time_empty));
     }
 
     @Override
     public void setTargetAmountEmpty() {
-        tilTargetAmount.setError("Se requiere una cantidad prevista a modo de información");
+        tilTargetAmount.setError(getString(R.string.error_initiative_amount_empty));
     }
 
     @Override
     public void setTargetAmountFormatError() {
-        tilTargetAmount.setError("No puede ser 0 o inferior");
+        tilTargetAmount.setError(getString(R.string.error_initiative_amount_format));
     }
 
-    @Override
-    public void setCannotDeleted() {
-        Toast.makeText(getContext(), "Imposible eliminar porque ya hay usuarios unidos", Toast.LENGTH_SHORT).show();
-    }
-
-    @Override
-    public void setSuccessDeleted() {
-        Toast.makeText(getContext(), "Iniciativa "+initiative.getName()+" eliminada", Toast.LENGTH_SHORT).show();
-        NavHostFragment.findNavController(this).popBackStack();
-    }
-
-    @Override
-    public void onSuccessLoad(Initiative initiative) {
-        setInitiative(initiative);
-        setTextInputEditTextNoEnable();
-    }
-
+    //TODO quizar aqui lanzar el notification push para todos los dispositivos
     @Override
     public void onSuccess(Initiative init) {
         if(isEditing) {
-            Snackbar.make(getView(), "Iniciativa "+init.getName()+" editada", Snackbar.LENGTH_SHORT).show();
+            Snackbar.make(coordinatorLayout, String.format(getString(R.string.initiative_success_edited), init.getName()), Snackbar.LENGTH_SHORT).show();
 //            Toast.makeText(getContext(), "Iniciativa "+init.getName()+" editada", Toast.LENGTH_SHORT).show();
         } else {
             initiative = init;
 //            if(JointlyPreferences.getInstance().getNotificationAvaible())
 //                Notifications.showNotificationAddInitiative(getActivity(), initiative.getId());
-            Snackbar.make(getView(), "Iniciativa "+init.getName()+" añadida", Snackbar.LENGTH_SHORT).show();
+            Snackbar.make(coordinatorLayout, String.format(getString(R.string.initiative_success_created), init.getName()), Snackbar.LENGTH_SHORT).show();
 //            Toast.makeText(getContext(), "Iniciativa "+init.getName()+" añadida", Toast.LENGTH_SHORT).show();
         }
 
@@ -424,14 +383,19 @@ public class ManageInitiativeFragment extends Fragment implements ManageInitiati
     }
 
     @Override
-    public void onUnsuccess(String message) {
-        Snackbar.make(getView(), message, Snackbar.LENGTH_SHORT).show();
+    public void onUnsuccess() {
+        if(isEditing) {
+            Snackbar.make(coordinatorLayout, getString(R.string.error_edit_initiative), Snackbar.LENGTH_SHORT).show();
 //        Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
+        } else {
+            Snackbar.make(coordinatorLayout, getString(R.string.error_insert_initiative), Snackbar.LENGTH_SHORT).show();
+//        Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
+        }
     }
 
     @Override
     public void setOnError(String message) {
-        Snackbar.make(getView(), message, Snackbar.LENGTH_SHORT).show();
+        Snackbar.make(coordinatorLayout, message != null ? message : getString(R.string.default_error_action), Snackbar.LENGTH_SHORT).show();
     }
 
     @Override

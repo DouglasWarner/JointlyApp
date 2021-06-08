@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.douglas.jointlyapp.R;
 import com.douglas.jointlyapp.ui.login.LoginActivity;
 import com.douglas.jointlyapp.ui.preferences.JointlyPreferences;
+import com.douglas.jointlyapp.ui.sync.SyncFromAPI;
 
 public class SplashActivity extends AppCompatActivity {
 
@@ -29,12 +30,15 @@ public class SplashActivity extends AppCompatActivity {
         super.onStart();
 
         new Thread(() -> {
-            JointlyApplication.setConnection(JointlyApplication.syncDataFromAPI());
+            SyncFromAPI syncFromAPI = new SyncFromAPI(() -> null);
 
-            if(!JointlyApplication.getConnection()) {
-                initNoConnectionActivity();
-                return;
-            }
+            syncFromAPI.run();
+
+            //TODO Volver a activar
+//            if(!JointlyApplication.getConnection()) {
+//                initNoConnectionActivity();
+//                return;
+//            }
 
             if(!JointlyPreferences.getInstance().getRemember())
                 initLogin();

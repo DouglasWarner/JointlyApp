@@ -21,7 +21,7 @@ public class InitiativeAdapter extends RecyclerView.Adapter<InitiativeAdapter.Vi
 
     public interface ManageInitiative
     {
-        void onClick(View initiative, String status);
+        void onClick(View view, String status);
     }
 
     private Context context;

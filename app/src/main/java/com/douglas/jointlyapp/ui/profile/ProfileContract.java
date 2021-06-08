@@ -6,8 +6,7 @@ import com.douglas.jointlyapp.ui.base.BaseProfileView;
 
 public interface ProfileContract {
 
-    interface View extends BaseProfileView<User>
-    {
+    interface View extends BaseProfileView<User> {
         void setLocationEmpty();
         void setPhoneEmpty();
         void setDescriptionEmpty();
@@ -16,8 +15,7 @@ public interface ProfileContract {
         void setInitiativeJointedEmpty();
     }
 
-    interface Presenter extends BasePresenter
-    {
+    interface Presenter extends BasePresenter {
         void loadUser(String userEmail);
         void updateImage(User user);
     }

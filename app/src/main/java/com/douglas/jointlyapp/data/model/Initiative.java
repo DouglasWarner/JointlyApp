@@ -5,11 +5,14 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
+import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.ForeignKey;
 import androidx.room.Ignore;
 import androidx.room.Index;
 import androidx.room.PrimaryKey;
+
+import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
 
@@ -23,33 +26,61 @@ public class Initiative implements Comparable<Initiative>, Serializable, Parcela
 
     //region Variables
 
+    //TODO quizas autoincrement
+    @SerializedName("id")
     @NonNull
     @PrimaryKey
     private long id;
+
+    @SerializedName("name")
     @NonNull
     private String name;
-    @NonNull
+
+    @SerializedName("created_at")
+    @ColumnInfo(defaultValue = "CURRENT_TIMESTAMP")
     private String created_at;
+
+    @SerializedName("target_date")
     @NonNull
     private String target_date;
+
+    @SerializedName("description")
     private String description;
+
+    @SerializedName("target_area")
     @NonNull
     private String target_area;
+
+    @SerializedName("location")
     @NonNull
     private String location;
+
+    @SerializedName("imagen")
     private Bitmap imagen;
+
+    @SerializedName("target_amount")
     @NonNull
     private String target_amount;
-    private String status;
-    @NonNull
-    private String created_by;
-    @NonNull
-    private String ref_code;
-    private boolean is_deleted;
-    private boolean is_sync;
 
     @Ignore
-    private int countUserJoined;
+    @SerializedName("status")
+    private String status;
+
+    @SerializedName("created_by")
+    @NonNull
+    private String created_by;
+
+    @SerializedName("ref_code")
+    @NonNull
+    private String ref_code;
+
+    @SerializedName("is_deleted")
+    @ColumnInfo(defaultValue = "0")
+    private boolean is_deleted;
+
+    @SerializedName("is_sync")
+    @ColumnInfo(defaultValue = "0")
+    private boolean is_sync;
 
     //endregion
 
@@ -72,7 +103,7 @@ public class Initiative implements Comparable<Initiative>, Serializable, Parcela
 
     @Ignore
     public Initiative(String name, String created_at, String target_date, String description, String target_area,
-                      String location, Bitmap imagen, String target_amount, String status, String created_by, String ref_code) {
+                      String location, Bitmap imagen, String target_amount, String created_by) {
         this.name = name;
         this.created_at = created_at;
         this.target_date = target_date;
@@ -81,7 +112,20 @@ public class Initiative implements Comparable<Initiative>, Serializable, Parcela
         this.location = location;
         this.imagen = imagen;
         this.target_amount = target_amount;
-        this.status = status;
+        this.created_by = created_by;
+    }
+
+    @Ignore
+    public Initiative(String name, String created_at, String target_date, String description, String target_area,
+                      String location, Bitmap imagen, String target_amount, String created_by, String ref_code) {
+        this.name = name;
+        this.created_at = created_at;
+        this.target_date = target_date;
+        this.description = description;
+        this.target_area = target_area;
+        this.location = location;
+        this.imagen = imagen;
+        this.target_amount = target_amount;
         this.created_by = created_by;
         this.ref_code = ref_code;
     }
@@ -97,11 +141,11 @@ public class Initiative implements Comparable<Initiative>, Serializable, Parcela
      * @param location
      * @param imagen
      * @param target_amount
-     * @param status
      * @param created_by
      */
     public Initiative(long id, String name, String created_at, String target_date, String description, String target_area,
-                      String location, Bitmap imagen, String target_amount, String status, String created_by, String ref_code, boolean is_deleted) {
+                      String location, Bitmap imagen, String target_amount, String created_by, String ref_code,
+                      boolean is_deleted, boolean is_sync) {
         this.id = id;
         this.name = name;
         this.created_at = created_at;
@@ -111,10 +155,10 @@ public class Initiative implements Comparable<Initiative>, Serializable, Parcela
         this.location = location;
         this.imagen = imagen;
         this.target_amount = target_amount;
-        this.status = status;
         this.created_by = created_by;
         this.ref_code = ref_code;
         this.is_deleted = is_deleted;
+        this.is_sync = is_sync;
     }
 
     @Ignore
@@ -132,7 +176,7 @@ public class Initiative implements Comparable<Initiative>, Serializable, Parcela
         created_by = in.readString();
         ref_code = in.readString();
         is_deleted = in.readByte() != 0;
-        countUserJoined = in.readInt();
+        is_sync = in.readByte() != 0;
     }
 
     //endregion
@@ -249,15 +293,7 @@ public class Initiative implements Comparable<Initiative>, Serializable, Parcela
         this.ref_code = ref_code;
     }
 
-    public int getCountUserJoined() {
-        return countUserJoined;
-    }
-
-    public void setCountUserJoined(int countUserJoined) {
-        this.countUserJoined = countUserJoined;
-    }
-
-    public boolean isIs_deleted() {
+    public boolean getIs_deleted() {
         return is_deleted;
     }
 
@@ -265,7 +301,15 @@ public class Initiative implements Comparable<Initiative>, Serializable, Parcela
         this.is_deleted = is_deleted;
     }
 
-    //endregion
+    public boolean getIs_sync() {
+        return is_sync;
+    }
+
+    public void setIs_sync(boolean is_sync) {
+        this.is_sync = is_sync;
+    }
+
+//endregion
 
     @Override
     public boolean equals(Object o) {
@@ -294,7 +338,6 @@ public class Initiative implements Comparable<Initiative>, Serializable, Parcela
                 ", location='" + location + '\'' +
                 ", imagen=" + imagen +
                 ", targetAmount='" + target_amount + '\'' +
-                ", status='" + status + '\'' +
                 ", created_by='" + created_by + '\'' +
                 ", ref_code='" + ref_code + '\'' +
                 '}';
@@ -325,5 +368,6 @@ public class Initiative implements Comparable<Initiative>, Serializable, Parcela
         dest.writeString(created_by);
         dest.writeString(ref_code);
         dest.writeByte((byte)(is_deleted ? 1:0));
+        dest.writeByte((byte)(is_sync ? 1:0));
     }
 }

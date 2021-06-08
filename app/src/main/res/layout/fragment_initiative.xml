@@ -18,8 +18,8 @@
             android:layout_height="wrap_content"
             android:text="@string/tvCreated"
             style="@style/TextOnPrimary"
-            android:textSize="25sp"
-            android:layout_margin="10dp"
+            android:textSize="@dimen/default_text_size_extra_large"
+            android:layout_margin="@dimen/default_margin_medium"
             android:clickable="true"
             android:drawableEnd="@drawable/ic_arrow_up" />
 
@@ -41,26 +41,26 @@
                     style="@style/SubTextOnPrimary"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="20dp"
-                    android:layout_marginTop="10dp"
+                    android:layout_marginStart="@dimen/default_margin_extralarge"
+                    android:layout_marginTop="@dimen/default_margin_medium"
                     android:text="@string/tvCreatedInProgress"
-                    android:textSize="18sp" />
+                    android:textSize="@dimen/default_text_size_large" />
 
                 <LinearLayout
                     android:id="@+id/llNoDataCreatedInProgress"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:orientation="vertical"
-                    android:visibility="gone">
+                    android:visibility="visible">
 
                     <TextView
                         android:id="@+id/tvNoDataCreatedInProgress"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:layout_marginBottom="20dp"
+                        android:layout_marginBottom="@dimen/default_margin_extralarge"
                         android:gravity="center"
                         android:text="@string/tvNoDataCreatedInProgress"
-                        android:textSize="20sp" />
+                        android:textSize="@dimen/default_text_size_medium" />
                 </LinearLayout>
 
                 <androidx.recyclerview.widget.RecyclerView
@@ -79,10 +79,10 @@
                     style="@style/SubTextOnPrimary"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="20dp"
-                    android:layout_marginTop="10dp"
+                    android:layout_marginStart="@dimen/default_margin_extralarge"
+                    android:layout_marginTop="@dimen/default_margin_medium"
                     android:text="@string/tvCreatedHistory"
-                    android:textSize="18sp" />
+                    android:textSize="@dimen/default_text_size_large" />
 
                 <LinearLayout
                     android:id="@+id/llNoDataCreatedHistory"
@@ -95,10 +95,10 @@
                         android:id="@+id/tvNoDataCreatedHistory"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:layout_marginBottom="20dp"
+                        android:layout_marginBottom="@dimen/default_margin_extralarge"
                         android:gravity="center"
                         android:text="@string/tvNoDataCreatedHistory"
-                        android:textSize="20sp" />
+                        android:textSize="@dimen/default_text_size_medium" />
                 </LinearLayout>
 
                 <androidx.recyclerview.widget.RecyclerView
@@ -115,8 +115,8 @@
             android:layout_height="wrap_content"
             android:text="@string/tvJoined"
             style="@style/TextOnPrimary"
-            android:textSize="25sp"
-            android:layout_margin="10dp"
+            android:textSize="@dimen/default_text_size_extra_large"
+            android:layout_margin="@dimen/default_margin_medium"
             android:drawableEnd="@drawable/ic_arrow_up"
             android:clickable="true"/>
 
@@ -138,10 +138,10 @@
                     style="@style/SubTextOnPrimary"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="20dp"
-                    android:layout_marginTop="10dp"
+                    android:layout_marginStart="@dimen/default_margin_extralarge"
+                    android:layout_marginTop="@dimen/default_margin_medium"
                     android:text="@string/tvJoinedInProgress"
-                    android:textSize="18sp" />
+                    android:textSize="@dimen/default_text_size_large" />
 
                 <LinearLayout
                     android:id="@+id/llNoDataJoinedInProgress"
@@ -154,10 +154,10 @@
                         android:id="@+id/tvNoDataJoinedInProgress"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:layout_marginBottom="20dp"
+                        android:layout_marginBottom="@dimen/default_margin_extralarge"
                         android:gravity="center"
                         android:text="@string/tvNoDataJoinedInProgress"
-                        android:textSize="20sp" />
+                        android:textSize="@dimen/default_text_size_medium" />
                 </LinearLayout>
 
                 <androidx.recyclerview.widget.RecyclerView
@@ -176,10 +176,10 @@
                     style="@style/SubTextOnPrimary"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="20dp"
-                    android:layout_marginTop="10dp"
+                    android:layout_marginStart="@dimen/default_margin_extralarge"
+                    android:layout_marginTop="@dimen/default_margin_medium"
                     android:text="@string/tvJoinedHistory"
-                    android:textSize="18sp" />
+                    android:textSize="@dimen/default_text_size_large" />
 
                 <LinearLayout
                     android:id="@+id/llNoDataJoinedHistory"
@@ -192,10 +192,10 @@
                         android:id="@+id/tvNoDataJoinedHistory"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:layout_marginBottom="20dp"
+                        android:layout_marginBottom="@dimen/default_margin_extralarge"
                         android:gravity="center"
                         android:text="@string/tvNoDataJoinedHistory"
-                        android:textSize="20sp" />
+                        android:textSize="@dimen/default_text_size_medium" />
                 </LinearLayout>
 
                 <androidx.recyclerview.widget.RecyclerView

@@ -2,32 +2,28 @@ package com.douglas.jointlyapp.ui.showuserprofile;
 
 import com.douglas.jointlyapp.data.model.Initiative;
 import com.douglas.jointlyapp.data.model.User;
-import com.douglas.jointlyapp.ui.base.BaseListView;
 import com.douglas.jointlyapp.ui.base.BasePresenter;
-import com.douglas.jointlyapp.ui.base.BaseProfileView;
+
+import java.util.List;
 
 public interface ShowUserProfileContract {
 
-    interface View extends BaseProfileView<User>, BaseListView<Initiative>
-    {
-        void setLocationEmpty();
-        void setPhoneEmpty();
-        void setDescriptionEmpty();
-        void setUserFollowersEmpty();
+    interface View {
         void setInitiativeCreatedEmpty();
         void setInitiativeJointedEmpty();
-        void setInitiativeInProgressEmptyError();
         void setSuccessUnFollow();
         void setSuccessFollow();
-        void setUserFollowed();
+        void setUserStateFollow(boolean follow);
+        void setCountUserFollow(long count);
+        void setCountUserParticipate(long count);
+        void onSuccess(List<Initiative> listInitiativesCreated, List<Initiative> listInitiativesJoined);
+        void onError(String message);
     }
 
-    interface Presenter extends BasePresenter
-    {
-        void loadUser(String userEmail);
-
-        void loadListInitiativeInProgress(String userEmail);
-
-        void followUser(String userEmail);
+    interface Presenter extends BasePresenter {
+        void loadListInitiative(User user);
+        void loadCountUserFollow(User user);
+        void loadUserStateFollow(User user);
+        void manageFollowUser(User user);
     }
 }

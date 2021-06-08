@@ -6,7 +6,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -19,6 +18,7 @@ import com.douglas.jointlyapp.R;
 import com.douglas.jointlyapp.data.model.Initiative;
 import com.douglas.jointlyapp.ui.adapter.InitiativeAdapter;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,11 +40,6 @@ public class InitiativeFragment extends Fragment implements InitiativeContract.V
     private LinearLayout llNoDataJoinedInProgress;
     private LinearLayout llNoDataJoinedHistory;
 
-//    ExpandableListView expandableListView;
-//    HashMap<String, List<String>> listGroup;
-//    HashMap<String, List<Initiative>>  listItem;
-//    ExpandableListAdapter adapter;
-
     private RecyclerView rvInitiativeCreatedInProgress;
     private RecyclerView rvInitiativeCreatedHistory;
     private RecyclerView rvInitiativeJoindedInProgress;
@@ -59,10 +54,10 @@ public class InitiativeFragment extends Fragment implements InitiativeContract.V
     private TextView tvCreated;
     private TextView tvJoined;
 
+    private View coordinatorLayout;
     private FloatingActionButton floatingActionButton;
 
     private InitiativeContract.Presenter presenter;
-
     //endregion
 
     @Override
@@ -83,33 +78,21 @@ public class InitiativeFragment extends Fragment implements InitiativeContract.V
 
         initUI(view);
         initRecyclers();
-//
-//        expandableListView = view.findViewById(R.id.expListInitiativeCreated);
-//        listGroup = new HashMap<>();
-//        listItem = new HashMap<>();
-//
-//        listGroup.put(getString(R.string.created), Arrays.asList(getResources().getStringArray(R.array.item_type)));
-//        listGroup.put(getString(R.string.joined), Arrays.asList(getResources().getStringArray(R.array.item_type)));
-//        listItem.put(listGroup.get(listGroup.keySet().toArray()[0]).get(0), new ArrayList<>());
-//        listItem.put(listGroup.get(listGroup.keySet().toArray()[0]).get(1), new ArrayList<>());
-//        listItem.put(listGroup.get(listGroup.keySet().toArray()[1]).get(0), new ArrayList<>());
-//        listItem.put(listGroup.get(listGroup.keySet().toArray()[1]).get(1), new ArrayList<>());
-//
-//        adapter = new ExpandableListAdapter(getContext(), listGroup, listItem);
-//        expandableListView.setAdapter(adapter);
+        setOnClickUI();
 
         presenter = new InitiativePresenter(this);
-
-        setOnClickUI();
     }
 
+    /**
+     *
+     * @param view
+     */
     private void initUI(@NonNull View view) {
         llLoading = view.findViewById(R.id.llLoading);
         llNoDataCreatedInProgress = view.findViewById(R.id.llNoDataCreatedInProgress);
         llNoDataCreatedHistory = view.findViewById(R.id.llNoDataCreatedHistory);
         llNoDataJoinedInProgress = view.findViewById(R.id.llNoDataJoinedInProgress);
         llNoDataJoinedHistory = view.findViewById(R.id.llNoDataJoinedHistory);
-        floatingActionButton = getActivity().findViewById(R.id.faButton);
 
         rvInitiativeCreatedInProgress = view.findViewById(R.id.rvInitiativeCreatedInProgress);
         rvInitiativeCreatedHistory = view.findViewById(R.id.rvInitiativeCreatedHistory);
@@ -120,8 +103,14 @@ public class InitiativeFragment extends Fragment implements InitiativeContract.V
 
         tvCreated = view.findViewById(R.id.tvCreated);
         tvJoined = view.findViewById(R.id.tvJoined);
+
+        coordinatorLayout = getActivity().findViewById(R.id.coordinator_main);
+        floatingActionButton = coordinatorLayout.findViewById(R.id.faButton);
     }
 
+    /**
+     *
+     */
     private void initRecyclers() {
         adapterInitiativeCreatedInProgress = new InitiativeAdapter(getContext(), new ArrayList<>(), this, TYPE_CREATED + TYPE_INPROGRESS);
         adapterInitiativeCreatedHistory  = new InitiativeAdapter(getContext(), new ArrayList<>(), this, TYPE_CREATED + TYPE_HISTORY);
@@ -145,6 +134,9 @@ public class InitiativeFragment extends Fragment implements InitiativeContract.V
         rvInitiativeJoindedHistory.setAdapter(adapterInitiativeJoinedHistory);
     }
 
+    /**
+     *
+     */
     private void setOnClickUI() {
         tvCreated.setOnClickListener(v -> {
             showInitiativeCreated();
@@ -162,9 +154,8 @@ public class InitiativeFragment extends Fragment implements InitiativeContract.V
     /**
      * Metodo que abre y cierra el desplegable de la lista de creados
      */
-    public void showInitiativeCreated()
-    {
-        if ((llInitiativeCreated.getVisibility() == View.GONE)) {
+    public void showInitiativeCreated() {
+        if (llInitiativeCreated.getVisibility() == View.GONE) {
             llInitiativeCreated.setVisibility(View.VISIBLE);
             tvCreated.setCompoundDrawablesWithIntrinsicBounds(0,0, R.drawable.ic_arrow_up,0);
         } else {
@@ -176,9 +167,8 @@ public class InitiativeFragment extends Fragment implements InitiativeContract.V
     /**
      * Metodo que abre y cierra el desplegable de la lista de unidos
      */
-    public void showInitiativeJoined()
-    {
-        if ((llInitiativeJoined.getVisibility() == View.GONE)) {
+    public void showInitiativeJoined() {
+        if (llInitiativeJoined.getVisibility() == View.GONE) {
             llInitiativeJoined.setVisibility(View.VISIBLE);
             tvJoined.setCompoundDrawablesWithIntrinsicBounds(0,0, R.drawable.ic_arrow_up,0);
         } else {
@@ -196,8 +186,10 @@ public class InitiativeFragment extends Fragment implements InitiativeContract.V
         presenter.loadJoined(TYPE_HISTORY, 0);
     }
 
-    private void hideFloatingButton()
-    {
+    /**
+     *
+     */
+    private void hideFloatingButton() {
         floatingActionButton.setVisibility(View.GONE);
     }
 
@@ -265,37 +257,36 @@ public class InitiativeFragment extends Fragment implements InitiativeContract.V
 
     @Override
     public void onError(String message) {
-        Toast.makeText(getContext(), (message != null) ? message : "Algo salio mal", Toast.LENGTH_SHORT).show();
+        Snackbar.make(coordinatorLayout, (message != null) ? message : getString(R.string.default_error_action), Snackbar.LENGTH_SHORT).show();
     }
 
     @Override
-    public void onClick(View item, String type) {
-
+    public void onClick(View view, String type) {
         Initiative initiative;
         Bundle bundle;
 
-        switch (type)
-        {
+        switch (type) {
             case TYPE_CREATED + TYPE_INPROGRESS:
-                initiative = adapterInitiativeCreatedInProgress.getInitiativeItem(rvInitiativeCreatedInProgress.getChildAdapterPosition(item));
+                initiative = adapterInitiativeCreatedInProgress.getInitiativeItem(rvInitiativeCreatedInProgress.getChildAdapterPosition(view));
 
                 bundle = new Bundle();
                 bundle.putSerializable(Initiative.TAG, initiative);
+                bundle.putBoolean(TYPE_CREATED, true);
 
-                goToEditInitiative(bundle);
+                goToShowInitiative(bundle);
                 break;
             case TYPE_CREATED + TYPE_HISTORY:
-                initiative = adapterInitiativeCreatedHistory.getInitiativeItem(rvInitiativeCreatedHistory.getChildAdapterPosition(item));
+                initiative = adapterInitiativeCreatedHistory.getInitiativeItem(rvInitiativeCreatedHistory.getChildAdapterPosition(view));
 
                 bundle = new Bundle();
                 bundle.putSerializable(Initiative.TAG, initiative);
-                bundle.putBoolean(TYPE_HISTORY,true);
+                bundle.putBoolean(TYPE_HISTORY, true);
 
                 hideFloatingButton();
                 goToShowInitiative(bundle);
                 break;
             case TYPE_JOINED + TYPE_INPROGRESS:
-                initiative = adapterInitiativeJoinedInProgress.getInitiativeItem(rvInitiativeJoindedInProgress.getChildAdapterPosition(item));
+                initiative = adapterInitiativeJoinedInProgress.getInitiativeItem(rvInitiativeJoindedInProgress.getChildAdapterPosition(view));
 
                 bundle = new Bundle();
                 bundle.putSerializable(Initiative.TAG, initiative);
@@ -304,11 +295,11 @@ public class InitiativeFragment extends Fragment implements InitiativeContract.V
                 goToShowInitiative(bundle);
                 break;
             case TYPE_JOINED + TYPE_HISTORY:
-                initiative = adapterInitiativeJoinedHistory.getInitiativeItem(rvInitiativeJoindedHistory.getChildAdapterPosition(item));
+                initiative = adapterInitiativeJoinedHistory.getInitiativeItem(rvInitiativeJoindedHistory.getChildAdapterPosition(view));
 
                 bundle = new Bundle();
                 bundle.putSerializable(Initiative.TAG, initiative);
-                bundle.putBoolean(TYPE_HISTORY,true);
+                bundle.putBoolean(TYPE_HISTORY, true);
 
                 hideFloatingButton();
                 goToShowInitiative(bundle);
@@ -316,17 +307,19 @@ public class InitiativeFragment extends Fragment implements InitiativeContract.V
             default:
                 break;
         }
-
     }
 
+    /**
+     *
+     */
     private void goToAddInitiative() {
-        NavHostFragment.findNavController(this).navigate(R.id.action_initiativeFragment_to_manageInitiativeFragment, new Bundle());
+        NavHostFragment.findNavController(this).navigate(R.id.action_initiativeFragment_to_manageInitiativeFragment);
     }
 
-    private void goToEditInitiative(Bundle bundle) {
-        NavHostFragment.findNavController(this).navigate(R.id.action_initiativeFragment_to_manageInitiativeFragment, bundle);
-    }
-
+    /**
+     *
+     * @param bundle
+     */
     private void goToShowInitiative(Bundle bundle) {
         NavHostFragment.findNavController(this).navigate(R.id.action_initiativeFragment_to_showInitiativeFragment, bundle);
     }

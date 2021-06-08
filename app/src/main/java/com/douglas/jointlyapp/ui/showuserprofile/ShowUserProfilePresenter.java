@@ -16,44 +16,9 @@ public class ShowUserProfilePresenter implements ShowUserProfileContract.Present
     }
 
     @Override
-    public void loadUser(String userEmail) {
-        interactor.loadUser(userEmail);
-    }
-
-    @Override
-    public void loadListInitiativeInProgress(String userEmail) {
-        interactor.loadListInitiativeInProgress(userEmail);
-    }
-
-    @Override
-    public void followUser(String user) {
-        interactor.followUser(user);
-    }
-
-    @Override
     public void onDestroy() {
         view = null;
         interactor = null;
-    }
-
-    @Override
-    public void onLocationEmpty() {
-        view.setLocationEmpty();
-    }
-
-    @Override
-    public void onPhoneEmpty() {
-        view.setPhoneEmpty();
-    }
-
-    @Override
-    public void onDescriptionEmpty() {
-        view.setDescriptionEmpty();
-    }
-
-    @Override
-    public void onUserFollowersEmpty() {
-        view.setUserFollowersEmpty();
     }
 
     @Override
@@ -67,26 +32,6 @@ public class ShowUserProfilePresenter implements ShowUserProfileContract.Present
     }
 
     @Override
-    public void onInitiativeInProgressEmptyError() {
-        view.setInitiativeInProgressEmptyError();
-    }
-
-    @Override
-    public void onUserFollowed() {
-        view.setUserFollowed();
-    }
-
-    @Override
-    public void onSuccess(User user, int countUserFollowers, int initiativeCreated, int initiativeJoined) {
-        view.onSuccess(user, countUserFollowers, initiativeCreated, initiativeJoined);
-    }
-
-    @Override
-    public void onSuccessInitiativeInProgress(List<Initiative> initiatives) {
-        view.onSuccess(initiatives);
-    }
-
-    @Override
     public void onSuccessUnFollow() {
         view.setSuccessUnFollow();
     }
@@ -94,5 +39,50 @@ public class ShowUserProfilePresenter implements ShowUserProfileContract.Present
     @Override
     public void onSuccessFollow() {
         view.setSuccessFollow();
+    }
+
+    @Override
+    public void onUserStateFollow(boolean follow) {
+        view.setUserStateFollow(follow);
+    }
+
+    @Override
+    public void onCountUserFollow(long count) {
+        view.setCountUserFollow(count);
+    }
+
+    @Override
+    public void onCountUserParticipate(long count) {
+        view.setCountUserParticipate(count);
+    }
+
+    @Override
+    public void onSuccess(List<Initiative> listInitiativesCreated, List<Initiative> listInitiativesJoined) {
+        view.onSuccess(listInitiativesCreated, listInitiativesJoined);
+    }
+
+    @Override
+    public void onError(String message) {
+        view.onError(message);
+    }
+
+    @Override
+    public void loadListInitiative(User user) {
+        interactor.loadListInitiative(user);
+    }
+
+    @Override
+    public void loadCountUserFollow(User user) {
+        interactor.loadCountUserFollow(user);
+    }
+
+    @Override
+    public void loadUserStateFollow(User user) {
+        interactor.loadUserStateFollow(user);
+    }
+
+    @Override
+    public void manageFollowUser(User user) {
+        interactor.manageFollowUser(user);
     }
 }

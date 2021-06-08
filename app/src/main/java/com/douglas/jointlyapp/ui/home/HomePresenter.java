@@ -39,13 +39,18 @@ public class HomePresenter implements HomeContract.Presenter, HomeInteractorImpl
     }
 
     @Override
-    public void onSuccess(List<Initiative> list, List<User> userOwners) {
+    public void onSuccess(List<Initiative> list, List<User> userOwners, List<Long> countUsersJoined) {
         view.hideProgress();
-        view.onSuccess(list, userOwners);
+        view.onSuccess(list, userOwners, countUsersJoined);
     }
 
     @Override
     public void onError(String message) {
         view.showOnError(message);
+    }
+
+    @Override
+    public void onSync() {
+        view.onSync();
     }
 }

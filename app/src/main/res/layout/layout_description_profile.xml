@@ -5,20 +5,21 @@
     android:id="@+id/linearLayoutDescripcion"
     android:layout_width="0dp"
     android:layout_height="wrap_content"
-    android:layout_margin="10dp"
+    android:layout_margin="@dimen/default_margin_medium"
     android:orientation="vertical"
     app:layout_constraintEnd_toStartOf="@+id/guideline13"
     app:layout_constraintStart_toStartOf="@+id/guideline12"
-    app:layout_constraintTop_toBottomOf="@+id/linearLayoutPopularidad"
+    app:layout_constraintTop_toBottomOf="@+id/divider2"
+    app:layout_constraintBottom_toTopOf="@+id/divider3"
     tools:showIn="@layout/fragment_profile">
 
     <TextView
         style="@style/TextOnPrimary"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="10dp"
+        android:layout_marginStart="@dimen/default_margin_medium"
         android:text="@string/tvUserDescription"
-        android:textSize="20dp"
+        android:textSize="@dimen/default_text_size_large"
         android:textStyle="bold" />
 
     <TextView
@@ -26,8 +27,8 @@
         style="@style/TextOnPrimary"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="10dp"
+        android:layout_margin="@dimen/default_margin_medium"
         android:text="@string/tvUserDescription"
-        android:textSize="15dp" />
+        android:textSize="@dimen/default_text_size_medium" />
 
 </LinearLayout>

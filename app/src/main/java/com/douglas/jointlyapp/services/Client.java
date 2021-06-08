@@ -1,8 +1,7 @@
-package com.douglas.jointlyapp.ui.utils.service;
+package com.douglas.jointlyapp.services;
 
 import java.time.Duration;
 
-import okhttp3.Authenticator;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
@@ -19,7 +18,7 @@ public class Client {
         //TODO cuidado con el callTimeout, puede ser muy poco tiempo
         OkHttpClient client = new OkHttpClient.Builder()
                 .addInterceptor(interceptor)
-                .callTimeout(Duration.ofSeconds(5))
+                .connectTimeout(Duration.ofSeconds(6))
                 .build();
 
         retrofit = new Retrofit.Builder()

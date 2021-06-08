@@ -51,4 +51,9 @@ public class FavoritePresenter implements FavoriteContract.Presenter, FavoriteIn
     public void onSuccessFollow() {
         view.setSuccessFollow();
     }
+
+    @Override
+    public void onError(String message) {
+
+    }
 }

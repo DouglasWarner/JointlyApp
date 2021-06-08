@@ -33,10 +33,10 @@
     <string name="tvUserLocation">Localidad</string>
     <string name="tvUserPhone">Telefono</string>
     <string name="tvInitiativeCreated">Iniciativas Creadas</string>
-    <string name="tvInitiativeJoined">Iniciativas Unidas</string>
+    <string name="tvInitiativeJoined">Iniciativas Participadas</string>
     <string name="tvUserFollows">Popularidad</string>
     <string name="tvUserDescription">Descripción</string>
-    <string name="tvUserInitiativeCreateds">Iniciativas creadas</string>
+    <string name="tvUserInitiativeCreateds">Creadas</string>
     <string name="tvUserCreated">Miembro desde</string>
     <string name="key_user">userEmail</string>
     <string name="key_password">userPassword</string>
@@ -89,8 +89,8 @@
     <string name="action_order_favorite_by_name">Ordenar por nombre</string>
     <string name="tvChatNoData">No ha escrito nadie ningun mensaje</string>
     <string name="tvNoUserData">Se tu el primero en unirte</string>
-    <string name="tvNoInitiativeUserData">Este usuario no tiene iniciativas en curso</string>
-
+    <string name="tvNoInitiativeCreatedUserData">Este usuario no ha creado ninguna iniciativa</string>
+    <string name="tvNoInitiativeJoinedUserData">Este usuario no hay participado en ninguna iniciativa</string>
     <string name="facebook_application_id" translatable="false">299641768192910</string>
     <string name="facebook_login_protocol_scheme" translatable="false">fb299641768192910</string>
     <string name="created">Creados</string>
@@ -105,11 +105,24 @@
     <string name="tvJoinedHistory">Historial</string>
     <string name="tvNoDataJoinedInProgress">Unete a una iniciativa</string>
     <string name="tvNoDataJoinedHistory">No hay historial de iniciativas unidas</string>
-    <string name="error_insert_initiative">Error al crear la iniciativa</string>
-    <string name="error_update_initiative">Error al editar la iniciativa</string>
-    <string name="error_no_connection">Se ha perdido la conexion</string>
-    <string name="refresh_for_sync">Refresca para sincronizar</string>
-    <string name="default_error">Valla algo salio mal</string>
+    <string name="refresh_for_sync">Refresca en inicio para sincronizar</string>
     <string name="tvNoConnection">No hay conexion a internet</string>
     <string name="btnExit">Salir</string>
+    <string name="undo_user_join">Cancelar</string>
+    <string name="join_user_join">Unirme</string>
+    <string name="dialog_title_delete_initiative">Eliminando iniciativa</string>
+    <string name="dialog_message_delete_initiative">\"Eliminar iniciativa: \"</string>
+    <string name="dialog_positive_btn_delete_initiative">Aceptar</string>
+    <string name="dialog_negative_btn_delete_initiative">Cancelar</string>
+    <string name="menu_item_title_add">Añadir</string>
+    <string name="menu_item_title_delete">Eliminar</string>
+    <string name="initiative_success_deleted">Iniciativa %s eliminada</string>
+    <string name="initiative_success_edited">Iniciativa %s editada</string>
+    <string name="initiative_success_created">Iniciativa %s añadida</string>
+    <string name="show_initiative_go_to_chat">Acceder al chat</string>
+    <string name="add_user_joined">Se ha unido a la iniciativa</string>
+    <string name="delete_user_joined">Ha cancelado la participación</string>
+    <string name="menu_item_title_edit">Editar</string>
+    <string name="tvUserInitiativeJoineds">Unido</string>
+    <string name="tvUserInitiative">Iniciativas</string>
 </resources>

@@ -1,5 +1,6 @@
 package com.douglas.jointlyapp.ui;
 
+import android.content.BroadcastReceiver;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
@@ -54,6 +55,7 @@ public class JointlyActivity extends AppCompatActivity {
         nestedScrollView = findViewById(R.id.nestedScrollView);
         floatingActionButton = findViewById(R.id.faButton);
         viewBottomSheet = findViewById(R.id.bottomSheetJoinInitiative);
+        bottomSheetBehavior = BottomSheetBehavior.from(viewBottomSheet);
         tvNoConnection = findViewById(R.id.tvNoConnection);
 
         setSupportActionBar(toolbar);
@@ -104,12 +106,22 @@ public class JointlyActivity extends AppCompatActivity {
         });
 
         // set info connection
-        tvNoConnection.setVisibility(JointlyApplication.getConnection() ? View.GONE : View.VISIBLE);
+        tvNoConnection.setVisibility(JointlyApplication.getConnection() && JointlyApplication.isIsSyncronized()? View.GONE : View.VISIBLE);
 
-        checkConnectionBroadCast = new CheckConnectionBroadCast(tvNoConnection);
-        LocalBroadcastManager.getInstance(this).registerReceiver(checkConnectionBroadCast, new IntentFilter(JointlyApplication.CHECK_CONNECTION_BROADCAST));
-        intentCheckConnection = new Intent(getApplicationContext(), CheckConnectionService.class);
+        createCheckConnectionService();
+    }
+
+    public void createCheckConnectionService() {
+        checkConnectionBroadCast = new CheckConnectionBroadCast(tvNoConnection, bottomSheetBehavior);
+        registerReceiver(checkConnectionBroadCast, new IntentFilter(JointlyApplication.CHECK_CONNECTION_BROADCAST));
+        intentCheckConnection = new Intent(JointlyApplication.getContext(), CheckConnectionService.class);
         startService(intentCheckConnection);
+    }
+
+    public void stopCheckConnectionService() {
+        stopService(intentCheckConnection);
+        checkConnectionBroadCast = null;
+        intentCheckConnection = null;
     }
 
     @Override
@@ -152,8 +164,6 @@ public class JointlyActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        stopService(intentCheckConnection);
-        checkConnectionBroadCast = null;
-        intentCheckConnection = null;
+        stopCheckConnectionService();
     }
 }

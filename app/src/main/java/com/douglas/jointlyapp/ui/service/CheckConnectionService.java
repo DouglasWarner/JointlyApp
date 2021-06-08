@@ -13,7 +13,7 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.douglas.jointlyapp.services.APIResponse;
 import com.douglas.jointlyapp.ui.JointlyApplication;
-import com.douglas.jointlyapp.ui.utils.service.Apis;
+import com.douglas.jointlyapp.services.Apis;
 
 import java.io.IOException;
 
@@ -72,7 +72,6 @@ public class CheckConnectionService extends Service {
                     activeNetwork = cm.getActiveNetworkInfo();
                 } else {
                     checkBroadCast.putExtra("connection", false);
-                    LocalBroadcastManager.getInstance(context).sendBroadcast(checkBroadCast);
                 }
 
                 boolean isConnected = activeNetwork != null && activeNetwork.isConnected();
@@ -84,27 +83,25 @@ public class CheckConnectionService extends Service {
                         if (response.isSuccessful() &&
                                 response.body() != null) {
                             checkBroadCast.putExtra("connection", true);
-                            LocalBroadcastManager.getInstance(context).sendBroadcast(checkBroadCast);
                         } else {
                             checkBroadCast.putExtra("connection", false);
-                            LocalBroadcastManager.getInstance(context).sendBroadcast(checkBroadCast);
                         }
                     } catch (IOException e) {
-                        Log.e("TAG", "Error checking internet connection", e);
+                        Log.e("TAG", "Error checking internet connection");
                         checkBroadCast.putExtra("connection", false);
-                        LocalBroadcastManager.getInstance(context).sendBroadcast(checkBroadCast);
-                        testCall.cancel();
                     }
                 } else {
                     Log.d("TAG", "No network available!");
                     checkBroadCast.putExtra("connection", false);
-                    LocalBroadcastManager.getInstance(context).sendBroadcast(checkBroadCast);
                 }
 
+
+                LocalBroadcastManager.getInstance(context).sendBroadcast(checkBroadCast);
                 try {
-                    Thread.sleep(10000);
+                    Thread.sleep(20000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
+                    return;
                 }
             }
         }

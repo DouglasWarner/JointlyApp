@@ -1,6 +1,12 @@
 package com.douglas.jointlyapp.ui.favorite;
 
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -8,13 +14,6 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
-import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.LinearLayout;
 
 import com.douglas.jointlyapp.R;
 import com.douglas.jointlyapp.data.model.User;
@@ -82,7 +81,7 @@ public class FavoriteFragment extends Fragment implements FavoriteContract.View,
     @Override
     public void onClick(View v) {
         Bundle b = new Bundle();
-        b.putString(User.TAG, adapter.getUserItem(rvUserFavorite.getChildAdapterPosition(v)).getEmail());
+        b.putSerializable(User.TAG, adapter.getUserItem(rvUserFavorite.getChildAdapterPosition(v)));
 
         NavHostFragment.findNavController(this).navigate(R.id.action_favoriteFragment_to_userProfileFragment, b);
     }

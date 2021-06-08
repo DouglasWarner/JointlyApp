@@ -4,10 +4,13 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
+import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.ForeignKey;
 import androidx.room.Ignore;
 import androidx.room.Index;
+
+import com.google.gson.annotations.SerializedName;
 
 @Entity(tableName = "chat", primaryKeys = {"dateMessage","idInitiative","userEmail"},
         foreignKeys = {@ForeignKey(entity = User.class, parentColumns = "email", childColumns = "userEmail"),
@@ -18,13 +21,31 @@ public class Chat implements Parcelable {
     public static final String TAG = "Chat";
     public static final String TABLE_NAME = "chat";
 
+    //region Variables
+
+    @SerializedName("date_message")
     @NonNull
+    @ColumnInfo(defaultValue = "CURRENT_TIMESTAMP")
     private String dateMessage;
+
+    @SerializedName("id_initiative")
     @NonNull
     private long idInitiative;
+
+    @SerializedName("user_email")
     @NonNull
     private String userEmail;
+
+    @SerializedName("message")
     private String message;
+
+    @SerializedName("is_sync")
+    @ColumnInfo(defaultValue = "0")
+    private boolean is_sync;
+
+    //endregion
+
+    //region Construct
 
     @Ignore
     public Chat() {
@@ -37,11 +58,12 @@ public class Chat implements Parcelable {
      * @param userEmail
      * @param message
      */
-    public Chat(String dateMessage, long idInitiative, String userEmail, String message) {
+    public Chat(String dateMessage, long idInitiative, String userEmail, String message, boolean is_sync) {
         this.dateMessage = dateMessage;
         this.idInitiative = idInitiative;
         this.userEmail = userEmail;
         this.message = message;
+        this.is_sync = is_sync;
     }
 
     @Ignore
@@ -50,7 +72,10 @@ public class Chat implements Parcelable {
         idInitiative = in.readLong();
         userEmail = in.readString();
         message = in.readString();
+        is_sync = in.readByte() != 0;
     }
+
+    //endregion
 
     public static final Creator<Chat> CREATOR = new Creator<Chat>() {
         @Override
@@ -64,6 +89,9 @@ public class Chat implements Parcelable {
         }
     };
 
+    //region GETTERs and SETTERs
+
+    @NonNull
     public String getDateMessage() {
         return dateMessage;
     }
@@ -80,11 +108,12 @@ public class Chat implements Parcelable {
         this.idInitiative = idInitiative;
     }
 
+    @NonNull
     public String getUserEmail() {
         return userEmail;
     }
 
-    public void setUserEmail(String userEmail) {
+    public void setUserEmail(@NonNull String userEmail) {
         this.userEmail = userEmail;
     }
 
@@ -95,6 +124,16 @@ public class Chat implements Parcelable {
     public void setMessage(String message) {
         this.message = message;
     }
+
+    public boolean isIs_sync() {
+        return is_sync;
+    }
+
+    public void setIs_sync(boolean is_sync) {
+        this.is_sync = is_sync;
+    }
+
+    //endregion
 
     @Override
     public boolean equals(Object o) {
@@ -123,6 +162,7 @@ public class Chat implements Parcelable {
                 ", idInitiative=" + idInitiative +
                 ", userEmail='" + userEmail + '\'' +
                 ", message='" + message + '\'' +
+                ", is_sync=" + is_sync +
                 '}';
     }
 
@@ -137,5 +177,6 @@ public class Chat implements Parcelable {
         dest.writeLong(idInitiative);
         dest.writeString(userEmail);
         dest.writeString(message);
+        dest.writeByte((byte)(is_sync ? 1:0));
     }
 }

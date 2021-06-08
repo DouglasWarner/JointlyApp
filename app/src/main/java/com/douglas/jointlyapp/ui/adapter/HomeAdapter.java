@@ -24,18 +24,19 @@ import java.util.List;
 
 public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ViewHolder> {
 
-    public interface ManageInitiative
-    {
+    public interface ManageInitiative {
         void onClick(View initiative);
     }
 
     private List<Initiative> list;
     private List<User> userOwners;
+    private List<Long> countUsersJoined;
     private ManageInitiative listener;
 
-    public HomeAdapter(List<Initiative> list, List<User> userOwners, ManageInitiative listener) {
+    public HomeAdapter(List<Initiative> list, List<User> userOwners, List<Long> countUsersJoined, ManageInitiative listener) {
         this.list = list;
         this.userOwners = userOwners;
+        this.countUsersJoined = countUsersJoined;
         this.listener = listener;
     }
 
@@ -62,7 +63,7 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ViewHolder> {
             holder.imgUser.setImageBitmap(CommonUtils.getImagenUserDefault(JointlyApplication.getContext()));
 
         holder.tvInitiativeName.setText(list.get(position).getName());
-        holder.tvCountUser.setText(String.valueOf(list.get(position).getCountUserJoined()));
+        holder.tvCountUser.setText(String.valueOf(countUsersJoined.get(position)));
         holder.tvLocationInitiative.setText(list.get(position).getLocation());
     }
 
@@ -71,12 +72,13 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ViewHolder> {
         return list.size();
     }
 
-    public void update(List<Initiative> list, List<User> userOwners)
-    {
+    public void update(List<Initiative> list, List<User> userOwners, List<Long> countUsersJoined) {
         this.list.clear();
         this.list.addAll(list);
         this.userOwners.clear();
         this.userOwners.addAll(userOwners);
+        this.countUsersJoined.clear();
+        this.countUsersJoined.addAll(countUsersJoined);
         notifyDataSetChanged();
     }
 
@@ -96,8 +98,7 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ViewHolder> {
         notifyDataSetChanged();
     }
 
-    public Initiative getInitiativeItem(int position)
-    {
+    public Initiative getInitiativeItem(int position) {
         return list.get(position);
     }
 

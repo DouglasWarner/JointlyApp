@@ -4,10 +4,13 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
+import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.ForeignKey;
 import androidx.room.Ignore;
 import androidx.room.Index;
+
+import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
 
@@ -22,16 +25,32 @@ public class UserReviewUser implements Serializable, Parcelable {
 
     //region Variables
 
+    @SerializedName("user")
     @NonNull
     private String user;
+
+    @SerializedName("user_review")
     @NonNull
     private String user_review;
-    @NonNull
+
+    @SerializedName("date")
+    @ColumnInfo(defaultValue = "CURRENT_TIMESTAMP")
     private String date;
+
+    @SerializedName("review")
     private String review;
+
+    @SerializedName("stars")
     @NonNull
     private int stars;
+
+    @SerializedName("is_deleted")
+    @ColumnInfo(defaultValue = "0")
     private boolean is_deleted;
+
+    @SerializedName("is_sync")
+    @ColumnInfo(defaultValue = "0")
+    private boolean is_sync;
 
     //endregion
 
@@ -49,13 +68,14 @@ public class UserReviewUser implements Serializable, Parcelable {
      * @param review
      * @param stars
      */
-    public UserReviewUser(String user, String user_review, String date, String review, int stars, boolean is_deleted) {
+    public UserReviewUser(String user, String user_review, String date, String review, int stars, boolean is_deleted, boolean is_sync) {
         this.user = user;
         this.user_review = user_review;
         this.date = date;
         this.review = review;
         this.stars = stars;
         this.is_deleted = is_deleted;
+        this.is_sync = is_sync;
     }
 
     @Ignore
@@ -66,6 +86,7 @@ public class UserReviewUser implements Serializable, Parcelable {
         review = in.readString();
         stars = in.readInt();
         is_deleted = in.readByte() != 0;
+        is_sync = in.readByte() != 0;
     }
 
     //endregion
@@ -124,12 +145,20 @@ public class UserReviewUser implements Serializable, Parcelable {
         this.stars = stars;
     }
 
-    public boolean isIs_deleted() {
+    public boolean getIs_deleted() {
         return is_deleted;
     }
 
     public void setIs_deleted(boolean is_deleted) {
         this.is_deleted = is_deleted;
+    }
+
+    public boolean getIs_sync() {
+        return is_sync;
+    }
+
+    public void setIs_sync(boolean is_sync) {
+        this.is_sync = is_sync;
     }
 
     //endregion
@@ -155,11 +184,13 @@ public class UserReviewUser implements Serializable, Parcelable {
     @Override
     public String toString() {
         return "UserReviewUser{" +
-                "idUser='" + user + '\'' +
-                ", idUserReview='" + user_review + '\'' +
+                "user='" + user + '\'' +
+                ", user_review='" + user_review + '\'' +
                 ", date='" + date + '\'' +
                 ", review='" + review + '\'' +
                 ", stars=" + stars +
+                ", is_deleted=" + is_deleted +
+                ", is_sync=" + is_sync +
                 '}';
     }
 
@@ -175,6 +206,7 @@ public class UserReviewUser implements Serializable, Parcelable {
         dest.writeString(date);
         dest.writeString(review);
         dest.writeInt(stars);
-        dest.writeByte((byte)(is_deleted? 1:0));
+        dest.writeByte((byte)(is_deleted ? 1:0));
+        dest.writeByte((byte)(is_sync ? 1:0));
     }
 }

@@ -8,17 +8,16 @@ import java.util.List;
 
 public interface HomeContract {
 
-    interface View
-    {
+    interface View {
         void setNoData();
         void showProgress();
         void hideProgress();
-        void onSuccess(List<Initiative> list, List<User> userOwners);
+        void onSuccess(List<Initiative> list, List<User> userOwners, List<Long> countUsersJoined);
         void showOnError(String message);
+        void onSync();
     }
 
-    interface Presenter extends BasePresenter
-    {
+    interface Presenter extends BasePresenter {
         void load();
         void syncData();
     }

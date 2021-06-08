@@ -1,8 +1,4 @@
-package com.douglas.jointlyapp.ui.utils.service;
-
-import com.douglas.jointlyapp.services.InitiativeService;
-import com.douglas.jointlyapp.services.JointlyService;
-import com.douglas.jointlyapp.services.UserService;
+package com.douglas.jointlyapp.services;
 
 public class Apis {
 

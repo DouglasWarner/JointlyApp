@@ -2,16 +2,11 @@ package com.douglas.jointlyapp.data;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.os.Handler;
 
 import androidx.room.Ignore;
 import androidx.room.TypeConverter;
 
-import com.douglas.jointlyapp.ui.utils.CommonUtils;
-
 import java.io.ByteArrayOutputStream;
-
-import okhttp3.internal.Util;
 
 public class Converters {
 

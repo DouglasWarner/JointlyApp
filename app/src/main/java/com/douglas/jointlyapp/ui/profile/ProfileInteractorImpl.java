@@ -28,8 +28,8 @@ public class ProfileInteractorImpl {
     public void loadUser(final String userEmail)
     {
         User user = UserRepository.getInstance().getUser(userEmail);
-        int initiativeCreated = InitiativeRepository.getInstance().getListUserCreated(userEmail).size();
-        int initiativeJoined = InitiativeRepository.getInstance().getListUserJoined(userEmail).size();
+        int initiativeCreated = InitiativeRepository.getInstance().getListCreatedByUser(userEmail, false).size();
+        int initiativeJoined = InitiativeRepository.getInstance().getListJoinedByUser(userEmail, 1,false).size();
         int userFollowers = UserRepository.getInstance().getCountUserFollowers(userEmail);
 
         if(user.getLocation().isEmpty())

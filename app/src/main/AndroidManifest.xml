@@ -42,7 +42,6 @@
         <receiver android:name=".ui.broadcast.CheckConnectionBroadCast">
             <intent-filter>
                 <action android:name="com.douglas.check_internet_connection" />
-                <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
 
