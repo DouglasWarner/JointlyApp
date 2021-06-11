@@ -22,7 +22,7 @@ public class TargetArea implements Serializable, Parcelable {
 
     //region Variables
 
-    @SerializedName("id")
+    @SerializedName("id_target_area")
     @NonNull
     private long idTargetArea;
 

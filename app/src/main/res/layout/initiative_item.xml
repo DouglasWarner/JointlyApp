@@ -20,7 +20,6 @@
             android:id="@+id/imgBtnInitiative"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:contentDescription="Imagen de la iniciativa"
             android:scaleType="centerCrop"
             app:layout_constraintBottom_toTopOf="@+id/guideline3"
             app:layout_constraintEnd_toEndOf="parent"
@@ -42,13 +41,26 @@
                 android:id="@+id/tvInitiativeName"
                 style="@style/TextOnPrimary"
                 android:layout_width="0dp"
-                android:layout_height="match_parent"
+                android:layout_height="0dp"
                 android:gravity="center_vertical"
                 android:text="Nombre iniciativa"
+                app:layout_constraintBottom_toTopOf="@+id/tvInitiativeDate"
+                app:layout_constraintEnd_toStartOf="@+id/guideline5"
+                app:layout_constraintStart_toStartOf="@+id/guideline4"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_chainStyle="spread" />
+
+            <TextView
+                android:id="@+id/tvInitiativeDate"
+                style="@style/TextOnPrimary"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:gravity="center_vertical"
+                android:text="10/10/2021"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/guideline5"
                 app:layout_constraintStart_toStartOf="@+id/guideline4"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toBottomOf="@+id/tvInitiativeName" />
 
             <androidx.constraintlayout.widget.Guideline
                 android:id="@+id/guideline4"

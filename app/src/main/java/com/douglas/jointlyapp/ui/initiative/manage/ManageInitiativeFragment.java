@@ -16,8 +16,11 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.DatePicker;
 import android.widget.ImageButton;
+import android.widget.Spinner;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
@@ -28,20 +31,24 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.douglas.jointlyapp.R;
+import com.douglas.jointlyapp.data.model.Countries;
 import com.douglas.jointlyapp.data.model.Initiative;
+import com.douglas.jointlyapp.data.model.TargetArea;
 import com.douglas.jointlyapp.ui.JointlyApplication;
 import com.douglas.jointlyapp.ui.dialog.DatePickerFragment;
 import com.douglas.jointlyapp.ui.dialog.TimePickerFragment;
 import com.douglas.jointlyapp.ui.preferences.JointlyPreferences;
 import com.douglas.jointlyapp.ui.utils.CommonUtils;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.GregorianCalendar;
+import java.util.List;
 import java.util.Locale;
+import java.util.stream.Collectors;
 
 public class ManageInitiativeFragment extends Fragment implements ManageInitiativeContract.View {
 
@@ -56,11 +63,17 @@ public class ManageInitiativeFragment extends Fragment implements ManageInitiati
     private TextInputLayout tilTargetAmount;
     private TextInputEditText tieName;
     private TextInputEditText tieDescription;
-    private TextInputEditText tieLocation;
-    private TextInputEditText tieTargetArea;
+    private AutoCompleteTextView tieLocation;
+    private AutoCompleteTextView tieTargetArea;
     private TextInputEditText tieTargetDate;
     private TextInputEditText tieTargetTime;
     private TextInputEditText tieTargetAmount;
+
+    private ArrayAdapter targetAreaAdapter;
+    private List<String> targetAreas;
+
+    private ArrayAdapter countriesAdapter;
+    private List<String> autoCompleteCountries;
 
     private Initiative initiative;
     private Bitmap imageInitiative;
@@ -68,8 +81,8 @@ public class ManageInitiativeFragment extends Fragment implements ManageInitiati
 
     private ManageInitiativePresenter presenter;
 
-    private FloatingActionButton floatingActionButton;
     private View coordinatorLayout;
+
     //endregion
 
     @Override
@@ -102,8 +115,6 @@ public class ManageInitiativeFragment extends Fragment implements ManageInitiati
             setTextInputEditTextNoEnable();
         }
 
-        manageFloatingButton();
-
         presenter = new ManageInitiativePresenter(this);
     }
 
@@ -130,11 +141,10 @@ public class ManageInitiativeFragment extends Fragment implements ManageInitiati
         tieTargetAmount = view.findViewById(R.id.tieTargetAmount);
 
         coordinatorLayout = getActivity().findViewById(R.id.coordinator_main);
-        floatingActionButton = coordinatorLayout.findViewById(R.id.faButton);
     }
 
     /**
-     *
+     * setOnClickUI
      */
     private void setOnClickUI() {
         imgBtnImagen.setOnClickListener(v -> {
@@ -167,7 +177,7 @@ public class ManageInitiativeFragment extends Fragment implements ManageInitiati
     }
 
     /**
-     *
+     * setInitiative
      * @param init
      */
     private void setInitiative(Initiative init) {
@@ -187,7 +197,7 @@ public class ManageInitiativeFragment extends Fragment implements ManageInitiati
     }
 
     /**
-     *
+     * setTextInputEditTextNoEnable for editing mode
      */
     private void setTextInputEditTextNoEnable() {
         tieName.setEnabled(false);
@@ -196,22 +206,9 @@ public class ManageInitiativeFragment extends Fragment implements ManageInitiati
         tilTargetAmount.setHelperTextEnabled(false);
     }
 
-    /**
-     *
-     */
-    private void manageFloatingButton() {
-        if(isEditing) {
-            floatingActionButton.setOnClickListener(v -> {
-                editInitiative();
-            });
-        } else {
-            floatingActionButton.setVisibility(View.GONE);
-        }
-    }
-
     //TODO quizas obtener el usuario de firebase
     /**
-     *
+     * editInitiative
      */
     private void editInitiative() {
         String created_by = JointlyPreferences.getInstance().getUser();
@@ -223,7 +220,7 @@ public class ManageInitiativeFragment extends Fragment implements ManageInitiati
     }
 
     /**
-     *
+     * addInitiative
      */
     private void addInitiative() {
         String user = JointlyPreferences.getInstance().getUser();
@@ -282,12 +279,19 @@ public class ManageInitiativeFragment extends Fragment implements ManageInitiati
     }
 
     /**
-     *
+     * openGallery for select imagen
      */
     private void openGallery() {
         Intent intent = new Intent(Intent.ACTION_PICK);
         intent.setType("image/*");
         startActivityForResult(intent, JointlyApplication.REQUEST_IMAGE_GALLERY);
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        presenter.loadCountries();
+        presenter.loadTargetArea();
     }
 
     @Override
@@ -309,14 +313,14 @@ public class ManageInitiativeFragment extends Fragment implements ManageInitiati
         super.onCreateOptionsMenu(menu, inflater);
         menu.clear();
         menu.add(0, 1, 0, getString(R.string.menu_item_title_add)).setIcon(R.drawable.ic_check).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
-        menu.getItem(0).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
+        menu.getItem(0).setOnMenuItemClickListener(item -> {
+            if (isEditing) {
+                editInitiative();
+            } else {
                 addInitiative();
-                return true;
             }
+            return true;
         });
-
     }
 
     @Override
@@ -369,17 +373,14 @@ public class ManageInitiativeFragment extends Fragment implements ManageInitiati
     public void onSuccess(Initiative init) {
         if(isEditing) {
             Snackbar.make(coordinatorLayout, String.format(getString(R.string.initiative_success_edited), init.getName()), Snackbar.LENGTH_SHORT).show();
-//            Toast.makeText(getContext(), "Iniciativa "+init.getName()+" editada", Toast.LENGTH_SHORT).show();
         } else {
             initiative = init;
 //            if(JointlyPreferences.getInstance().getNotificationAvaible())
 //                Notifications.showNotificationAddInitiative(getActivity(), initiative.getId());
             Snackbar.make(coordinatorLayout, String.format(getString(R.string.initiative_success_created), init.getName()), Snackbar.LENGTH_SHORT).show();
-//            Toast.makeText(getContext(), "Iniciativa "+init.getName()+" añadida", Toast.LENGTH_SHORT).show();
         }
 
         NavHostFragment.findNavController(this).popBackStack();
-//        getActivity().onBackPressed();
     }
 
     @Override
@@ -394,6 +395,33 @@ public class ManageInitiativeFragment extends Fragment implements ManageInitiati
     }
 
     @Override
+    public void setCountries(List<Countries> countries) {
+        autoCompleteCountries = new ArrayList<>();
+        autoCompleteCountries.addAll(countries.stream().map(Countries::getName).collect(Collectors.toList()));
+        autoCompleteCountries.add("holaa");
+        autoCompleteCountries.add("como estas");
+
+        countriesAdapter = new ArrayAdapter(getContext(), R.layout.support_simple_spinner_dropdown_item, autoCompleteCountries);
+        tieLocation.setThreshold(1);
+//        tieLocation.setOnClickListener(v -> {
+//
+//        });
+        tieLocation.setAdapter(countriesAdapter);
+    }
+
+    @Override
+    public void setTargetArea(List<TargetArea> targetArea) {
+        targetAreas = new ArrayList<>();
+        this.targetAreas.add(getString(R.string.spHintTargetArea));
+        this.targetAreas.addAll(targetArea.stream().map(TargetArea::getName).collect(Collectors.toList()));
+        this.targetAreas.add("Hollaaaa");
+        this.targetAreas.add("caracolaaa");
+
+        targetAreaAdapter = new ArrayAdapter(getContext(), R.layout.support_simple_spinner_dropdown_item, targetAreas);
+        tieTargetArea.setAdapter(targetAreaAdapter);
+    }
+
+    @Override
     public void setOnError(String message) {
         Snackbar.make(coordinatorLayout, message != null ? message : getString(R.string.default_error_action), Snackbar.LENGTH_SHORT).show();
     }
@@ -401,6 +429,6 @@ public class ManageInitiativeFragment extends Fragment implements ManageInitiati
     @Override
     public void onDestroy() {
         super.onDestroy();
-        presenter = null;
+        presenter.onDestroy();
     }
 }

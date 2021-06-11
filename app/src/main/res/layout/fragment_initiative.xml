@@ -41,7 +41,7 @@
                     style="@style/SubTextOnPrimary"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/default_margin_extralarge"
+                    android:layout_marginStart="@dimen/default_margin_extra_large"
                     android:layout_marginTop="@dimen/default_margin_medium"
                     android:text="@string/tvCreatedInProgress"
                     android:textSize="@dimen/default_text_size_large" />
@@ -57,7 +57,7 @@
                         android:id="@+id/tvNoDataCreatedInProgress"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:layout_marginBottom="@dimen/default_margin_extralarge"
+                        android:layout_marginBottom="@dimen/default_margin_extra_large"
                         android:gravity="center"
                         android:text="@string/tvNoDataCreatedInProgress"
                         android:textSize="@dimen/default_text_size_medium" />
@@ -79,7 +79,7 @@
                     style="@style/SubTextOnPrimary"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/default_margin_extralarge"
+                    android:layout_marginStart="@dimen/default_margin_extra_large"
                     android:layout_marginTop="@dimen/default_margin_medium"
                     android:text="@string/tvCreatedHistory"
                     android:textSize="@dimen/default_text_size_large" />
@@ -95,7 +95,7 @@
                         android:id="@+id/tvNoDataCreatedHistory"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:layout_marginBottom="@dimen/default_margin_extralarge"
+                        android:layout_marginBottom="@dimen/default_margin_extra_large"
                         android:gravity="center"
                         android:text="@string/tvNoDataCreatedHistory"
                         android:textSize="@dimen/default_text_size_medium" />
@@ -138,7 +138,7 @@
                     style="@style/SubTextOnPrimary"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/default_margin_extralarge"
+                    android:layout_marginStart="@dimen/default_margin_extra_large"
                     android:layout_marginTop="@dimen/default_margin_medium"
                     android:text="@string/tvJoinedInProgress"
                     android:textSize="@dimen/default_text_size_large" />
@@ -154,7 +154,7 @@
                         android:id="@+id/tvNoDataJoinedInProgress"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:layout_marginBottom="@dimen/default_margin_extralarge"
+                        android:layout_marginBottom="@dimen/default_margin_extra_large"
                         android:gravity="center"
                         android:text="@string/tvNoDataJoinedInProgress"
                         android:textSize="@dimen/default_text_size_medium" />
@@ -176,7 +176,7 @@
                     style="@style/SubTextOnPrimary"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/default_margin_extralarge"
+                    android:layout_marginStart="@dimen/default_margin_extra_large"
                     android:layout_marginTop="@dimen/default_margin_medium"
                     android:text="@string/tvJoinedHistory"
                     android:textSize="@dimen/default_text_size_large" />
@@ -192,7 +192,7 @@
                         android:id="@+id/tvNoDataJoinedHistory"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:layout_marginBottom="@dimen/default_margin_extralarge"
+                        android:layout_marginBottom="@dimen/default_margin_extra_large"
                         android:gravity="center"
                         android:text="@string/tvNoDataJoinedHistory"
                         android:textSize="@dimen/default_text_size_medium" />

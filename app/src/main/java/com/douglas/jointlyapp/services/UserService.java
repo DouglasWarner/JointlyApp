@@ -72,12 +72,14 @@ public interface UserService {
     Call<APIResponse<List<UserReviewUser>>> getListUserReview();
 
     @GET("api/users/reviews/")
-    Call<APIResponse<UserReviewUser>> getUserReview(@Body String email);
+    Call<APIResponse<List<UserReviewUser>>> getListUserReview(@Query("email") String email);
 
     @POST("api/users/reviews/")
-    Call<APIResponse<UserReviewUser>> postUserReview(@Body String date, @Body String userEmail,
-                                        @Body String userReviewEmail,
-                                        @Body String review, @Body int stars);
+    Call<APIResponse<UserReviewUser>> postUserReview(@Body UserReviewUser userReviewUser);
+
+//    String date, @Body String userEmail,
+//    @Body String userReviewEmail,
+//    @Body String review, @Body int stars
 
     @POST("api/users/follows/sync/")
     Call<APIResponse<UserFollowUser>> syncToAPI(@Body List<UserFollowUser> followUserList);

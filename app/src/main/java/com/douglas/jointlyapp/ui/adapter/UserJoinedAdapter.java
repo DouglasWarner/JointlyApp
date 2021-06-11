@@ -3,8 +3,6 @@ package com.douglas.jointlyapp.ui.adapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -17,8 +15,7 @@ import java.util.List;
 
 public class UserJoinedAdapter extends RecyclerView.Adapter<UserJoinedAdapter.ViewHolder>{
 
-    public interface ManageInitiative
-    {
+    public interface ManageInitiative {
         void onClick(View User);
     }
 
@@ -47,8 +44,7 @@ public class UserJoinedAdapter extends RecyclerView.Adapter<UserJoinedAdapter.Vi
         return list.size();
     }
 
-    public void update(List<User> list)
-    {
+    public void update(List<User> list) {
         this.list.clear();
         this.list.addAll(list);
         notifyDataSetChanged();

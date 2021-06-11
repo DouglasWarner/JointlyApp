@@ -9,10 +9,10 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:layout_height="match_parent">
 
         <include
+            android:id="@+id/profile"
             layout="@layout/layout_header_profile"
             android:visibility="visible" />
 
@@ -21,108 +21,46 @@
             android:layout_width="0dp"
             android:layout_height="2dp"
             android:background="?android:attr/listDivider"
-            app:layout_constraintBottom_toTopOf="@+id/constraintLayoutContador"
+            app:layout_constraintBottom_toTopOf="@+id/tbLayoutUser"
             app:layout_constraintEnd_toStartOf="@+id/guideline13"
             app:layout_constraintStart_toStartOf="@+id/guideline12"
-            app:layout_constraintTop_toBottomOf="@+id/constraintLayoutPerfil" />
+            app:layout_constraintTop_toBottomOf="@+id/profile" />
 
-        <include
-            layout="@layout/layout_count_initiative"
-            android:visibility="visible" />
-
-        <View
-            android:id="@+id/divider1"
-            android:layout_width="0dp"
-            android:layout_height="2dp"
-            android:background="?android:attr/listDivider"
-            app:layout_constraintBottom_toTopOf="@+id/linearLayoutPopularidad"
-            app:layout_constraintEnd_toStartOf="@+id/guideline13"
-            app:layout_constraintStart_toStartOf="@+id/guideline12"
-            app:layout_constraintTop_toBottomOf="@+id/constraintLayoutContador" />
-
-        <include
-            layout="@layout/layout_follows_profile"
-            android:visibility="visible" />
-
-        <View
-            android:id="@+id/divider2"
-            android:layout_width="0dp"
-            android:layout_height="2dp"
-            android:background="?android:attr/listDivider"
-            app:layout_constraintBottom_toTopOf="@+id/linearLayoutDescripcion"
-            app:layout_constraintEnd_toStartOf="@+id/guideline13"
-            app:layout_constraintStart_toStartOf="@+id/guideline12"
-            app:layout_constraintTop_toBottomOf="@+id/linearLayoutPopularidad" />
-
-        <include
-            layout="@layout/layout_description_profile"
-            android:visibility="visible"/>
-
-        <View
-            android:id="@+id/divider3"
-            android:layout_width="0dp"
-            android:layout_height="2dp"
-            android:background="?android:attr/listDivider"
-            app:layout_constraintBottom_toTopOf="@+id/linearLayoutIniciativas"
-            app:layout_constraintEnd_toStartOf="@+id/guideline13"
-            app:layout_constraintStart_toStartOf="@+id/guideline12"
-            app:layout_constraintTop_toBottomOf="@+id/linearLayoutDescripcion" />
-
-        <include layout="@layout/layout_initiative_profile" />
-
-        <View
-            android:id="@+id/divider4"
-            android:layout_width="0dp"
-            android:layout_height="2dp"
-            android:background="?android:attr/listDivider"
-            app:layout_constraintBottom_toTopOf="@+id/linearLayoutMiembroDesde"
-            app:layout_constraintEnd_toStartOf="@+id/guideline13"
-            app:layout_constraintStart_toStartOf="@+id/guideline12"
-            app:layout_constraintTop_toBottomOf="@+id/linearLayoutIniciativas" />
-
-        <LinearLayout
-            android:id="@+id/linearLayoutMiembroDesde"
+        <com.google.android.material.tabs.TabLayout
+            android:id="@+id/tbLayoutUser"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/default_margin_medium"
-            android:orientation="vertical"
             app:layout_constraintEnd_toStartOf="@+id/guideline13"
             app:layout_constraintStart_toStartOf="@+id/guideline12"
-            app:layout_constraintTop_toBottomOf="@+id/divider4">
+            app:layout_constraintTop_toBottomOf="@+id/profile"
+            android:padding="@dimen/default_dimen_small"
+            style="@style/Widget.MaterialComponents.TabLayout"
+            app:tabIndicatorColor="@color/secondaryColor">
 
-            <TextView
-                style="@style/TextOnPrimary"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/default_margin_medium"
-                android:text="@string/tvUserCreated"
-                android:textSize="@dimen/default_text_size_large"
-                android:textStyle="bold" />
+        </com.google.android.material.tabs.TabLayout>
 
-            <TextView
-                android:id="@+id/tvUserCreatedAt"
-                style="@style/TextOnPrimary"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="@dimen/default_margin_medium"
-                android:text="@string/tvUserCreated"
-                android:textSize="@dimen/default_text_size_medium" />
-
-        </LinearLayout>
+        <androidx.viewpager2.widget.ViewPager2
+            android:id="@+id/vpUser"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/default_dimen_small"
+            app:layout_constraintEnd_toStartOf="@+id/guideline13"
+            app:layout_constraintStart_toStartOf="@+id/guideline12"
+            app:layout_constraintTop_toBottomOf="@+id/tbLayoutUser" />
 
         <androidx.constraintlayout.widget.Guideline
             android:id="@+id/guideline12"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            app:layout_constraintGuide_begin="20dp" />
+            app:layout_constraintGuide_begin="10dp" />
 
         <androidx.constraintlayout.widget.Guideline
             android:id="@+id/guideline13"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            app:layout_constraintGuide_end="20dp" />
+            app:layout_constraintGuide_end="10dp" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

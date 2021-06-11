@@ -1,5 +1,6 @@
 package com.douglas.jointlyapp.ui.adapter;
 
+import android.content.res.Resources;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -7,6 +8,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.douglas.jointlyapp.R;
@@ -77,8 +79,7 @@ public class UserFavoriteAdapter extends RecyclerView.Adapter<UserFavoriteAdapte
         notifyDataSetChanged();
     }
 
-    public User getUserItem(int position)
-    {
+    public User getUserItem(int position) {
         return list.get(position);
     }
 
@@ -99,6 +100,7 @@ public class UserFavoriteAdapter extends RecyclerView.Adapter<UserFavoriteAdapte
 
             btnFollowUser.setOnClickListener(v -> {
                 ((Button)v).setText((follow) ? "Siguiendo" : "Seguir");
+                ((Button)v).setBackgroundColor((follow) ? itemView.getResources().getColor(R.color.primaryDarkColor) : itemView.getResources().getColor(R.color.secondaryLightColor));
                 listener.onClickBtnFollow(itemView);
             });
 

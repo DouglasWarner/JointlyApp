@@ -104,10 +104,16 @@ public class ShowInitiativeFragment extends Fragment implements ShowInitiativeCo
         if(!isHistory)
             showBottomSheetBehavior();
         if(isCreated) {
-            imgBtnChat.setVisibility(View.GONE);
+            imgBtnChat.setEnabled(true);
+            imgBtnChat.setImageResource(R.drawable.ic_qr);
             btnJoin.setText(R.string.show_initiative_go_to_chat);
             btnJoin.setPaddingRelative((int) getResources().getDimension(R.dimen.default_dimen_large), 0, 0, 0);
             btnJoin.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_chat,0,0,0);
+        } else {
+            imgBtnChat.setImageResource(R.drawable.ic_chat);
+            btnJoin.setText(R.string.join_user_join);
+//            btnJoin.setPaddingRelative((int) getResources().getDimension(R.dimen.default_dimen_large), 0, 0, 0);
+            btnJoin.setCompoundDrawablesWithIntrinsicBounds(0,0,0,0);
         }
 
         setInitiative(initiative);
@@ -178,12 +184,38 @@ public class ShowInitiativeFragment extends Fragment implements ShowInitiativeCo
             if(isCreated) {
                 goToChatFragment();
             } else {
-                presenter.joinInitiative(initiative);
+                AlertDialog.Builder dialog = new AlertDialog.Builder(getActivity())
+                        .setTitle(R.string.dialog_title_join_initiative)
+                        .setMessage(R.string.dialog_alert_info_message_join_initiative)
+                        .setIcon(R.drawable.ic_info)
+                        .setPositiveButton(R.string.dialog_positive_btn_join_initiative, (dialog1, which) -> {
+                            presenter.joinInitiative(initiative);
+                            dialog1.dismiss();
+                        })
+                        .setNegativeButton(R.string.dialog_negative_btn_join_initiative, (dialog1, which) -> {
+                            dialog1.dismiss();
+                        });
+
+                dialog.show();
             }
         });
 
         imgBtnChat.setOnClickListener(v -> {
-            goToChatFragment();
+            if(isCreated) {
+                AlertDialog.Builder dialog = new AlertDialog.Builder(getActivity())
+                        .setTitle(R.string.dialog_title_qr_initiative)
+                        .setView(R.layout.layout_qr)
+                        .setPositiveButton(R.string.dialog_positive_qr, (dialog1, which) -> {
+                            dialog1.dismiss();
+                        })
+                        .setNegativeButton(R.string.dialog_negative_qr, (dialog1, which) -> {
+                            dialog1.dismiss();
+                        });
+                dialog.show();
+                //TODO mostrar un fragment con el codigo qr para que otro lo escanee
+            } else {
+                goToChatFragment();
+            }
         });
     }
 
@@ -192,7 +224,7 @@ public class ShowInitiativeFragment extends Fragment implements ShowInitiativeCo
      */
     private void goToChatFragment() {
         Bundle bundle = new Bundle();
-        bundle.putLong(Initiative.TAG, initiative.getId());
+        bundle.putSerializable(Initiative.TAG, initiative);
         NavHostFragment.findNavController(this).navigate(R.id.action_showInitiativeFragment_to_chatFragment, bundle);
     }
 
@@ -238,16 +270,19 @@ public class ShowInitiativeFragment extends Fragment implements ShowInitiativeCo
         String email = JointlyPreferences.getInstance().getUser();
 
         if(email != null) {
-            presenter.loadUserStateJoined(email, initiative.getId());
             presenter.loadUserOwner(initiative.getCreated_by());
             presenter.loadListUserJoined(initiative.getId());
+            if(!isCreated) {
+                presenter.loadUserStateJoined(email, initiative.getId());
+            }
         }
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        hideBottomSheetBehavior();
+        presenter.onDestroy();
+        new Thread(this::hideBottomSheetBehavior).start();
     }
 
     @Override
@@ -292,12 +327,11 @@ public class ShowInitiativeFragment extends Fragment implements ShowInitiativeCo
 
     /**
      *
-     * @param bundle
      */
     private void goToEditInitiative() {
         Bundle bundle = new Bundle();
         bundle.putSerializable(Initiative.TAG, initiative);
-        NavHostFragment.findNavController(this).navigate(R.id.action_initiativeFragment_to_manageInitiativeFragment, bundle);
+        NavHostFragment.findNavController(this).navigate(R.id.action_showInitiativeFragment_to_manageInitiativeFragment, bundle);
     }
 
     /**
@@ -320,16 +354,20 @@ public class ShowInitiativeFragment extends Fragment implements ShowInitiativeCo
 
     @Override
     public void setJoined() {
-        btnJoin.setText(R.string.undo_user_join);
-        Snackbar.make(coordinatorLayout, getString(R.string.add_user_joined), Snackbar.LENGTH_SHORT).show();
-        imgBtnChat.setEnabled(true);
+        if(!isCreated) {
+            btnJoin.setText(R.string.undo_user_join);
+//        Snackbar.make(coordinatorLayout, getString(R.string.add_user_joined), Snackbar.LENGTH_SHORT).show();
+            imgBtnChat.setEnabled(true);
+        }
     }
 
     @Override
     public void setUnJoined() {
-        btnJoin.setText(R.string.join_user_join);
-        Snackbar.make(coordinatorLayout, getString(R.string.delete_user_joined), Snackbar.LENGTH_SHORT).show();
-        imgBtnChat.setEnabled(true);
+        if(!isCreated) {
+            btnJoin.setText(R.string.join_user_join);
+//        Snackbar.make(coordinatorLayout, getString(R.string.delete_user_joined), Snackbar.LENGTH_SHORT).show();
+            imgBtnChat.setEnabled(true);
+        }
     }
 
     @Override
@@ -339,8 +377,10 @@ public class ShowInitiativeFragment extends Fragment implements ShowInitiativeCo
 
     @Override
     public void setLoadUserStateJoined(boolean joined) {
-        imgBtnChat.setEnabled(joined);
-        btnJoin.setText((joined) ? R.string.undo_user_join : R.string.join_user_join);
+        if(!isCreated) {
+            imgBtnChat.setEnabled(joined);
+            btnJoin.setText((joined) ? R.string.undo_user_join : R.string.join_user_join);
+        }
     }
 
     @Override

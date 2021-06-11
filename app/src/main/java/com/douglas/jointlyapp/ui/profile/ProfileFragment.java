@@ -8,30 +8,36 @@ import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageButton;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.RecyclerView;
-
-import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import com.douglas.jointlyapp.R;
 import com.douglas.jointlyapp.data.model.User;
 import com.douglas.jointlyapp.ui.JointlyApplication;
 import com.douglas.jointlyapp.ui.preferences.JointlyPreferences;
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.imageview.ShapeableImageView;
 
 /**
- * La ventana de el usuario de inicio de sesion
+ * Fragment that represent the current user
  */
 public class ProfileFragment extends Fragment implements ProfileContract.View{
+
+    //region Variables
+
+    public static final String LOGINUSER = "LOGINUSER";
 
     private ShapeableImageView shImgUser;
     private TextView tvUserName;
@@ -44,12 +50,12 @@ public class ProfileFragment extends Fragment implements ProfileContract.View{
     private TextView tvUserDescription;
     private TextView tvUserCreatedAt;
 
-    private RecyclerView rvInitiativeCreateds;
-
-    BitmapDrawable imageUser;
-    User user;
+    private BitmapDrawable imageUser;
+    private User user;
 
     private ProfileContract.Presenter presenter;
+
+    //endregion
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -72,24 +78,18 @@ public class ProfileFragment extends Fragment implements ProfileContract.View{
         initUI(view);
 
         shImgUser.setOnClickListener(v -> {
-            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
-            {
-                if(ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)
-                {
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                if(ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
                     openGallery();
-                }
-                else
-                {
+                } else {
                     requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, JointlyApplication.REQUEST_PERMISSION_CODE);
                 }
-            }
-            else
-            {
+            } else {
                 openGallery();
             }
         });
 
-        view.findViewById(R.id.layoutInitiativeCreateds).setVisibility(View.GONE);
+        view.findViewById(R.id.linearLayoutInitiatives).setVisibility(View.GONE);
         view.findViewById(R.id.divider4).setVisibility(View.GONE);
 
         presenter = new ProfilePresenter(this);
@@ -108,9 +108,11 @@ public class ProfileFragment extends Fragment implements ProfileContract.View{
         tvUserFollows = view.findViewById(R.id.tvUserFollows);
         tvUserDescription = view.findViewById(R.id.tvUserDescription);
         tvUserCreatedAt = view.findViewById(R.id.tvUserCreatedAt);
-        rvInitiativeCreateds = view.findViewById(R.id.rvUserInitiativeCreated);
     }
 
+    /**
+     *
+     */
     private void openGallery() {
         Intent intent = new Intent(Intent.ACTION_PICK);
         intent.setType("image/*");
@@ -119,18 +121,14 @@ public class ProfileFragment extends Fragment implements ProfileContract.View{
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        if(requestCode == JointlyApplication.REQUEST_IMAGE_GALLERY)
-        {
-            if(resultCode == Activity.RESULT_OK && data != null)
-            {
+        if(requestCode == JointlyApplication.REQUEST_IMAGE_GALLERY) {
+            if(resultCode == Activity.RESULT_OK && data != null) {
                 Uri imagen = data.getData();
                 shImgUser.setImageURI(imagen);
                 imageUser = ((BitmapDrawable)shImgUser.getDrawable());
                 user.setImagen(imageUser.getBitmap());
                 presenter.updateImage(user);
-            }
-            else
-            {
+            } else {
                 Toast.makeText(getActivity(), "No se ha seleccionado ninguna imagen", Toast.LENGTH_SHORT).show();
             }
         }
@@ -139,14 +137,10 @@ public class ProfileFragment extends Fragment implements ProfileContract.View{
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        if(requestCode == JointlyApplication.REQUEST_PERMISSION_CODE)
-        {
-            if(permissions.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
-            {
+        if(requestCode == JointlyApplication.REQUEST_PERMISSION_CODE) {
+            if(permissions.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 openGallery();
-            }
-            else
-            {
+            } else {
                 Toast.makeText(getActivity(), "Se necesitan los permisos para abrir la galeria", Toast.LENGTH_SHORT).show();
             }
         }
@@ -197,7 +191,7 @@ public class ProfileFragment extends Fragment implements ProfileContract.View{
     }
 
     @Override
-    public void onSuccess(User user, int countUserFollowers, int initiativeCreated, int initiativeJoined) {
+    public void onSuccess(User user, long countUserFollowers, int initiativeCreated, int initiativeJoined) {
         shImgUser.setImageBitmap(user.getImagen());
         tvUserName.setText(user.getName());
         tvUserEmail.setText(user.getEmail());

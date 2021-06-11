@@ -1,25 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/constraintLayoutContador"
     android:layout_width="0dp"
     android:layout_height="wrap_content"
-    android:layout_margin="@dimen/default_margin_medium"
-    app:layout_constraintEnd_toStartOf="@+id/guideline13"
-    app:layout_constraintStart_toStartOf="@+id/guideline12"
-    app:layout_constraintTop_toBottomOf="@+id/divider"
+    android:layout_marginVertical="@dimen/default_margin_medium"
+    app:layout_constraintEnd_toStartOf="@+id/guideline31"
+    app:layout_constraintStart_toStartOf="@+id/guideline30"
+    app:layout_constraintTop_toTopOf="parent"
     app:layout_constraintBottom_toTopOf="@+id/divider1"
-    tools:showIn="@layout/fragment_profile">
+    app:layout_constraintVertical_bias="0.0"
+    tools:showIn="@layout/fragment_info">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/constraintLayout2"
-        android:layout_width="@dimen/default_width_small"
+        android:layout_width="0dp"
         android:layout_height="@dimen/default_height_medium"
         android:background="?attr/colorSecondary"
-        android:padding="@dimen/default_dimen_small"
+        android:layout_margin="@dimen/default_dimen_small"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/constraintLayout3"
+        app:layout_constraintEnd_toStartOf="@+id/guideline17"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -29,15 +31,15 @@
             style="@style/TextOnPrimary"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
             android:text="0"
             android:textSize="@dimen/default_text_size_large"
             android:textStyle="bold"
-            android:gravity="center_horizontal"
             app:layout_constraintBottom_toTopOf="@+id/textView5"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_chainStyle="spread" />
+            app:layout_constraintEnd_toStartOf="@+id/guideline19"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="@+id/guideline18"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/textView5"
@@ -46,27 +48,43 @@
             android:layout_height="wrap_content"
             android:gravity="center_horizontal"
             android:letterSpacing="0.05"
+            android:maxWidth="@dimen/default_width_small"
             android:text="@string/tvInitiativeCreated"
             android:textAllCaps="true"
-            android:textSize="@dimen/default_text_size_medium"
+            android:textSize="@dimen/default_text_size_small"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/guideline19"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="@+id/guideline18"
             app:layout_constraintTop_toBottomOf="@+id/tvInitiativeCreatedCount" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline18"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.05" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline19"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.95" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/constraintLayout3"
-        android:layout_width="@dimen/default_width_small"
+        android:layout_width="0dp"
         android:layout_height="@dimen/default_height_medium"
         android:background="?attr/colorSecondary"
-        android:padding="@dimen/default_dimen_small"
+        android:layout_margin="@dimen/default_dimen_small"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/constraintLayout2"
+        app:layout_constraintStart_toStartOf="@+id/guideline17"
         app:layout_constraintTop_toTopOf="parent">
 
         <TextView
@@ -79,8 +97,8 @@
             android:textSize="@dimen/default_text_size_large"
             android:textStyle="bold"
             app:layout_constraintBottom_toTopOf="@+id/textView6"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/guideline21"
+            app:layout_constraintStart_toStartOf="@+id/guideline20"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_chainStyle="spread" />
 
@@ -91,15 +109,37 @@
             android:layout_height="wrap_content"
             android:gravity="center_horizontal"
             android:letterSpacing="0.05"
+            android:maxWidth="@dimen/default_width_small"
             android:text="@string/tvInitiativeJoined"
             android:textAllCaps="true"
-            android:textSize="@dimen/default_text_size_medium"
+            android:textSize="@dimen/default_text_size_small"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/guideline21"
+            app:layout_constraintStart_toStartOf="@+id/guideline20"
             app:layout_constraintTop_toBottomOf="@+id/tvInitiativeJoinedCount" />
 
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline20"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.05" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline21"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.95" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline17"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.5" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

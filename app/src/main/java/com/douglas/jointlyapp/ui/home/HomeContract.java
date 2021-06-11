@@ -1,7 +1,6 @@
 package com.douglas.jointlyapp.ui.home;
 
-import com.douglas.jointlyapp.data.model.Initiative;
-import com.douglas.jointlyapp.data.model.User;
+import com.douglas.jointlyapp.data.model.HomeListAdapter;
 import com.douglas.jointlyapp.ui.base.BasePresenter;
 
 import java.util.List;
@@ -12,7 +11,7 @@ public interface HomeContract {
         void setNoData();
         void showProgress();
         void hideProgress();
-        void onSuccess(List<Initiative> list, List<User> userOwners, List<Long> countUsersJoined);
+        void onSuccess(List<HomeListAdapter> homeListAdapters);
         void showOnError(String message);
         void onSync();
     }

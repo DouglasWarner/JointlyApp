@@ -1,11 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="TextInputLayout" parent="Widget.Design.TextInputLayout">
+    <style name="TextInputLayout" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
         <item name="android:fontFamily">@font/raleway</item>
         <item name="android:textColor">@color/primaryTextColor</item>
         <item name="errorEnabled">true</item>
         <item name="errorTextColor">@android:color/holo_red_light</item>
-        <item name="android:layout_marginTop">20dp</item>
+        <item name="boxStrokeColor">@color/primaryDarkColor</item>
+        <item name="android:layout_marginTop">@dimen/default_margin_extra_large</item>
+    </style>
+    <style name="TextInputLayoutBox" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
+        <item name="android:fontFamily">@font/raleway</item>
+        <item name="android:textColor">@color/primaryTextColor</item>
+        <item name="errorEnabled">true</item>
+        <item name="errorTextColor">@android:color/holo_red_light</item>
+        <item name="android:layout_marginTop">@dimen/default_margin_extra_large</item>
     </style>
     <style name="TextOnPrimary" parent="TextAppearance.AppCompat">
         <item name="android:fontFamily">@font/raleway</item>
@@ -35,6 +43,5 @@
     </style>
     <style name="dateTimePickerDialog" parent="Theme.AppCompat.Light.Dialog">
         <item name="android:foreground">@color/primaryColor</item>
-        <item name="android:background">@color/secondaryColor</item>
     </style>
 </resources>

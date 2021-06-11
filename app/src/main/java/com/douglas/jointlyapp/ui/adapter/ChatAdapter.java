@@ -10,8 +10,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.douglas.jointlyapp.R;
 import com.douglas.jointlyapp.data.model.Chat;
-import com.douglas.jointlyapp.data.model.User;
-import com.douglas.jointlyapp.ui.preferences.JointlyPreferences;
 
 import java.util.List;
 
@@ -31,15 +29,12 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder>  {
     @NonNull
     @Override
     public ChatAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        if(viewType == RIGHT_MESSAGE)
-        {
+        if(viewType == RIGHT_MESSAGE) {
             View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.chat_item_right, parent, false);
-            return new ChatAdapter.ViewHolder(view);
-        }
-        else
-        {
+            return new ViewHolder(view);
+        } else {
             View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.chat_item_left, parent, false);
-            return new ChatAdapter.ViewHolder(view);
+            return new ViewHolder(view);
         }
     }
 
@@ -55,15 +50,13 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder>  {
         return list.size();
     }
 
-    public void update(List<Chat> list)
-    {
+    public void update(List<Chat> list) {
         this.list.clear();
         this.list.addAll(list);
         notifyDataSetChanged();
     }
 
-    public void addMessage(Chat chat)
-    {
+    public void addMessage(Chat chat) {
         list.add(chat);
         user = chat.getUserEmail();
         notifyDataSetChanged();

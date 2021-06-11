@@ -59,7 +59,7 @@ public class ProfilePresenter implements ProfileContract.Presenter, ProfileInter
     }
 
     @Override
-    public void onSuccess(User user, int countUserFollowers, int initiativeCreated, int initiativeJoined) {
+    public void onSuccess(User user, long countUserFollowers, int initiativeCreated, int initiativeJoined) {
         view.onSuccess(user, countUserFollowers, initiativeCreated, initiativeJoined);
     }
 }

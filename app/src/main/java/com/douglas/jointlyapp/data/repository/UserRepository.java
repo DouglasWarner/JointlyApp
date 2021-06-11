@@ -104,8 +104,7 @@ public class UserRepository {
      * Actualiza el usuario
      * @param user
      */
-    public void update(User user)
-    {
+    public void update(User user) {
         JointlyDatabase.DATABASE_WRITE_EXECUTOR.submit(() -> userDao.update(user));
     }
 
@@ -148,14 +147,11 @@ public class UserRepository {
      * @return user
      */
     public User getUser(String email) {
-        User result;
-        User user = null;
+        User result = null;
         try {
-            user = JointlyDatabase.DATABASE_WRITE_EXECUTOR.submit(() -> userDao.getUserExists(email)).get();
+            result = JointlyDatabase.DATABASE_WRITE_EXECUTOR.submit(() -> userDao.getUserExists(email)).get();
         } catch (ExecutionException | InterruptedException e) {
             e.printStackTrace();
-        } finally {
-            result = user;
         }
         return result;
     }
@@ -188,13 +184,11 @@ public class UserRepository {
      * @return list
      */
     public List<User> getListUserFollowed(String userEmail, boolean is_deleted) {
-        List<User> result;
+        List<User> result = new ArrayList<>();
         try {
-            list = JointlyDatabase.DATABASE_WRITE_EXECUTOR.submit(() -> userDao.getListUserFollowed(userEmail, is_deleted)).get();
+            result = JointlyDatabase.DATABASE_WRITE_EXECUTOR.submit(() -> userDao.getListUserFollowed(userEmail, is_deleted)).get();
         } catch (ExecutionException | InterruptedException e) {
             e.printStackTrace();
-        } finally {
-            result = list;
         }
         return result;
     }
@@ -220,15 +214,11 @@ public class UserRepository {
      * @return user
      */
     public User getUserOwnerInitiative(int initiative) {
-        User result;
-        User user = null;
-
+        User result = null;
         try {
-            user = JointlyDatabase.DATABASE_WRITE_EXECUTOR.submit(() -> userDao.getUserOwner(initiative)).get();
+            result = JointlyDatabase.DATABASE_WRITE_EXECUTOR.submit(() -> userDao.getUserOwner(initiative)).get();
         } catch (ExecutionException | InterruptedException e) {
             e.printStackTrace();
-        } finally {
-            result = user;
         }
         return result;
     }
@@ -237,10 +227,10 @@ public class UserRepository {
      * Devuelve la lista de usuarios que han creado almenos una iniciativa
      * @return list
      */
-    public List<User> getListInitiativeOwners() {
+    public List<User> getListInitiativeOwners(boolean is_deleted) {
         List<User> result = null;
         try {
-            list = JointlyDatabase.DATABASE_WRITE_EXECUTOR.submit(userDao::getListInitiativeOwners).get();
+            result = JointlyDatabase.DATABASE_WRITE_EXECUTOR.submit(() -> userDao.getListInitiativeOwners(is_deleted)).get();
         } catch (ExecutionException | InterruptedException e) {
             e.printStackTrace();
         }
@@ -366,14 +356,11 @@ public class UserRepository {
      * @return list
      */
     public List<String> getListUserFollows(String userEmail) {
-        List<String> result;
-        List<String> list = null;
+        List<String> result = new ArrayList<>();
         try {
-            list = JointlyDatabase.DATABASE_WRITE_EXECUTOR.submit(() -> userFollowUserDao.getListFollows(userEmail)).get();
+            result = JointlyDatabase.DATABASE_WRITE_EXECUTOR.submit(() -> userFollowUserDao.getListFollows(userEmail)).get();
         } catch (ExecutionException | InterruptedException e) {
             e.printStackTrace();
-        } finally {
-            result = list;
         }
         return result;
     }
@@ -409,23 +396,28 @@ public class UserRepository {
      * Obtiene todos los datos de la tabla
      * @return
      */
-    public List<UserReviewUser> getListUserReview() {
+    public List<UserReviewUser> getListUserReview(boolean is_deleted) {
+        List<UserReviewUser> userReviewUsers = new ArrayList<>();
         try {
-            List<UserReviewUser> listReview = JointlyDatabase.DATABASE_WRITE_EXECUTOR.submit(userReviewUserDao::getList).get();
-            return listReview;
+            List<UserReviewUser> listReview = JointlyDatabase.DATABASE_WRITE_EXECUTOR.submit(() -> userReviewUserDao.getList(is_deleted)).get();
         } catch (ExecutionException | InterruptedException e) {
             e.printStackTrace();
-            return null;
         }
+        return userReviewUsers;
     }
 
     /**
      * Inserta un review en un usuario
      * @param userReviewUser
      */
-    public void insertUserReview(UserReviewUser userReviewUser)
-    {
-        JointlyDatabase.DATABASE_WRITE_EXECUTOR.submit(() -> userReviewUserDao.insert(userReviewUser));
+    public long insertUserReview(UserReviewUser userReviewUser) {
+        long result = 0;
+        try {
+            result = JointlyDatabase.DATABASE_WRITE_EXECUTOR.submit(() -> userReviewUserDao.insert(userReviewUser)).get();
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
+        return result;
     }
 
     /**
@@ -446,8 +438,7 @@ public class UserRepository {
      * Actualiza el review
      * @param userReviewUser
      */
-    public void updateReview(UserReviewUser userReviewUser)
-    {
+    public void updateReview(UserReviewUser userReviewUser) {
         JointlyDatabase.DATABASE_WRITE_EXECUTOR.submit(() -> userReviewUserDao.update(userReviewUser));
     }
 
@@ -455,8 +446,7 @@ public class UserRepository {
      * Borra el review de un usuario
      * @param userReviewUser
      */
-    public void deleteUserReview(UserReviewUser userReviewUser)
-    {
+    public void deleteUserReview(UserReviewUser userReviewUser, boolean is_deleted) {
         JointlyDatabase.DATABASE_WRITE_EXECUTOR.submit(() -> userReviewUserDao.delete(userReviewUser));
     }
 
@@ -465,15 +455,12 @@ public class UserRepository {
      * @param userEmail
      * @return list
      */
-    public List<UserReviewUser> getListUserReviews(String userEmail) {
-        List<UserReviewUser> result;
-        List<UserReviewUser> list = null;
+    public List<UserReviewUser> getListUserReviews(String userEmail, boolean is_deleted) {
+        List<UserReviewUser> result = new ArrayList<>();
         try {
-            list = JointlyDatabase.DATABASE_WRITE_EXECUTOR.submit(() -> userReviewUserDao.getListReview(userEmail)).get();
+            result = JointlyDatabase.DATABASE_WRITE_EXECUTOR.submit(() -> userReviewUserDao.getListReview(userEmail, is_deleted)).get();
         } catch (ExecutionException | InterruptedException e) {
             e.printStackTrace();
-        } finally {
-            result = list;
         }
         return result;
     }
@@ -485,13 +472,11 @@ public class UserRepository {
      */
     public List<UserReviewUser> getListUserReviewsToSync(boolean isDeleted, boolean isSync) {
         List<UserReviewUser> result = null;
-
         try {
             result = JointlyDatabase.DATABASE_WRITE_EXECUTOR.submit(() -> userReviewUserDao.getListToSync(isDeleted, isSync)).get();
         } catch (ExecutionException | InterruptedException e) {
             e.printStackTrace();
         }
-
         return result;
     }
 

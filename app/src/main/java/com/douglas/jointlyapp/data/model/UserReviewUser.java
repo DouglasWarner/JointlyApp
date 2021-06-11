@@ -14,7 +14,7 @@ import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
 
-@Entity(tableName = "userReviewUser", primaryKeys = {"user", "user_review"},
+@Entity(tableName = "userReviewUser", primaryKeys = {"user", "user_review", "date"},
     foreignKeys = {@ForeignKey(entity = User.class, parentColumns = "email", childColumns = "user"),
                 @ForeignKey(entity = User.class, parentColumns = "email", childColumns = "user_review")},
     indices = {@Index("user"), @Index("user_review")})
@@ -35,6 +35,7 @@ public class UserReviewUser implements Serializable, Parcelable {
 
     @SerializedName("date")
     @ColumnInfo(defaultValue = "CURRENT_TIMESTAMP")
+    @NonNull
     private String date;
 
     @SerializedName("review")
@@ -58,6 +59,15 @@ public class UserReviewUser implements Serializable, Parcelable {
 
     @Ignore
     public UserReviewUser() {
+    }
+
+    @Ignore
+    public UserReviewUser(@NonNull String user, @NonNull String user_review, @NonNull String date, String review, int stars) {
+        this.user = user;
+        this.user_review = user_review;
+        this.date = date;
+        this.review = review;
+        this.stars = stars;
     }
 
     /**
@@ -170,14 +180,16 @@ public class UserReviewUser implements Serializable, Parcelable {
 
         UserReviewUser that = (UserReviewUser) o;
 
-        if (user != null ? !user.equals(that.user) : that.user != null) return false;
-        return user_review != null ? user_review.equals(that.user_review) : that.user_review == null;
+        if (!user.equals(that.user)) return false;
+        if (!user_review.equals(that.user_review)) return false;
+        return date.equals(that.date);
     }
 
     @Override
     public int hashCode() {
-        int result = user != null ? user.hashCode() : 0;
-        result = 31 * result + (user_review != null ? user_review.hashCode() : 0);
+        int result = user.hashCode();
+        result = 31 * result + user_review.hashCode();
+        result = 31 * result + date.hashCode();
         return result;
     }
 

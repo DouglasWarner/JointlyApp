@@ -44,6 +44,7 @@ public interface UserDao extends BaseDao<User> {
     @Query("SELECT * FROM user u ORDER BY (SELECT COUNT(*) FROM userFollowUser f WHERE u.email=f.user)")
     List<User> getListOrderByMaxUserFollowers();
 
+    //TODO mirar el resultado que me devuelve
     @Query("SELECT * FROM user WHERE email IN (SELECT user_follow FROM userFollowUser WHERE user=:userEmail AND is_deleted=:is_deleted)")
     List<User> getListUserFollowed(String userEmail, boolean is_deleted);
 
@@ -53,8 +54,8 @@ public interface UserDao extends BaseDao<User> {
     @Query("SELECT * FROM user WHERE email in (SELECT created_by FROM initiative WHERE id=:idInitiative)")
     User getUserOwner(int idInitiative);
 
-    @Query("SELECT * FROM user WHERE email in (SELECT created_by FROM initiative)")
-    List<User> getListInitiativeOwners();
+    @Query("SELECT * FROM user WHERE email in (SELECT created_by FROM initiative WHERE is_deleted=:is_deleted)")
+    List<User> getListInitiativeOwners(boolean is_deleted);
 
     @Query("DELETE FROM user")
     void deleteAll();

@@ -36,6 +36,8 @@ public class FavoriteInteractorImpl {
         this.userService = Apis.getInstance().getUserService();
     }
 
+    //region loadData
+
     public void loadData() {
         String user = JointlyPreferences.getInstance().getUser();
 
@@ -91,6 +93,10 @@ public class FavoriteInteractorImpl {
             }
         });
     }
+
+    //endregion
+
+    //region followUser
 
     public void followUser(final User userFollowed) {
         User user = UserRepository.getInstance().getUser(JointlyPreferences.getInstance().getUser());
@@ -176,4 +182,6 @@ public class FavoriteInteractorImpl {
             }
         };
     }
+
+    //endregion
 }

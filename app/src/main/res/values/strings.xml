@@ -125,4 +125,25 @@
     <string name="menu_item_title_edit">Editar</string>
     <string name="tvUserInitiativeJoineds">Unido</string>
     <string name="tvUserInitiative">Iniciativas</string>
+    <string name="dialog_alert_info_message_join_initiative">Unirse a una iniciativa significa que te comprometes con ella. En el caso de no poder asistir, porfavor cancela la participación.</string>
+    <string name="dialog_title_join_initiative">Información</string>
+    <string name="dialog_positive_btn_join_initiative">Aceptar</string>
+    <string name="dialog_negative_btn_join_initiative">Cancelar</string>
+    <string name="search_initiative">Buscar iniciativa</string>
+    <string name="action_search_initiative">Buscar por nombre...</string>
+    <string name="dialog_title_qr_initiative">QR</string>
+    <string name="dialog_positive_qr">Aceptar</string>
+    <string name="dialog_negative_qr">Cancelar</string>
+    <string name="scanQR">Escanear QR</string>
+    <string name="hint_etSendMessage">Opina sobre este usuario...</string>
+    <string name="tvRating">Puntuación</string>
+    <string name="default_text_small">Hola buenas</string>
+    <string name="default_text_large">Hola buenasHola buenasHola buenasHola buenasHola buenasHola buenasHola buenasHola buen buenasHola buenasHola buenasHola buenasHola buenasHola buenasHola buenasHola buen buenasHola buenasHola buenasHola buenasHola buenasHola buenasHola buenasHola buen buenasHola buenasHola buenasHola buenasHola buenasHola buenasHola buenasHola buen buenasHola buenasHola buenasHola buenasHola buenasHola buenasHola buenasHola buen buenasHola buenasHola buenasHola buenasHola buenasHola buenasHola buenasHola buen buenasHola buenasHola buenasHola buenasHola buenasHola buenasHola buenasHola buenasHola buenasHola buenasHola buenasHola buenasHola buenasHola buenasHola buenasHola buenasHola buenasHola buenasHola buenasHola buenasHola buenasHola buenasHola buenasHola buenasHola buenasHola buenasHola buenasHola buenasHola buenasHola buenasHola buenasHola buenas</string>
+    <string name="tvTitleReview">Review</string>
+    <string name="tvNoReviewData">Tadavía no tiene ninguna review</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="success_send_review">Enviado con exito</string>
+    <string name="spTitleTargetArea">Selecciona un area</string>
+    <string name="spHintTargetArea">Selecciona un area</string>
 </resources>

@@ -2,16 +2,16 @@
 <LinearLayout xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/linearLayoutIniciativas"
+    android:id="@+id/linearLayoutInitiatives"
     android:layout_width="0dp"
     android:layout_height="wrap_content"
-    android:layout_margin="@dimen/default_margin_medium"
+    android:layout_marginVertical="@dimen/default_margin_medium"
     android:orientation="vertical"
-    app:layout_constraintEnd_toStartOf="@+id/guideline13"
-    app:layout_constraintStart_toStartOf="@+id/guideline12"
+    app:layout_constraintEnd_toStartOf="@+id/guideline31"
+    app:layout_constraintStart_toStartOf="@+id/guideline30"
     app:layout_constraintTop_toBottomOf="@+id/divider3"
     app:layout_constraintBottom_toTopOf="@+id/divider4"
-    tools:showIn="@layout/fragment_profile">
+    tools:showIn="@layout/fragment_info">
 
     <TextView
         style="@style/TextOnPrimary"
@@ -46,7 +46,8 @@
         android:id="@+id/rvUserInitiativeCreated"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_margin="@dimen/default_margin_medium" />
+        android:layout_marginVertical="@dimen/default_margin_medium"
+        android:focusableInTouchMode="true"/>
 
     <TextView
         style="@style/SubTextOnSecondary"
@@ -72,6 +73,7 @@
         android:id="@+id/rvUserInitiativeJoined"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_margin="@dimen/default_margin_medium" />
+        android:layout_marginVertical="@dimen/default_margin_medium"
+        android:focusableInTouchMode="true"/>
 
 </LinearLayout>

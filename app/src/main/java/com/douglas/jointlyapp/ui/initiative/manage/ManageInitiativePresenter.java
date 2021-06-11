@@ -2,7 +2,11 @@ package com.douglas.jointlyapp.ui.initiative.manage;
 
 import android.graphics.Bitmap;
 
+import com.douglas.jointlyapp.data.model.Countries;
 import com.douglas.jointlyapp.data.model.Initiative;
+import com.douglas.jointlyapp.data.model.TargetArea;
+
+import java.util.List;
 
 public class ManageInitiativePresenter implements ManageInitiativeContract.Presenter, ManageInitiativeInteractorImpl.ManageInitiativeInteractor {
 
@@ -24,6 +28,16 @@ public class ManageInitiativePresenter implements ManageInitiativeContract.Prese
     public void editInitiative(long id, String name, String createAt, String targetDate, String targetTime, String description,
                                String targetArea, String location, Bitmap imagen, String targetAmount, String created_by, String ref_code) {
         interactor.editInitiative(id,name,createAt,targetDate,targetTime,description,targetArea,location,imagen,targetAmount,created_by,ref_code);
+    }
+
+    @Override
+    public void loadCountries() {
+        interactor.loadCountries();
+    }
+
+    @Override
+    public void loadTargetArea() {
+        interactor.loadTargetArea();
     }
 
     @Override
@@ -79,6 +93,16 @@ public class ManageInitiativePresenter implements ManageInitiativeContract.Prese
     @Override
     public void onUnsuccess() {
         view.onUnsuccess();
+    }
+
+    @Override
+    public void setCountries(List<Countries> countries) {
+        view.setCountries(countries);
+    }
+
+    @Override
+    public void setTargetArea(List<TargetArea> targetArea) {
+        view.setTargetArea(targetArea);
     }
 
     @Override

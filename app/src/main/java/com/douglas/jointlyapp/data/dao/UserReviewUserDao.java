@@ -26,11 +26,11 @@ public interface UserReviewUserDao extends BaseDao<UserReviewUser> {
     @Delete
     void delete(UserReviewUser userReviewUser);
 
-    @Query("SELECT * FROM userReviewUser")
-    List<UserReviewUser> getList();
+    @Query("SELECT * FROM userReviewUser WHERE is_deleted=:is_deleted")
+    List<UserReviewUser> getList(boolean is_deleted);
 
-    @Query("SELECT * FROM userReviewUser where user_review=:userEmail")
-    List<UserReviewUser> getListReview(String userEmail);
+    @Query("SELECT * FROM userReviewUser WHERE user_review=:userEmail AND is_deleted=:is_deleted")
+    List<UserReviewUser> getListReview(String userEmail, boolean is_deleted);
 
     @Query("SELECT * FROM userReviewUser WHERE is_deleted=:isDeleted OR is_sync=:isSync")
     List<UserReviewUser> getListToSync(boolean isDeleted, boolean isSync);

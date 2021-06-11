@@ -1,6 +1,7 @@
 package com.douglas.jointlyapp.ui.home;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -11,6 +12,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.SearchView;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -18,8 +20,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.douglas.jointlyapp.R;
+import com.douglas.jointlyapp.data.model.HomeListAdapter;
 import com.douglas.jointlyapp.data.model.Initiative;
-import com.douglas.jointlyapp.data.model.User;
 import com.douglas.jointlyapp.ui.JointlyApplication;
 import com.douglas.jointlyapp.ui.adapter.HomeAdapter;
 import com.douglas.jointlyapp.ui.preferences.JointlyPreferences;
@@ -33,7 +35,7 @@ import java.util.List;
 /**
  * La ventana home con todas la iniciativas
  */
-public class HomeFragment extends Fragment implements HomeContract.View, HomeAdapter.ManageInitiative {
+public class HomeFragment extends Fragment implements HomeContract.View, HomeAdapter.ManageInitiative, SearchView.OnQueryTextListener {
 
     //region Variables
 
@@ -102,7 +104,7 @@ public class HomeFragment extends Fragment implements HomeContract.View, HomeAda
      *
      */
     private void initRecycler() {
-        adapter = new HomeAdapter(new ArrayList<>(), new ArrayList<>(), new ArrayList<>(),this);
+        adapter = new HomeAdapter(new ArrayList<>(),this);
 
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext(), RecyclerView.VERTICAL, false);
         rvInitiative.setLayoutManager(layoutManager);
@@ -131,14 +133,13 @@ public class HomeFragment extends Fragment implements HomeContract.View, HomeAda
     }
 
     @Override
-    public void onSuccess(List<Initiative> list, List<User> userOwners, List<Long> countUsersJoined) {
+    public void onSuccess(List<HomeListAdapter> homeListAdapters) {
         if(llNoData.getVisibility() == View.VISIBLE)
             llNoData.setVisibility(View.GONE);
 
-        tvNoConnection.setVisibility(JointlyApplication.getConnection() && JointlyApplication.isIsSyncronized() ? View.GONE : View.VISIBLE);
+//        tvNoConnection.setVisibility(JointlyApplication.getConnection() && JointlyApplication.isIsSyncronized() ? View.GONE : View.VISIBLE);
 
-        adapter.update(list, userOwners, countUsersJoined);
-        updateListOrderByDefault();
+        updateListOrderByDefault(homeListAdapters);
     }
 
     @Override
@@ -151,7 +152,7 @@ public class HomeFragment extends Fragment implements HomeContract.View, HomeAda
         swipeRefreshLayout.setRefreshing(!swipeRefreshLayout.isRefreshing());
     }
 
-    private void updateListOrderByDefault() {
+    private void updateListOrderByDefault(List<HomeListAdapter> homeListAdapters) {
         switch (JointlyPreferences.getInstance().getOrderByFavorite()) {
             case "date":
                 adapter.sortByDate();
@@ -162,19 +163,22 @@ public class HomeFragment extends Fragment implements HomeContract.View, HomeAda
             case "users":
                 adapter.sortByUsersJoineds();
                 break;
+            default:
+                adapter.update(homeListAdapters);
+                break;
         }
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        presenter = null;
+        presenter.onDestroy();
     }
 
     @Override
     public void onClick(View initiative) {
         Bundle bundle = new Bundle();
-        bundle.putSerializable(Initiative.TAG, adapter.getInitiativeItem(rvInitiative.getChildAdapterPosition(initiative)));
+        bundle.putSerializable(Initiative.TAG, adapter.getInitiativeItem(rvInitiative.getChildAdapterPosition(initiative)).getInitiative());
         NavHostFragment.findNavController(this).navigate(R.id.action_homeFragment_to_showInitiativeFragment, bundle);
     }
 
@@ -182,6 +186,33 @@ public class HomeFragment extends Fragment implements HomeContract.View, HomeAda
     public void onPrepareOptionsMenu(@NonNull Menu menu) {
         super.onPrepareOptionsMenu(menu);
         menu.setGroupVisible(R.id.group_action_order_initiative, true);
+        MenuItem searchViewItem = menu.findItem(R.id.action_search);
+        searchViewItem.setVisible(true);
+        MenuItem.OnActionExpandListener onActionExpandListener = new MenuItem.OnActionExpandListener() {
+            @Override
+            public boolean onMenuItemActionExpand(MenuItem item) {
+                menu.setGroupVisible(R.id.group_action_order_initiative, false);
+                return true;
+            }
+
+            @Override
+            public boolean onMenuItemActionCollapse(MenuItem item) {
+                menu.setGroupVisible(R.id.group_action_order_initiative, true);
+                return true;
+            }
+        };
+
+        searchViewItem.setOnActionExpandListener(onActionExpandListener);
+        SearchView searchView = (SearchView) searchViewItem.getActionView();
+        searchView.setOnCloseListener(new SearchView.OnCloseListener() {
+            @Override
+            public boolean onClose() {
+                Log.e("TAG", searchViewItem.isVisible() +"");
+                return true;
+            }
+        });
+        searchView.setQueryHint(getString(R.string.action_search_initiative));
+        searchView.setOnQueryTextListener(this);
     }
 
     @Override
@@ -198,5 +229,17 @@ public class HomeFragment extends Fragment implements HomeContract.View, HomeAda
                 break;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public boolean onQueryTextSubmit(String query) {
+//        searchView.clearFocus();
+        return false;
+    }
+
+    @Override
+    public boolean onQueryTextChange(String newText) {
+        adapter.getFilter().filter(newText);
+        return false;
     }
 }

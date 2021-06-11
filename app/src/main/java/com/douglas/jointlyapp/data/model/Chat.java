@@ -23,7 +23,7 @@ public class Chat implements Parcelable {
 
     //region Variables
 
-    @SerializedName("date_message")
+    @SerializedName("date")
     @NonNull
     @ColumnInfo(defaultValue = "CURRENT_TIMESTAMP")
     private String dateMessage;
@@ -36,8 +36,11 @@ public class Chat implements Parcelable {
     @NonNull
     private String userEmail;
 
-    @SerializedName("message")
+    @SerializedName("mensaje")
     private String message;
+
+    @SerializedName("read")
+    private boolean read;
 
     @SerializedName("is_sync")
     @ColumnInfo(defaultValue = "0")
@@ -58,11 +61,12 @@ public class Chat implements Parcelable {
      * @param userEmail
      * @param message
      */
-    public Chat(String dateMessage, long idInitiative, String userEmail, String message, boolean is_sync) {
+    public Chat(String dateMessage, long idInitiative, String userEmail, String message, boolean read, boolean is_sync) {
         this.dateMessage = dateMessage;
         this.idInitiative = idInitiative;
         this.userEmail = userEmail;
         this.message = message;
+        this.read = read;
         this.is_sync = is_sync;
     }
 
@@ -72,6 +76,7 @@ public class Chat implements Parcelable {
         idInitiative = in.readLong();
         userEmail = in.readString();
         message = in.readString();
+        read = in.readByte() != 0;
         is_sync = in.readByte() != 0;
     }
 
@@ -125,6 +130,14 @@ public class Chat implements Parcelable {
         this.message = message;
     }
 
+    public boolean isRead() {
+        return read;
+    }
+
+    public void setRead(boolean read) {
+        this.read = read;
+    }
+
     public boolean isIs_sync() {
         return is_sync;
     }
@@ -162,6 +175,7 @@ public class Chat implements Parcelable {
                 ", idInitiative=" + idInitiative +
                 ", userEmail='" + userEmail + '\'' +
                 ", message='" + message + '\'' +
+                ", isRead='" + read + '\'' +
                 ", is_sync=" + is_sync +
                 '}';
     }
@@ -177,6 +191,7 @@ public class Chat implements Parcelable {
         dest.writeLong(idInitiative);
         dest.writeString(userEmail);
         dest.writeString(message);
+        dest.writeByte((byte)(read ? 1:0));
         dest.writeByte((byte)(is_sync ? 1:0));
     }
 }

@@ -47,7 +47,7 @@ public class ChatInteractorImpl {
 
         String date = simpleDateFormat.format(Calendar.getInstance().getTime());
 
-        Chat chat = new Chat(date, idInitiative, userEmail, message, false);
+        Chat chat = new Chat(date, idInitiative, userEmail, message, false, false);
 
         ChatRepository.getInstance().insert(chat);
 

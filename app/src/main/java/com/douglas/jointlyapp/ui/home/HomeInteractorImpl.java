@@ -2,17 +2,20 @@ package com.douglas.jointlyapp.ui.home;
 
 import android.util.Log;
 
+import com.douglas.jointlyapp.data.model.HomeListAdapter;
 import com.douglas.jointlyapp.data.model.Initiative;
 import com.douglas.jointlyapp.data.model.User;
 import com.douglas.jointlyapp.data.model.UserJoinInitiative;
 import com.douglas.jointlyapp.data.repository.InitiativeRepository;
 import com.douglas.jointlyapp.data.repository.UserRepository;
 import com.douglas.jointlyapp.services.APIResponse;
+import com.douglas.jointlyapp.services.Apis;
 import com.douglas.jointlyapp.services.InitiativeService;
 import com.douglas.jointlyapp.services.UserService;
 import com.douglas.jointlyapp.ui.JointlyApplication;
 import com.douglas.jointlyapp.ui.preferences.JointlyPreferences;
-import com.douglas.jointlyapp.services.Apis;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,7 +29,7 @@ public class HomeInteractorImpl {
 
     interface ListInitiativeInteractor {
         void onNoData();
-        void onSuccess(List<Initiative> list, List<User> userOwners, List<Long> usersJoined);
+        void onSuccess(List<HomeListAdapter> homeListAdapters);
         void onError(String message);
         void onSync();
         //TODO mirar todas las llamadas onError para mandar mensajes
@@ -95,15 +98,55 @@ public class HomeInteractorImpl {
     private void fromLocal() {
         //TODO Quizas obtener de firebase
         String user = JointlyPreferences.getInstance().getUser();
-        List<Initiative> list = InitiativeRepository.getInstance().getList();
-        List<User> userOwner = UserRepository.getInstance().getListInitiativeOwners();
-        List<Long> listCountUsersJoined = InitiativeRepository.getInstance().getListCountUsersJoinedByInitiative();
 
-        if (list.isEmpty()) {
+        List<Initiative> listInitiative = InitiativeRepository.getInstance().getList(false);
+        List<User> userOwner = UserRepository.getInstance().getListInitiativeOwners(false);
+        List<UserJoinInitiative> joinInitiatives = InitiativeRepository.getInstance().getListUserJoinInitiative(false);
+        List<Long> listCountUsersJoined = getCountUserJoineds(listInitiative, joinInitiatives);
+
+        List<HomeListAdapter> homeListAdapters = getHomeListAdapters(listInitiative, userOwner, listCountUsersJoined);
+
+        if (listInitiative.isEmpty()) {
             interactor.onNoData();
         } else {
-            interactor.onSuccess(list, userOwner, listCountUsersJoined);
+            interactor.onSuccess(homeListAdapters);
         }
+    }
+
+    /**
+     *
+     * @param listInitiative
+     * @param userOwner
+     * @param listCountUsersJoined
+     * @return
+     */
+    @NotNull
+    private List<HomeListAdapter> getHomeListAdapters(List<Initiative> listInitiative, List<User> userOwner, List<Long> listCountUsersJoined) {
+        List<HomeListAdapter> homeListAdapters = new ArrayList<>();
+
+        for (int i = 0; i < listInitiative.size(); i++) {
+            int finalI = i;
+            homeListAdapters.add(
+                    new HomeListAdapter(listInitiative.get(i),
+                            userOwner.stream().findAny().filter(x -> x.getEmail().equals(listInitiative.get(finalI).getCreated_by())).orElse(null),
+                            listCountUsersJoined.get(i))
+            );
+        }
+        return homeListAdapters;
+    }
+
+    /**
+     *
+     * @param listInitiative
+     * @param joinInitiatives
+     * @return
+     */
+    @NotNull
+    private List<Long> getCountUserJoineds(List<Initiative> listInitiative, List<UserJoinInitiative> joinInitiatives) {
+        List<Long> listCountUsersJoined = new ArrayList<>();
+
+        listInitiative.forEach(i -> listCountUsersJoined.add(joinInitiatives.stream().filter(x -> !x.getIs_deleted() && x.getId_initiative()==i.getId()).count()));
+        return listCountUsersJoined;
     }
 
     //endregion
@@ -155,9 +198,9 @@ public class HomeInteractorImpl {
                     Log.e("TAG", response.message());
                     if (!response.body().isError()) {
                         List<UserJoinInitiative> userJoinInitiatives = response.body().getData();
-                        List<Long> countUsersJoined = new ArrayList<>();
-                        initiatives.forEach(x -> countUsersJoined.add(userJoinInitiatives.stream().filter(y-> x.getId()==y.getId_initiative()).count()));
-                        interactor.onSuccess(initiatives, listUserOwner, countUsersJoined);
+                        List<Long> listCountUsersJoined = getCountUserJoineds(initiatives, userJoinInitiatives);
+                        List<HomeListAdapter> homeListAdapters = getHomeListAdapters(initiatives, listUserOwner, listCountUsersJoined);
+                        interactor.onSuccess(homeListAdapters);
                     } else {
                         interactor.onError(response.body().getMessage());
                     }
@@ -187,21 +230,5 @@ public class HomeInteractorImpl {
 //        syncFromAPI.run();
 
         interactor.onSync();
-    }
-
-    private List<Long> getCountUserJoined() {
-        List<UserJoinInitiative> tmp = new ArrayList<>();
-//        List<Long> count = new ArrayList<>();
-//
-//        for (UserJoinInitiative t : tmp) {
-//            long c = 0;
-//            for (Initiative i : initiatives) {
-//                if(t.getId_initiative() == i.getId())
-//                    c++;
-//            }
-//            count.add(c);
-//        }
-
-        return null;
     }
 }

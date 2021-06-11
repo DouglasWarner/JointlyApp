@@ -5,14 +5,15 @@ import android.util.Log;
 import com.douglas.jointlyapp.data.model.Initiative;
 import com.douglas.jointlyapp.data.repository.InitiativeRepository;
 import com.douglas.jointlyapp.services.APIResponse;
+import com.douglas.jointlyapp.services.Apis;
 import com.douglas.jointlyapp.services.UserService;
 import com.douglas.jointlyapp.ui.JointlyApplication;
 import com.douglas.jointlyapp.ui.preferences.JointlyPreferences;
-import com.douglas.jointlyapp.services.Apis;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
@@ -47,19 +48,17 @@ public class InitiativeInteractorImpl {
         this.simpleDateFormat = new SimpleDateFormat(JointlyApplication.DATETIMEFORMAT, Locale.getDefault());
     }
 
+    //region loadCreated
+
+    /**
+     *
+     * @param history
+     */
     public void loadCreated(final String history) {
         if(JointlyApplication.getConnection() && JointlyApplication.isIsSyncronized()) {
             createdFromAPI(history);
         } else {
             createdFromLocal(history);
-        }
-    }
-
-    public void loadJoined(final String history, final int type) {
-        if(JointlyApplication.getConnection() && JointlyApplication.isIsSyncronized()) {
-            joinedFromAPI(history, type);
-        } else {
-            joinedFromLocal(history, type);
         }
     }
 
@@ -78,63 +77,16 @@ public class InitiativeInteractorImpl {
                     if (!response.body().isError()) {
                         List<Initiative> list = response.body().getData();
                         if(history.equals(InitiativeFragment.TYPE_HISTORY)) {
-                            list = filterHistory(list);
                             if(list.isEmpty()) {
                                 interactor.onNoDataCreatedHistory();
                             } else {
-                                interactor.onSuccessCreatedHistory(list);
+                                interactor.onSuccessCreatedHistory(filterHistory(list));
                             }
                         } else if(history.equals(InitiativeFragment.TYPE_INPROGRESS)) {
-                            list = filterInProgress(list);
                             if(list.isEmpty()) {
                                 interactor.onNoDataCreatedInProgress();
                             } else {
-                                interactor.onSuccessCreatedInProgress(list);
-                            }
-                        }
-                    } else {
-                        interactor.onError(response.body().getMessage());
-                    }
-                }
-            }
-
-            @Override
-            public void onFailure(Call<APIResponse<List<Initiative>>> call, Throwable t) {
-                Log.e("ERR", t.getMessage());
-                interactor.onError(null);
-                call.cancel();
-            }
-        });
-    }
-
-    /**
-     *
-     * @param history
-     * @param type
-     */
-    private void joinedFromAPI(final String history, final int type) {
-        Call<APIResponse<List<Initiative>>> initiativeCall = userService.getListInitiativeJoinedByUser(JointlyPreferences.getInstance().getUser(), type);
-
-        initiativeCall.enqueue(new Callback<APIResponse<List<Initiative>>>() {
-            @Override
-            public void onResponse(Call<APIResponse<List<Initiative>>> call, Response<APIResponse<List<Initiative>>> response) {
-                Log.e("TAG", response.code()+"");
-                if (response.isSuccessful() && response.body() != null) {
-                    if (!response.body().isError()) {
-                        List<Initiative> list = response.body().getData();
-                        if(history.equals(InitiativeFragment.TYPE_HISTORY)) {
-                            list = filterHistory(list);
-                            if(list.isEmpty()) {
-                                interactor.onNoDataJoinedHistory();
-                            } else {
-                                interactor.onSuccessJoinedHistory(list);
-                            }
-                        } else if(history.equals(InitiativeFragment.TYPE_INPROGRESS)) {
-                            list = filterInProgress(list);
-                            if(list.isEmpty()) {
-                                interactor.onNoDataJoinedInProgress();
-                            } else {
-                                interactor.onSuccessJoinedInProgress(list);
+                                interactor.onSuccessCreatedInProgress(filterInProgress(list));
                             }
                         }
                     } else {
@@ -159,20 +111,36 @@ public class InitiativeInteractorImpl {
      */
     private void createdFromLocal(final String history) {
         String user = JointlyPreferences.getInstance().getUser();
+        List<Initiative> list = InitiativeRepository.getInstance().getListCreatedByUser(user, false);
         if(history.equals(InitiativeFragment.TYPE_HISTORY)) {
-            List<Initiative> list = filterHistory(InitiativeRepository.getInstance().getListCreatedByUser(user, false));
             if (list.isEmpty()) {
                 interactor.onNoDataCreatedHistory();
             } else {
-                interactor.onSuccessCreatedHistory(list);
+                interactor.onSuccessCreatedHistory(filterHistory(list));
             }
         } else if(history.equals(InitiativeFragment.TYPE_INPROGRESS)) {
-            List<Initiative> list = filterInProgress(InitiativeRepository.getInstance().getListCreatedByUser(user, false));
             if (list.isEmpty()) {
                 interactor.onNoDataCreatedInProgress();
             } else {
-                interactor.onSuccessCreatedInProgress(list);
+                interactor.onSuccessCreatedInProgress(filterInProgress(list));
             }
+        }
+    }
+
+    //endregion
+
+    //region loadJoined
+
+    /**
+     *
+     * @param history
+     * @param type
+     */
+    public void loadJoined(final String history, final int type) {
+        if(JointlyApplication.getConnection() && JointlyApplication.isIsSyncronized()) {
+            joinedFromAPI(history, type);
+        } else {
+            joinedFromLocal(history, type);
         }
     }
 
@@ -182,22 +150,68 @@ public class InitiativeInteractorImpl {
      */
     private void joinedFromLocal(final String history, final int type) {
         String user = JointlyPreferences.getInstance().getUser();
+        List<Initiative> list = InitiativeRepository.getInstance().getListJoinedByUser(user, type, false);
         if(history.equals(InitiativeFragment.TYPE_HISTORY)) {
-            List<Initiative> list = filterHistory(InitiativeRepository.getInstance().getListJoinedByUser(user, type, false));
             if (list.isEmpty()) {
                 interactor.onNoDataJoinedHistory();
             } else {
-                interactor.onSuccessJoinedHistory(list);
+                interactor.onSuccessJoinedHistory(filterHistory(list));
             }
         } else if(history.equals(InitiativeFragment.TYPE_INPROGRESS)) {
-            List<Initiative> list = filterInProgress(InitiativeRepository.getInstance().getListJoinedByUser(user, type, false));
             if (list.isEmpty()) {
                 interactor.onNoDataJoinedInProgress();
             } else {
-                interactor.onSuccessJoinedInProgress(list);
+                interactor.onSuccessJoinedInProgress(filterInProgress(list));
             }
         }
     }
+
+    /**
+     *
+     * @param history
+     * @param type
+     */
+    private void joinedFromAPI(final String history, final int type) {
+        Call<APIResponse<List<Initiative>>> initiativeCall = userService.getListInitiativeJoinedByUser(JointlyPreferences.getInstance().getUser(), type);
+
+        initiativeCall.enqueue(new Callback<APIResponse<List<Initiative>>>() {
+            @Override
+            public void onResponse(Call<APIResponse<List<Initiative>>> call, Response<APIResponse<List<Initiative>>> response) {
+                Log.e("TAG", response.code()+"");
+                if (response.isSuccessful() && response.body() != null) {
+                    if (!response.body().isError()) {
+                        List<Initiative> list = response.body().getData();
+                        if(history.equals(InitiativeFragment.TYPE_HISTORY)) {
+                            if(list.isEmpty()) {
+                                interactor.onNoDataJoinedHistory();
+                            } else {
+                                interactor.onSuccessJoinedHistory(filterHistory(list));
+                            }
+                        } else if(history.equals(InitiativeFragment.TYPE_INPROGRESS)) {
+                            if(list.isEmpty()) {
+                                interactor.onNoDataJoinedInProgress();
+                            } else {
+                                interactor.onSuccessJoinedInProgress(filterInProgress(list));
+                            }
+                        }
+                    } else {
+                        interactor.onError(response.body().getMessage());
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<APIResponse<List<Initiative>>> call, Throwable t) {
+                Log.e("ERR", t.getMessage());
+                interactor.onError(null);
+                call.cancel();
+            }
+        });
+    }
+
+    //endregion
+
+    //region Filter Type
 
     //TODO checkear si esta haciendo bien el filtrado
 
@@ -210,8 +224,10 @@ public class InitiativeInteractorImpl {
         return list.stream()
                 .filter(x -> {
                     try {
-                        return simpleDateFormat.parse(x.getTarget_date()).after(Calendar.getInstance(TimeZone.getTimeZone("UTF")).getTime());
+                        Log.e("TAG", simpleDateFormat.parse(x.getTarget_date()).after(GregorianCalendar.getInstance(Locale.getDefault()).getTime()) + "");
+                        return simpleDateFormat.parse(x.getTarget_date()).after(GregorianCalendar.getInstance(Locale.getDefault()).getTime());
                     } catch (ParseException e) {
+                        Log.e("TAG", "------ERROR de filtrado in progress---------");
                         return false;
                     }
                 }).collect(Collectors.toList());
@@ -226,10 +242,14 @@ public class InitiativeInteractorImpl {
         return list.stream()
                 .filter(x -> {
                     try {
-                        return simpleDateFormat.parse(x.getTarget_date()).before(Calendar.getInstance(TimeZone.getTimeZone("UTF")).getTime());
+                        Log.e("TAG", simpleDateFormat.parse(x.getTarget_date()).before(GregorianCalendar.getInstance(Locale.getDefault()).getTime()) + "");
+                        return simpleDateFormat.parse(x.getTarget_date()).before(GregorianCalendar.getInstance(Locale.getDefault()).getTime());
                     } catch (ParseException e) {
+                        Log.e("TAG", "------ERROR de filtrado history------");
                         return false;
                     }
                 }).collect(Collectors.toList());
     }
+
+    //endregion
 }

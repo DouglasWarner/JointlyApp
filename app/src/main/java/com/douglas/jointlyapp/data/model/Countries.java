@@ -29,8 +29,8 @@ public class Countries implements Parcelable, Serializable {
     @SerializedName("name")
     private String name;
 
-    @SerializedName("description")
-    private String description;
+    @SerializedName("ccaa")
+    private String ccaa;
 
     //endregion
 
@@ -44,19 +44,19 @@ public class Countries implements Parcelable, Serializable {
      * Create a new Countries
      * @param idCountries
      * @param name
-     * @param description
+     * @param ccaa
      */
-    public Countries(long idCountries, String name, String description) {
+    public Countries(long idCountries, String name, String ccaa) {
         this.idCountries = idCountries;
         this.name = name;
-        this.description = description;
+        this.ccaa = ccaa;
     }
 
     @Ignore
     protected Countries(Parcel in) {
         idCountries = in.readLong();
         name = in.readString();
-        description = in.readString();
+        ccaa = in.readString();
     }
 
     //endregion
@@ -91,12 +91,12 @@ public class Countries implements Parcelable, Serializable {
         this.name = name;
     }
 
-    public String getDescription() {
-        return description;
+    public String getCcaa() {
+        return ccaa;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public void setCcaa(String ccaa) {
+        this.ccaa = ccaa;
     }
 
     //endregion
@@ -121,7 +121,7 @@ public class Countries implements Parcelable, Serializable {
         return "Countries{" +
                 "idCountries=" + idCountries +
                 ", name='" + name + '\'' +
-                ", description='" + description + '\'' +
+                ", ccaa='" + ccaa + '\'' +
                 '}';
     }
 
@@ -134,6 +134,6 @@ public class Countries implements Parcelable, Serializable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeLong(idCountries);
         dest.writeString(name);
-        dest.writeString(description);
+        dest.writeString(ccaa);
     }
 }

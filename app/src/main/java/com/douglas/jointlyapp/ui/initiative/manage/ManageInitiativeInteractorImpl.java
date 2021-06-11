@@ -5,13 +5,19 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import com.douglas.jointlyapp.data.Converters;
+import com.douglas.jointlyapp.data.model.Countries;
 import com.douglas.jointlyapp.data.model.Initiative;
+import com.douglas.jointlyapp.data.model.TargetArea;
 import com.douglas.jointlyapp.data.repository.InitiativeRepository;
+import com.douglas.jointlyapp.data.repository.SettingsRepository;
 import com.douglas.jointlyapp.services.APIResponse;
+import com.douglas.jointlyapp.services.Apis;
 import com.douglas.jointlyapp.services.InitiativeService;
 import com.douglas.jointlyapp.ui.JointlyApplication;
 import com.douglas.jointlyapp.ui.utils.CommonUtils;
-import com.douglas.jointlyapp.services.Apis;
+
+import java.util.List;
+import java.util.Set;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -34,6 +40,9 @@ public class ManageInitiativeInteractorImpl {
 
         void onSuccess(Initiative initiative);
         void onUnsuccess();
+
+        void setCountries(List<Countries> countries);
+        void setTargetArea(List<TargetArea> targetArea);
 
         void onError(String message);
     }
@@ -65,9 +74,6 @@ public class ManageInitiativeInteractorImpl {
                               final String targetAmount, final String created_by) {
         if (isNotValidInitiative(name, targetDate, targetTime, targetArea, location, targetAmount))
             return;
-
-        // Created
-        // name, cre_at, t_date, descrip, t_area, loca, imag, t_amou, status, cre_by, refcode,
 
         Initiative initiative = new Initiative(name, CommonUtils.getDateNow(), String.format("%s %s", targetDate, targetTime), description, targetArea,
                 location, imagen, targetAmount, created_by);
@@ -153,9 +159,6 @@ public class ManageInitiativeInteractorImpl {
                                final String targetAmount, final String created_by, final String ref_code) {
         if (isNotValidInitiative(targetDate, targetTime, targetArea, location))
             return;
-
-        // Edit
-        // name, t_date, descrip, loca, imag, t_amou, status
 
         if(JointlyApplication.getConnection() && JointlyApplication.isIsSyncronized()) {
             editToAPI(id,name,createAt,targetDate,targetTime,description,targetArea,location,imagen,targetAmount,created_by,ref_code);
@@ -244,6 +247,28 @@ public class ManageInitiativeInteractorImpl {
             }
         });
     }
+    //endregion
+
+    //region load Countries and TargetArea
+
+    /**
+     * Load all countries from DB
+     */
+    public void loadCountries(){
+        List<Countries> countries = SettingsRepository.getInstance().getListCountries();
+
+        interactor.setCountries(countries);
+    }
+
+    /**
+     * Load all targetArea from DB
+     */
+    public void loadTargetArea() {
+        List<TargetArea> targetAreas = SettingsRepository.getInstance().getListTargetArea();
+
+        interactor.setTargetArea(targetAreas);
+    }
+
     //endregion
 
     //region Utils

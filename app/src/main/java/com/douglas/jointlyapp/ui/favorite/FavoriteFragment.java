@@ -23,7 +23,12 @@ import com.douglas.jointlyapp.ui.preferences.JointlyPreferences;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Fragment that represents the list of users followed
+ */
 public class FavoriteFragment extends Fragment implements FavoriteContract.View, UserFavoriteAdapter.ManageUserFavorite {
+
+    //region Variables
 
     private LinearLayout llLoading;
     private LinearLayout llNoData;
@@ -31,6 +36,8 @@ public class FavoriteFragment extends Fragment implements FavoriteContract.View,
     private UserFavoriteAdapter adapter;
 
     private FavoritePresenter presenter;
+
+    //endregion
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -122,29 +129,12 @@ public class FavoriteFragment extends Fragment implements FavoriteContract.View,
             llNoData.setVisibility(View.GONE);
 
         adapter.update(list);
-
-        updateListOrderByDefault();
-    }
-
-    private void updateListOrderByDefault() {
-        switch (JointlyPreferences.getInstance().getOrderByFavorite())
-        {
-            case "name":
-                adapter.sortByName();
-                break;
-            case "location":
-                adapter.sortByLocation();
-                break;
-            case "users":
-                adapter.sortByUsersFollows();
-                break;
-        }
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        presenter = null;
+        presenter.onDestroy();
     }
 
     @Override

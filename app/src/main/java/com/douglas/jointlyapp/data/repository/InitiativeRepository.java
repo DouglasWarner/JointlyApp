@@ -2,8 +2,6 @@ package com.douglas.jointlyapp.data.repository;
 
 import android.util.Log;
 
-import androidx.room.RoomDatabase;
-
 import com.douglas.jointlyapp.data.JointlyDatabase;
 import com.douglas.jointlyapp.data.dao.InitiativeDao;
 import com.douglas.jointlyapp.data.dao.UserJoinInitiativeDao;
@@ -15,29 +13,27 @@ import com.douglas.jointlyapp.ui.utils.CommonUtils;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
-import java.util.stream.Collectors;
 
+/**
+ * Entity that makes the connection to DB local for get data
+ */
 public class InitiativeRepository {
 
     private static final InitiativeRepository initiativeRepository;
     private final InitiativeDao initiativeDao;
     private final UserJoinInitiativeDao userJoinInitiativeDao;
-    private List<Initiative> list;
 
     static {
         initiativeRepository = new InitiativeRepository();
     }
 
-    private InitiativeRepository()
-    {
-        this.list = new ArrayList<>();
+    private InitiativeRepository() {
         JointlyDatabase db = JointlyDatabase.getDatabase();
         initiativeDao = db.initiativeDao();
         userJoinInitiativeDao = db.userJoinInitiativeDao();
     }
 
-    public static InitiativeRepository getInstance()
-    {
+    public static InitiativeRepository getInstance() {
         return initiativeRepository;
     }
 
@@ -47,14 +43,12 @@ public class InitiativeRepository {
      * Devuelve toda la lista de iniciativas
      * @return list
      */
-    public List<Initiative> getList() {
-        List<Initiative> result;
+    public List<Initiative> getList(boolean is_deleted) {
+        List<Initiative> result = new ArrayList<>();
         try {
-            list = JointlyDatabase.DATABASE_WRITE_EXECUTOR.submit(initiativeDao::getList).get();
+            result = JointlyDatabase.DATABASE_WRITE_EXECUTOR.submit(() -> initiativeDao.getList(is_deleted)).get();
         } catch (ExecutionException | InterruptedException e) {
             e.printStackTrace();
-        } finally {
-            result = list;
         }
         return result;
     }
@@ -64,15 +58,16 @@ public class InitiativeRepository {
      * @param userEmail
      * @return list
      */
-    public List<Initiative> getList(String userEmail) {
-        List<Initiative> result;
+    public List<Initiative> getList(String userEmail, boolean is_deleted) {
+        List<Initiative> result = new ArrayList<>();
         try {
-            list = JointlyDatabase.DATABASE_WRITE_EXECUTOR.submit(initiativeDao::getList).get();
+            result = JointlyDatabase.DATABASE_WRITE_EXECUTOR.submit(() -> initiativeDao.getList(userEmail, is_deleted)).get();
         } catch (ExecutionException | InterruptedException e) {
             e.printStackTrace();
-        } finally {
-            result = list.stream().filter(x -> !x.getCreated_by().equals(userEmail)).collect(Collectors.toList());
         }
+//        finally {
+//            result = list.stream().filter(x -> !x.getCreated_by().equals(userEmail)).collect(Collectors.toList());
+//        }
         return result;
     }
 
@@ -83,13 +78,11 @@ public class InitiativeRepository {
      */
     public List<Initiative> getListInitiativeToSync(boolean isDeleted, boolean isSync) {
         List<Initiative> result = null;
-
         try {
-            JointlyDatabase.DATABASE_WRITE_EXECUTOR.submit(() -> initiativeDao.getListToSync(isDeleted, isSync)).get();
+            result = JointlyDatabase.DATABASE_WRITE_EXECUTOR.submit(() -> initiativeDao.getListToSync(isDeleted, isSync)).get();
         } catch (ExecutionException | InterruptedException e) {
             e.printStackTrace();
         }
-
         return result;
     }
 
@@ -157,7 +150,7 @@ public class InitiativeRepository {
     public List<Initiative> getListCreatedByUser(String userEmail, boolean is_deleted) {
         List<Initiative> result = new ArrayList<>();
         try {
-            list = JointlyDatabase.DATABASE_WRITE_EXECUTOR.submit(() -> initiativeDao.getListCreatedByUser(userEmail, is_deleted)).get();
+            result = JointlyDatabase.DATABASE_WRITE_EXECUTOR.submit(() -> initiativeDao.getListCreatedByUser(userEmail, is_deleted)).get();
         } catch (ExecutionException | InterruptedException e) {
             e.printStackTrace();
         }
@@ -174,7 +167,7 @@ public class InitiativeRepository {
     public List<Initiative> getListJoinedByUser(String userEmail, int type, boolean is_deleted) {
         List<Initiative> result = new ArrayList<>();
         try {
-            list = JointlyDatabase.DATABASE_WRITE_EXECUTOR.submit(() -> initiativeDao.getListJoinedByUser(userEmail, type, is_deleted)).get();
+            result = JointlyDatabase.DATABASE_WRITE_EXECUTOR.submit(() -> initiativeDao.getListJoinedByUser(userEmail, type, is_deleted)).get();
         } catch (ExecutionException | InterruptedException e) {
             e.printStackTrace();
         }
@@ -211,9 +204,9 @@ public class InitiativeRepository {
      * Obtiene todos los datos de la tabla
      * @return
      */
-    public List<UserJoinInitiative> getListUserJoinInitiative() {
+    public List<UserJoinInitiative> getListUserJoinInitiative(boolean is_deleted) {
         try {
-            List<UserJoinInitiative> listJoin = JointlyDatabase.DATABASE_WRITE_EXECUTOR.submit(userJoinInitiativeDao::getList).get();
+            List<UserJoinInitiative> listJoin = JointlyDatabase.DATABASE_WRITE_EXECUTOR.submit(() -> userJoinInitiativeDao.getList(is_deleted)).get();
             return listJoin;
         } catch (ExecutionException | InterruptedException e) {
             e.printStackTrace();
@@ -225,10 +218,10 @@ public class InitiativeRepository {
      * Obtiene una lista con todos los usuarios unidos a cada iniciativa
      * @return
      */
-    public List<Long> getListCountUsersJoinedByInitiative() {
+    public List<Long> getListCountUsersJoinedByInitiative(boolean is_deleted) {
         List<Long> result = null;
         try {
-            result = JointlyDatabase.DATABASE_WRITE_EXECUTOR.submit(userJoinInitiativeDao::getListCountUserJoinedByInitiative).get();
+            result = JointlyDatabase.DATABASE_WRITE_EXECUTOR.submit(() -> userJoinInitiativeDao.getListCountUserJoinedByInitiative(is_deleted)).get();
         } catch (ExecutionException | InterruptedException e) {
             e.printStackTrace();
         }

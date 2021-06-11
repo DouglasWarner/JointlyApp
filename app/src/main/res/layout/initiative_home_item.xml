@@ -5,8 +5,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/cardView"
     android:layout_width="match_parent"
-    android:layout_height="175dp"
-    android:layout_margin="10dp"
+    android:layout_height="@dimen/default_height_extra_large"
+    android:layout_margin="@dimen/default_margin_medium"
     android:clickable="true"
     app:cardCornerRadius="30dp"
     app:cardElevation="8dp">
@@ -14,20 +14,22 @@
     <LinearLayout
         android:id="@+id/llImageInitiative"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:orientation="vertical">
 
         <ImageView
             android:id="@+id/imgBtnInitiative"
             android:layout_width="match_parent"
-            android:layout_height="100dp"
+            android:layout_height="0dp"
             android:contentDescription="Imagen de la iniciativa"
             android:scaleType="centerCrop"
+            android:layout_weight="1"
             android:src="@drawable/ic_add_photo_initiative" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="75dp">
+            android:layout_height="0dp"
+            android:layout_weight="0.6">
 
             <com.google.android.material.imageview.ShapeableImageView
                 android:id="@+id/imgUser"
@@ -37,6 +39,7 @@
                 android:src="@mipmap/ic_app"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/guideline4"
+                app:layout_constraintHorizontal_bias="0.6"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:shapeAppearanceOverlay="@style/imageCircular" />
@@ -48,40 +51,61 @@
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/raleway"
                 android:text="Nombre de iniciativa"
-                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintBottom_toTopOf="@+id/tvInitiativeDate"
                 app:layout_constraintEnd_toStartOf="@+id/guideline5"
-                app:layout_constraintHorizontal_bias="0.069"
+                app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toStartOf="@+id/guideline4"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.16000003" />
+                app:layout_constraintVertical_chainStyle="spread" />
+
+            <TextView
+                android:id="@+id/tvInitiativeDate"
+                style="@style/TextOnPrimary"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:drawableLeft="@drawable/ic_date"
+                android:gravity="center_vertical"
+                android:text="10/10/2021"
+                android:textSize="@dimen/default_text_size_extra_small"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/guideline5"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintHorizontal_chainStyle="spread"
+                app:layout_constraintStart_toStartOf="@+id/guideline4"
+                app:layout_constraintTop_toBottomOf="@+id/tvInitiativeName" />
 
             <TextView
                 android:id="@+id/tvCountUser"
                 style="@style/TextOnPrimary"
-                android:layout_width="wrap_content"
+                android:layout_width="50dp"
                 android:layout_height="wrap_content"
                 android:drawableLeft="@drawable/ic_people"
                 android:gravity="center_vertical"
-                android:text="20"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="@+id/tvInitiativeName"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toStartOf="@+id/tvInitiativeName"
-                app:layout_constraintTop_toBottomOf="@+id/tvInitiativeName"
-                app:layout_constraintVertical_bias="0.25" />
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:text="0"
+                android:textSize="@dimen/default_text_size_extra_small"
+                android:drawablePadding="@dimen/default_dimen_small"
+                app:layout_constraintBaseline_toBaselineOf="@+id/tvInitiativeDate"
+                app:layout_constraintEnd_toStartOf="@+id/guideline5"
+                app:layout_constraintHorizontal_bias="0.1"
+                app:layout_constraintHorizontal_chainStyle="spread"
+                app:layout_constraintStart_toEndOf="@+id/tvInitiativeDate" />
 
             <TextView
                 android:id="@+id/tvLocationInitiative"
                 style="@style/TextOnPrimary"
-                android:layout_width="125dp"
+                android:layout_width="90sp"
                 android:layout_height="wrap_content"
                 android:drawableLeft="@drawable/ic_location"
-                android:text="Málaga"
+                android:gravity="center_vertical"
                 android:maxLines="1"
-                android:gravity="center"
-                android:paddingStart="10dp"
+                android:ellipsize="end"
+                android:text="Málagaaaaaaaaaaa"
+                android:textSize="@dimen/default_text_size_extra_small"
                 app:layout_constraintBaseline_toBaselineOf="@+id/tvCountUser"
                 app:layout_constraintEnd_toStartOf="@+id/guideline5"
+                app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toEndOf="@+id/tvCountUser" />
 
             <androidx.constraintlayout.widget.Guideline
@@ -89,14 +113,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                app:layout_constraintGuide_begin="90dp" />
+                app:layout_constraintGuide_begin="65dp" />
 
             <androidx.constraintlayout.widget.Guideline
                 android:id="@+id/guideline5"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                app:layout_constraintGuide_end="33dp" />
+                app:layout_constraintGuide_end="10dp" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

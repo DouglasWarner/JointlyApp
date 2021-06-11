@@ -23,14 +23,18 @@
         android:label="@string/initiative"
         tools:layout="@layout/fragment_initiative" >
         <action
-            android:id="@+id/action_initiativeFragment_to_manageInitiativeFragment"
-            app:destination="@id/manageInitiativeFragment" />
-        <action
             android:id="@+id/action_initiativeFragment_to_settingFragment"
             app:destination="@id/settingFragment" />
         <action
             android:id="@+id/action_initiativeFragment_to_showInitiativeFragment"
-            app:destination="@id/showInitiativeFragment" />
+            app:destination="@id/showInitiativeFragment"
+            app:enterAnim="@anim/fragment_open_enter"
+            app:exitAnim="@anim/fragment_open_exit"
+            app:popEnterAnim="@anim/fragment_open_enter"
+            app:popExitAnim="@anim/fragment_open_exit" />
+        <action
+            android:id="@+id/action_initiativeFragment_to_manageInitiativeFragment"
+            app:destination="@id/manageInitiativeFragment" />
     </fragment>
     <fragment
         android:id="@+id/favoriteFragment"
@@ -55,6 +59,9 @@
         <action
             android:id="@+id/action_profileFragment_to_settingFragment"
             app:destination="@id/settingFragment" />
+        <action
+            android:id="@+id/action_profileFragment_to_reviewBottomSheetDialog"
+            app:destination="@id/reviewBottomSheetDialog" />
     </fragment>
     <fragment
         android:id="@+id/manageInitiativeFragment"
@@ -75,6 +82,9 @@
         <action
             android:id="@+id/action_showInitiativeFragment_to_chatFragment"
             app:destination="@id/chatFragment" />
+        <action
+            android:id="@+id/action_showInitiativeFragment_to_manageInitiativeFragment"
+            app:destination="@id/manageInitiativeFragment" />
     </fragment>
     <fragment
         android:id="@+id/settingFragment"
@@ -98,6 +108,9 @@
         <action
             android:id="@+id/action_userProfileFragment_to_showInitiativeFragment2"
             app:destination="@id/showInitiativeFragment" />
+        <action
+            android:id="@+id/action_showUserProfileFragment_to_reviewBottomSheetDialog"
+            app:destination="@id/reviewBottomSheetDialog" />
     </fragment>
     <fragment
         android:id="@+id/chatFragment"
@@ -108,4 +121,8 @@
         android:name="com.douglas.jointlyapp.ui.preferences.AboutUsFragment"
         android:label="fragment_about_us"
         tools:layout="@layout/fragment_about_us" />
+    <dialog
+        android:id="@+id/reviewBottomSheetDialog"
+        android:name="com.douglas.jointlyapp.ui.reviewdialog.ReviewBottomSheetDialog"
+        android:label="ReviewBottomSheetDialog" />
 </navigation>

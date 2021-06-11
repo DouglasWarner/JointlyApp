@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:backgroundTint="@color/white"
+    android:padding="@dimen/default_dimen_medium">
+
+    <TextView
+        android:id="@+id/tvNameUser"
+        style="@style/TextOnSecondary"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:textSize="@dimen/default_text_size_medium"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.1"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <TextView
+        android:id="@+id/itemTvSendMessage"
+        style="@style/TextOnSecondary"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:focusableInTouchMode="true"
+        android:maxHeight="400dp"
+        android:nestedScrollingEnabled="true"
+        android:padding="@dimen/default_dimen_large"
+        android:scrollbars="vertical"
+        android:textSize="@dimen/default_text_size_medium"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_chainStyle="spread"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvNameUser"
+        app:layout_constraintVertical_bias="0.0"
+        app:layout_constraintVertical_chainStyle="spread" />
+
+    <RatingBar
+        android:id="@+id/itemRatingBarStars"
+        style="?attr/ratingBarStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:numStars="5"
+        android:progressTint="@color/yellow"
+        android:stepSize="@android:integer/config_mediumAnimTime"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.1"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/itemTvSendMessage"
+        app:layout_constraintVertical_bias="0.0"
+        android:rating="3.5"/>
+
+    <TextView
+        android:id="@+id/itemTvDate"
+        style="@style/TextOnSecondary"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="10/10/2010"
+        android:textSize="@dimen/default_text_size_small"
+        app:layout_constraintBottom_toBottomOf="@+id/itemRatingBarStars"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/itemRatingBarStars"
+        app:layout_constraintTop_toBottomOf="@+id/itemTvSendMessage" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

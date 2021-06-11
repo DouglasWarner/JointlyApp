@@ -1,6 +1,5 @@
 package com.douglas.jointlyapp.ui;
 
-import android.content.BroadcastReceiver;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
@@ -14,7 +13,6 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.widget.NestedScrollView;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
@@ -39,8 +37,8 @@ public class JointlyActivity extends AppCompatActivity {
     private NavController navController;
     private NestedScrollView nestedScrollView;
     private FloatingActionButton floatingActionButton;
-    private View viewBottomSheet;
-    private BottomSheetBehavior<View> bottomSheetBehavior;
+    private View viewBottomSheetInitiative;
+    private BottomSheetBehavior<View> bottomSheetInitiative;
     private TextView tvNoConnection;
     private Intent intentCheckConnection;
     private CheckConnectionBroadCast checkConnectionBroadCast;
@@ -54,8 +52,9 @@ public class JointlyActivity extends AppCompatActivity {
         toolbar = findViewById(R.id.toolbar);
         nestedScrollView = findViewById(R.id.nestedScrollView);
         floatingActionButton = findViewById(R.id.faButton);
-        viewBottomSheet = findViewById(R.id.bottomSheetJoinInitiative);
-        bottomSheetBehavior = BottomSheetBehavior.from(viewBottomSheet);
+        viewBottomSheetInitiative = findViewById(R.id.bottomSheetJoinInitiative);
+        bottomSheetInitiative = BottomSheetBehavior.from(viewBottomSheetInitiative);
+
         tvNoConnection = findViewById(R.id.tvNoConnection);
 
         setSupportActionBar(toolbar);
@@ -77,6 +76,8 @@ public class JointlyActivity extends AppCompatActivity {
             switch (id)
             {
                 case R.id.homeFragment:
+                case R.id.favoriteFragment:
+                case R.id.profileFragment:
                     bottomNavigationView.setVisibility(View.VISIBLE);
                     floatingActionButton.setVisibility(View.GONE);
                     break;
@@ -86,15 +87,8 @@ public class JointlyActivity extends AppCompatActivity {
                     floatingActionButton.setImageResource(R.drawable.ic_add);
                     break;
                 case R.id.manageInitiativeFragment:
+                case R.id.showUserProfileFragment:
                     bottomNavigationView.setVisibility(View.GONE);
-                    floatingActionButton.setImageResource(R.drawable.ic_edit);
-                    break;
-                case R.id.favoriteFragment:
-                    bottomNavigationView.setVisibility(View.VISIBLE);
-                    floatingActionButton.setVisibility(View.GONE);
-                    break;
-                case R.id.profileFragment:
-                    bottomNavigationView.setVisibility(View.VISIBLE);
                     floatingActionButton.setVisibility(View.GONE);
                     break;
                 default:
@@ -105,14 +99,15 @@ public class JointlyActivity extends AppCompatActivity {
             nestedScrollView.scrollTo(0,0);
         });
 
+        //TODO sync
         // set info connection
-        tvNoConnection.setVisibility(JointlyApplication.getConnection() && JointlyApplication.isIsSyncronized()? View.GONE : View.VISIBLE);
+//        tvNoConnection.setVisibility(JointlyApplication.getConnection() && JointlyApplication.isIsSyncronized()? View.GONE : View.VISIBLE);
 
         createCheckConnectionService();
     }
 
     public void createCheckConnectionService() {
-        checkConnectionBroadCast = new CheckConnectionBroadCast(tvNoConnection, bottomSheetBehavior);
+        checkConnectionBroadCast = new CheckConnectionBroadCast(tvNoConnection);
         registerReceiver(checkConnectionBroadCast, new IntentFilter(JointlyApplication.CHECK_CONNECTION_BROADCAST));
         intentCheckConnection = new Intent(JointlyApplication.getContext(), CheckConnectionService.class);
         startService(intentCheckConnection);
@@ -133,8 +128,7 @@ public class JointlyActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
 
-        switch (item.getItemId())
-        {
+        switch (item.getItemId()) {
             case R.id.action_settings:
                 Navigation.findNavController(this, R.id.nav_host_fragment).navigate(R.id.settingFragment);
                 break;
@@ -152,7 +146,6 @@ public class JointlyActivity extends AppCompatActivity {
                 Navigation.findNavController(this, R.id.nav_host_fragment).navigate(R.id.accountFragment);
                 break;
         }
-
         return false;
     }
 

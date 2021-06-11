@@ -16,7 +16,9 @@ import com.douglas.jointlyapp.data.dao.UserFollowUserDao;
 import com.douglas.jointlyapp.data.dao.UserJoinInitiativeDao;
 import com.douglas.jointlyapp.data.dao.UserReviewUserDao;
 import com.douglas.jointlyapp.data.model.Chat;
+import com.douglas.jointlyapp.data.model.Countries;
 import com.douglas.jointlyapp.data.model.Initiative;
+import com.douglas.jointlyapp.data.model.TargetArea;
 import com.douglas.jointlyapp.data.model.User;
 import com.douglas.jointlyapp.data.model.UserFollowUser;
 import com.douglas.jointlyapp.data.model.UserJoinInitiative;
@@ -25,7 +27,7 @@ import com.douglas.jointlyapp.data.model.UserReviewUser;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-@Database(entities = {User.class, Initiative.class, UserFollowUser.class, UserJoinInitiative.class, Chat.class, UserReviewUser.class}, version = 21, exportSchema = false)
+@Database(entities = {User.class, Initiative.class, UserFollowUser.class, UserJoinInitiative.class, Chat.class, UserReviewUser.class, TargetArea.class, Countries.class}, version = 24, exportSchema = false)
 @TypeConverters(Converters.class)
 public abstract class JointlyDatabase extends RoomDatabase {
 

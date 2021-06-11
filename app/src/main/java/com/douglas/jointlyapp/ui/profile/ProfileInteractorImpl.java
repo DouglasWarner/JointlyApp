@@ -16,7 +16,7 @@ public class ProfileInteractorImpl {
         void onUserFollowersEmpty();
         void onInitiativeCreatedEmpty();
         void onInitiativeJointedEmpty();
-        void onSuccess(User user, int countUserFollowers, int initiativeCreated, int initiativeJoined);
+        void onSuccess(User user, long countUserFollowers, int initiativeCreated, int initiativeJoined);
     }
 
     private ProfileInteractor interactor;
@@ -25,12 +25,11 @@ public class ProfileInteractorImpl {
         this.interactor = interactor;
     }
 
-    public void loadUser(final String userEmail)
-    {
+    public void loadUser(final String userEmail) {
         User user = UserRepository.getInstance().getUser(userEmail);
         int initiativeCreated = InitiativeRepository.getInstance().getListCreatedByUser(userEmail, false).size();
         int initiativeJoined = InitiativeRepository.getInstance().getListJoinedByUser(userEmail, 1,false).size();
-        int userFollowers = UserRepository.getInstance().getCountUserFollowers(userEmail);
+        long userFollowers = UserRepository.getInstance().getCountUserFollowers(userEmail);
 
         if(user.getLocation().isEmpty())
             interactor.onLocationEmpty();

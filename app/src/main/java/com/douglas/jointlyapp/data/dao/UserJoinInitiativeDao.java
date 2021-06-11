@@ -36,11 +36,11 @@ public interface UserJoinInitiativeDao {
     @Query("UPDATE userJoinInitiative SET type=:type, is_deleted=:is_deleted, is_sync=:is_sync WHERE id_initiative=:id_initiative AND user_email=:user_email")
     void update(long id_initiative, String user_email, int type, boolean is_deleted, boolean is_sync);
 
-    @Query("SELECT * FROM userJoinInitiative")
-    List<UserJoinInitiative> getList();
+    @Query("SELECT * FROM userJoinInitiative WHERE is_deleted=:is_deleted")
+    List<UserJoinInitiative> getList(boolean is_deleted);
 
-    @Query("SELECT count(*) FROM userJoinInitiative GROUP BY id_initiative")
-    List<Long> getListCountUserJoinedByInitiative();
+    @Query("SELECT count(*) FROM userJoinInitiative j WHERE j.id_initiative IN (SELECT i.id FROM initiative i) AND j.is_deleted=:is_deleted GROUP BY j.id_initiative ORDER BY j.id_initiative")
+    List<Long> getListCountUserJoinedByInitiative(boolean is_deleted);
 
     @Query("SELECT count(*) FROM userJoinInitiative WHERE user_email=:user AND type=:type AND is_deleted=:is_deleted")
     long getCountInitiativeParticipateByUser(String user, int type, boolean is_deleted);

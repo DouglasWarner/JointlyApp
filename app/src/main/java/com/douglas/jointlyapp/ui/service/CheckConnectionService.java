@@ -95,7 +95,6 @@ public class CheckConnectionService extends Service {
                     checkBroadCast.putExtra("connection", false);
                 }
 
-
                 LocalBroadcastManager.getInstance(context).sendBroadcast(checkBroadCast);
                 try {
                     Thread.sleep(20000);

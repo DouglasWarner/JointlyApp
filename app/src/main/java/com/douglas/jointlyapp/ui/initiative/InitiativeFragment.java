@@ -2,6 +2,8 @@ package com.douglas.jointlyapp.ui.initiative;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
@@ -322,5 +324,24 @@ public class InitiativeFragment extends Fragment implements InitiativeContract.V
      */
     private void goToShowInitiative(Bundle bundle) {
         NavHostFragment.findNavController(this).navigate(R.id.action_initiativeFragment_to_showInitiativeFragment, bundle);
+    }
+
+    @Override
+    public void onPrepareOptionsMenu(@NonNull Menu menu) {
+        super.onPrepareOptionsMenu(menu);
+        menu.findItem(R.id.action_scan_qr).setVisible(true);
+        menu.findItem(R.id.action_scan_qr).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                //TODO aqui va la llamada para abrir el scaner
+                return true;
+            }
+        });
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        presenter.onDestroy();
     }
 }

@@ -1,13 +1,16 @@
 package com.douglas.jointlyapp.ui.chat;
 
+import android.app.ActionBar;
 import android.app.job.JobInfo;
 import android.app.job.JobScheduler;
 import android.content.ComponentName;
 import android.content.Context;
+import android.icu.text.CaseMap;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -59,23 +62,25 @@ public class ChatFragment extends Fragment implements ChatContract.View {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        Toolbar toolbar = getActivity().findViewById(R.id.toolbar);
+
         Bundle bundle = getArguments();
 
-        long idInitiative = bundle.getLong(Initiative.TAG);
+        Initiative initiative = bundle != null ? (Initiative) bundle.getSerializable(Initiative.TAG) : null;
         String userEmail = JointlyPreferences.getInstance().getUser();
 
         initUI(view);
-
         initRecycler();
-
-        imgbtnSend.setOnClickListener(v -> {
-            presenter.sendMessage(idInitiative, userEmail, tvMessage.getText().toString());
-        });
 
         presenter = new ChatPresenter(this);
 
-        presenter.loadChat(idInitiative);
-
+        if(initiative != null) {
+            toolbar.setTitle(initiative.getName() + " Chat");
+            imgbtnSend.setOnClickListener(v -> {
+                presenter.sendMessage(initiative.getId(), userEmail, tvMessage.getText().toString());
+            });
+            presenter.loadChat(initiative.getId());
+        }
     }
 
     private void initUI(@NonNull View view) {

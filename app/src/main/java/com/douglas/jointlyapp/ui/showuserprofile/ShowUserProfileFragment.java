@@ -7,33 +7,35 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.RatingBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.navigation.fragment.NavHostFragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
+import androidx.navigation.Navigation;
+import androidx.viewpager2.widget.ViewPager2;
 
 import com.douglas.jointlyapp.R;
-import com.douglas.jointlyapp.data.model.Initiative;
 import com.douglas.jointlyapp.data.model.User;
-import com.douglas.jointlyapp.ui.adapter.InitiativeAdapter;
+import com.douglas.jointlyapp.ui.JointlyApplication;
+import com.douglas.jointlyapp.ui.infouser.InfoUserFragment;
+import com.douglas.jointlyapp.ui.reviewuser.ReviewUserFragment;
+import com.douglas.jointlyapp.ui.utils.CommonUtils;
+import com.douglas.jointlyapp.ui.viewpager.UserViewPagerAdapter;
 import com.google.android.material.imageview.ShapeableImageView;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.android.material.tabs.TabLayout;
+import com.google.android.material.tabs.TabLayoutMediator;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import static com.douglas.jointlyapp.ui.initiative.InitiativeFragment.TYPE_CREATED;
-import static com.douglas.jointlyapp.ui.initiative.InitiativeFragment.TYPE_JOINED;
+import java.util.Locale;
 
 /**
- * La ventana de otro usuario
+ * Fragment that represents other user
  */
-public class ShowUserProfileFragment extends Fragment implements InitiativeAdapter.ManageInitiative, ShowUserProfileContract.View {
+public class ShowUserProfileFragment extends Fragment implements ShowUserProfileContract.View {
 
     //region Variables
 
@@ -43,21 +45,18 @@ public class ShowUserProfileFragment extends Fragment implements InitiativeAdapt
     private TextView tvUserLocation;
     private TextView tvUserEmail;
     private TextView tvUserPhome;
-    private TextView tvUserInitiativeCreateds;
-    private TextView tvUserInitiativeJoineds;
-    private TextView tvUserFollows;
-    private TextView tvUserDescription;
-    private TextView tvUserCreatedAt;
+    private RatingBar rbUser;
+    private TextView tvRatingUser;
+    private ImageButton imgBtnOpenReview;
 
-    private TextView tvNoInitiativeCreatedUserData;
-    private TextView tvNoInitiativeJoinedUserData;
-    private RecyclerView rvInitiativeCreateds;
-    private InitiativeAdapter adapterCreateds;
-    private RecyclerView rvInitiativeJoineds;
-    private InitiativeAdapter adapterJoineds;
+    private ViewPager2 viewPager2;
+    private TabLayout tabLayout;
 
     private User user;
-    private Menu menu;
+    private MenuItem favorite;
+
+    private View coordinatorLayout;
+    private View viewBottomSheetReview;
 
     private ShowUserProfileContract.Presenter presenter;
 
@@ -83,13 +82,68 @@ public class ShowUserProfileFragment extends Fragment implements InitiativeAdapt
         user = (bundle != null) ? (User) bundle.getSerializable(User.TAG) : null;
 
         initUI(view);
-        initRecycler();
+        setUser(user);
+
+        // set SheetBottomDialog
+        imgBtnOpenReview.setVisibility(View.VISIBLE);
+        imgBtnOpenReview.setOnClickListener(v -> {
+            Bundle b = new Bundle();
+            b.putSerializable(User.TAG, user);
+            Navigation.findNavController(getView()).navigate(R.id.action_showUserProfileFragment_to_reviewBottomSheetDialog, b);
+        });
+
+        // set UserViewPager
+        viewPager2 = view.findViewById(R.id.vpUser);
+        tabLayout = view.findViewById(R.id.tbLayoutUser);
+        setUpViewPager(viewPager2);
 
         presenter = new ShowUserProfilePresenter(this);
     }
 
     /**
-     *
+     * setUpViewPager for ViewPager2
+     * @param viewPager2
+     */
+    private void setUpViewPager(ViewPager2 viewPager2) {
+        UserViewPagerAdapter userViewPagerAdapter = new UserViewPagerAdapter(getActivity().getSupportFragmentManager(), getLifecycle());
+        userViewPagerAdapter.addUser(user);
+        userViewPagerAdapter.addFragment(new InfoUserFragment(user));
+        userViewPagerAdapter.addFragment(new ReviewUserFragment(user));
+        String[] title = new String[]{"Info","Review"};
+
+        viewPager2.setAdapter(userViewPagerAdapter);
+        viewPager2.setUserInputEnabled(false);
+
+        //TODO probar
+        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                userViewPagerAdapter.getFragment(tab.getPosition()).onStart();
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+                userViewPagerAdapter.getFragment(tab.getPosition()).onDestroy();
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+                userViewPagerAdapter.getFragment(tab.getPosition()).onStart();
+            }
+        });
+
+        new TabLayoutMediator(tabLayout, viewPager2, new TabLayoutMediator.TabConfigurationStrategy() {
+            @Override
+            public void onConfigureTab(@NonNull TabLayout.Tab tab, int position) {
+
+            }
+        });
+
+//                (tab, position) -> tab.setText(title[position])).attach();
+    }
+
+    /**
+     * initUI
      * @param view
      */
     private void initUI(@NonNull View view) {
@@ -99,116 +153,55 @@ public class ShowUserProfileFragment extends Fragment implements InitiativeAdapt
         tvUserLocation = view.findViewById(R.id.tvUserLocation);
         tvUserEmail = view.findViewById(R.id.tvUserEmail);
         tvUserPhome = view.findViewById(R.id.tvUserPhone);
-        tvUserInitiativeCreateds = view.findViewById(R.id.tvInitiativeCreatedCount);
-        tvUserInitiativeJoineds = view.findViewById(R.id.tvInitiativeJoinedCount);
-        tvUserFollows = view.findViewById(R.id.tvUserFollows);
-        tvUserDescription = view.findViewById(R.id.tvUserDescription);
-        tvUserCreatedAt = view.findViewById(R.id.tvUserCreatedAt);
-        rvInitiativeCreateds = view.findViewById(R.id.rvUserInitiativeCreated);
-        rvInitiativeJoineds = view.findViewById(R.id.rvUserInitiativeJoined);
-        tvNoInitiativeCreatedUserData = view.findViewById(R.id.tvNoInitiativeCreatedUserData);
-        tvNoInitiativeJoinedUserData = view.findViewById(R.id.tvNoInitiativeJoinedUserData);
+        rbUser = view.findViewById(R.id.rbUser);
+        tvRatingUser = view.findViewById(R.id.tvAverageRating);
+        coordinatorLayout = getActivity().findViewById(R.id.coordinator_main);
+        viewBottomSheetReview = coordinatorLayout.findViewById(R.id.llReviewUser);
+        viewBottomSheetReview.setVisibility(View.VISIBLE);
+        imgBtnOpenReview = coordinatorLayout.findViewById(R.id.imgBtnReview);
     }
 
     /**
-     *
+     * setUser
+     * @param user
      */
-    private void initRecycler() {
-        adapterCreateds = new InitiativeAdapter(getContext(), new ArrayList<>(), this, TYPE_CREATED);
-        adapterJoineds = new InitiativeAdapter(getContext(), new ArrayList<>(), this, TYPE_JOINED);
-        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext(), RecyclerView.HORIZONTAL, false);
+    private void setUser(User user) {
+        imgUser.setImageBitmap(user.getImagen() != null ? user.getImagen() : CommonUtils.getImagenUserDefault(JointlyApplication.getContext()));
+        tvUserName.setText(user.getName());
+        tvUserLocation.setText(user.getLocation());
+        tvUserEmail.setText(user.getEmail());
+        tvUserPhome.setText(user.getPhone());
 
-        rvInitiativeCreateds.setLayoutManager(layoutManager);
-        rvInitiativeCreateds.setAdapter(adapterCreateds);
-        rvInitiativeJoineds.setLayoutManager(layoutManager);
-        rvInitiativeJoineds.setAdapter(adapterJoineds);
+        // set visibility for edit imagen button
+        ivEditImagenUser.setVisibility(View.GONE);
     }
 
     @Override
     public void onStart() {
         super.onStart();
-        presenter.loadCountUserFollow(user);
-        presenter.loadListInitiative(user);
-        presenter.loadUserStateFollow(user);
+        presenter.loadRatingUser(user);
         getActivity().findViewById(R.id.faButton).setVisibility(View.GONE);
     }
 
     @Override
-    public void onClick(View view, String type) {
-        Bundle bundle = new Bundle();
-        Initiative initiative;
-
-        //TODO mirar
-        switch (type) {
-            case TYPE_CREATED:
-                initiative = (Initiative) adapterCreateds.getInitiativeItem(rvInitiativeCreateds.getChildAdapterPosition(view));
-
-                bundle = new Bundle();
-                bundle.putSerializable(Initiative.TAG, initiative);
-                bundle.putBoolean(TYPE_CREATED, true);
-
-                NavHostFragment.findNavController(this).navigate(R.id.action_userProfileFragment_to_showInitiativeFragment2, bundle);
-                break;
-            case TYPE_JOINED:
-                initiative = (Initiative) adapterCreateds.getInitiativeItem(rvInitiativeJoineds.getChildAdapterPosition(view));
-
-                bundle = new Bundle();
-                bundle.putSerializable(Initiative.TAG, initiative);
-                bundle.putBoolean(TYPE_JOINED, true);
-
-                NavHostFragment.findNavController(this).navigate(R.id.action_userProfileFragment_to_showInitiativeFragment2, bundle);
-                break;
-            default:
-                break;
-        }
-    }
-
-    @Override
-    public void setInitiativeCreatedEmpty() {
-        tvNoInitiativeCreatedUserData.setVisibility(View.VISIBLE);
-    }
-
-    @Override
-    public void setInitiativeJointedEmpty() {
-        tvNoInitiativeJoinedUserData.setVisibility(View.VISIBLE);
-    }
-
-    @Override
     public void setSuccessUnFollow() {
-        menu.getItem(0).setIcon(R.drawable.ic_favorite_border);
+        favorite.setIcon(R.drawable.ic_favorite_border);
     }
 
     @Override
     public void setSuccessFollow() {
-        menu.getItem(0).setIcon(R.drawable.ic_favorite);
+        favorite.setIcon(R.drawable.ic_favorite);
     }
 
     @Override
     public void setUserStateFollow(boolean follow) {
-        menu.getItem(0).setIcon(follow ? R.drawable.ic_favorite : R.drawable.ic_favorite_border);
+        favorite.setIcon(follow ? R.drawable.ic_favorite : R.drawable.ic_favorite_border);
     }
 
     @Override
-    public void setCountUserFollow(long count) {
-        tvUserFollows.setText(String.format(getString(R.string.tvUserProfileFollowsFormat), count));
-    }
-
-    @Override
-    public void setCountUserParticipate(long count) {
-        tvUserInitiativeJoineds.setText(String.valueOf(count));
-    }
-
-    @Override
-    public void onSuccess(List<Initiative> listInitiativesCreated, List<Initiative> listInitiativesJoined) {
-        if(tvNoInitiativeCreatedUserData.getVisibility() == View.VISIBLE)
-            tvNoInitiativeCreatedUserData.setVisibility(View.GONE);
-        if(tvNoInitiativeJoinedUserData.getVisibility() == View.VISIBLE)
-            tvNoInitiativeJoinedUserData.setVisibility(View.GONE);
-
-        tvUserInitiativeCreateds.setText(String.valueOf(listInitiativesCreated.size()));
-
-        adapterCreateds.update(listInitiativesCreated);
-        adapterJoineds.update(listInitiativesJoined);
+    public void setRatingUser(float average) {
+        rbUser.setRating(average);
+        tvRatingUser.setText(String.format(Locale.getDefault(),"%.2f/%d", average, rbUser.getNumStars()));
     }
 
     @Override
@@ -223,18 +216,22 @@ public class ShowUserProfileFragment extends Fragment implements InitiativeAdapt
     }
 
     @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        viewBottomSheetReview.setVisibility(View.GONE);
+        presenter.onDestroy();
+    }
+
+    @Override
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
-        menu.clear();
-        menu.add(0, 1, 0, "Favoritos").setIcon(R.drawable.ic_favorite_border).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
-        menu.getItem(0).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                presenter.manageFollowUser(user);
-                return true;
-            }
+
+        favorite = menu.findItem(R.id.action_favorite).setVisible(true);
+        favorite.setOnMenuItemClickListener(item -> {
+            presenter.manageFollowUser(user);
+            return true;
         });
 
-        this.menu = menu;
+        presenter.loadUserStateFollow(user);
     }
 }

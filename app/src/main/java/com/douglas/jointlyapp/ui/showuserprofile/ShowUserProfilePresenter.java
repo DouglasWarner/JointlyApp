@@ -1,9 +1,6 @@
 package com.douglas.jointlyapp.ui.showuserprofile;
 
-import com.douglas.jointlyapp.data.model.Initiative;
 import com.douglas.jointlyapp.data.model.User;
-
-import java.util.List;
 
 public class ShowUserProfilePresenter implements ShowUserProfileContract.Presenter, ShowUserProfileInteractorImpl.ProfileInteractor {
 
@@ -22,16 +19,6 @@ public class ShowUserProfilePresenter implements ShowUserProfileContract.Present
     }
 
     @Override
-    public void onInitiativeCreatedEmpty() {
-        view.setInitiativeCreatedEmpty();
-    }
-
-    @Override
-    public void onInitiativeJointedEmpty() {
-        view.setInitiativeJointedEmpty();
-    }
-
-    @Override
     public void onSuccessUnFollow() {
         view.setSuccessUnFollow();
     }
@@ -47,18 +34,8 @@ public class ShowUserProfilePresenter implements ShowUserProfileContract.Present
     }
 
     @Override
-    public void onCountUserFollow(long count) {
-        view.setCountUserFollow(count);
-    }
-
-    @Override
-    public void onCountUserParticipate(long count) {
-        view.setCountUserParticipate(count);
-    }
-
-    @Override
-    public void onSuccess(List<Initiative> listInitiativesCreated, List<Initiative> listInitiativesJoined) {
-        view.onSuccess(listInitiativesCreated, listInitiativesJoined);
+    public void onRatingUser(float average) {
+        view.setRatingUser(average);
     }
 
     @Override
@@ -67,13 +44,8 @@ public class ShowUserProfilePresenter implements ShowUserProfileContract.Present
     }
 
     @Override
-    public void loadListInitiative(User user) {
-        interactor.loadListInitiative(user);
-    }
-
-    @Override
-    public void loadCountUserFollow(User user) {
-        interactor.loadCountUserFollow(user);
+    public void loadRatingUser(User user) {
+        interactor.loadRatingUser(user);
     }
 
     @Override
