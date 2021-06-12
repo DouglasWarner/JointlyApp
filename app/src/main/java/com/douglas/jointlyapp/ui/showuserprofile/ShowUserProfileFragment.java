@@ -7,7 +7,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
@@ -15,11 +14,12 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.navigation.Navigation;
 import androidx.viewpager2.widget.ViewPager2;
 
+import com.bumptech.glide.Glide;
 import com.douglas.jointlyapp.R;
 import com.douglas.jointlyapp.data.model.User;
+import com.douglas.jointlyapp.services.Apis;
 import com.douglas.jointlyapp.ui.JointlyApplication;
 import com.douglas.jointlyapp.ui.infouser.InfoUserFragment;
 import com.douglas.jointlyapp.ui.reviewuser.ReviewUserFragment;
@@ -35,7 +35,7 @@ import java.util.Locale;
 /**
  * Fragment that represents other user
  */
-public class ShowUserProfileFragment extends Fragment implements ShowUserProfileContract.View {
+public class ShowUserProfileFragment extends Fragment implements ShowUserProfileContract.View, ReviewUserFragment.onSendRating{
 
     //region Variables
 
@@ -47,7 +47,6 @@ public class ShowUserProfileFragment extends Fragment implements ShowUserProfile
     private TextView tvUserPhome;
     private RatingBar rbUser;
     private TextView tvRatingUser;
-    private ImageButton imgBtnOpenReview;
 
     private ViewPager2 viewPager2;
     private TabLayout tabLayout;
@@ -55,8 +54,8 @@ public class ShowUserProfileFragment extends Fragment implements ShowUserProfile
     private User user;
     private MenuItem favorite;
 
-    private View coordinatorLayout;
-    private View viewBottomSheetReview;
+    private InfoUserFragment infoUserFragment;
+    private ReviewUserFragment reviewUserFragment;
 
     private ShowUserProfileContract.Presenter presenter;
 
@@ -65,6 +64,7 @@ public class ShowUserProfileFragment extends Fragment implements ShowUserProfile
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setRetainInstance(true);
         setHasOptionsMenu(true);
     }
 
@@ -84,14 +84,6 @@ public class ShowUserProfileFragment extends Fragment implements ShowUserProfile
         initUI(view);
         setUser(user);
 
-        // set SheetBottomDialog
-        imgBtnOpenReview.setVisibility(View.VISIBLE);
-        imgBtnOpenReview.setOnClickListener(v -> {
-            Bundle b = new Bundle();
-            b.putSerializable(User.TAG, user);
-            Navigation.findNavController(getView()).navigate(R.id.action_showUserProfileFragment_to_reviewBottomSheetDialog, b);
-        });
-
         // set UserViewPager
         viewPager2 = view.findViewById(R.id.vpUser);
         tabLayout = view.findViewById(R.id.tbLayoutUser);
@@ -107,39 +99,17 @@ public class ShowUserProfileFragment extends Fragment implements ShowUserProfile
     private void setUpViewPager(ViewPager2 viewPager2) {
         UserViewPagerAdapter userViewPagerAdapter = new UserViewPagerAdapter(getActivity().getSupportFragmentManager(), getLifecycle());
         userViewPagerAdapter.addUser(user);
-        userViewPagerAdapter.addFragment(new InfoUserFragment(user));
-        userViewPagerAdapter.addFragment(new ReviewUserFragment(user));
+        infoUserFragment = new InfoUserFragment(user);
+        reviewUserFragment = new ReviewUserFragment(user, this);
+        userViewPagerAdapter.addFragment(infoUserFragment);
+        userViewPagerAdapter.addFragment(reviewUserFragment);
         String[] title = new String[]{"Info","Review"};
 
         viewPager2.setAdapter(userViewPagerAdapter);
         viewPager2.setUserInputEnabled(false);
+        viewPager2.setOffscreenPageLimit(2);
 
-        //TODO probar
-        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
-            @Override
-            public void onTabSelected(TabLayout.Tab tab) {
-                userViewPagerAdapter.getFragment(tab.getPosition()).onStart();
-            }
-
-            @Override
-            public void onTabUnselected(TabLayout.Tab tab) {
-                userViewPagerAdapter.getFragment(tab.getPosition()).onDestroy();
-            }
-
-            @Override
-            public void onTabReselected(TabLayout.Tab tab) {
-                userViewPagerAdapter.getFragment(tab.getPosition()).onStart();
-            }
-        });
-
-        new TabLayoutMediator(tabLayout, viewPager2, new TabLayoutMediator.TabConfigurationStrategy() {
-            @Override
-            public void onConfigureTab(@NonNull TabLayout.Tab tab, int position) {
-
-            }
-        });
-
-//                (tab, position) -> tab.setText(title[position])).attach();
+        new TabLayoutMediator(tabLayout, viewPager2, (tab, position) -> tab.setText(title[position])).attach();
     }
 
     /**
@@ -155,10 +125,6 @@ public class ShowUserProfileFragment extends Fragment implements ShowUserProfile
         tvUserPhome = view.findViewById(R.id.tvUserPhone);
         rbUser = view.findViewById(R.id.rbUser);
         tvRatingUser = view.findViewById(R.id.tvAverageRating);
-        coordinatorLayout = getActivity().findViewById(R.id.coordinator_main);
-        viewBottomSheetReview = coordinatorLayout.findViewById(R.id.llReviewUser);
-        viewBottomSheetReview.setVisibility(View.VISIBLE);
-        imgBtnOpenReview = coordinatorLayout.findViewById(R.id.imgBtnReview);
     }
 
     /**
@@ -166,7 +132,14 @@ public class ShowUserProfileFragment extends Fragment implements ShowUserProfile
      * @param user
      */
     private void setUser(User user) {
-        imgUser.setImageBitmap(user.getImagen() != null ? user.getImagen() : CommonUtils.getImagenUserDefault(JointlyApplication.getContext()));
+        if(user.getImagen() != null) {
+            Glide.with(JointlyApplication.getContext())
+                    .setDefaultRequestOptions(CommonUtils.getGlideOptions(User.TAG))
+                    .load(Apis.getURLIMAGE()+user.getImagen())
+                    .into(imgUser);
+        } else {
+            imgUser.setImageBitmap(CommonUtils.getImagenUserDefault(JointlyApplication.getContext()));
+        }
         tvUserName.setText(user.getName());
         tvUserLocation.setText(user.getLocation());
         tvUserEmail.setText(user.getEmail());
@@ -179,7 +152,7 @@ public class ShowUserProfileFragment extends Fragment implements ShowUserProfile
     @Override
     public void onStart() {
         super.onStart();
-        presenter.loadRatingUser(user);
+        presenter.loadRatingUser(user.getEmail());
         getActivity().findViewById(R.id.faButton).setVisibility(View.GONE);
     }
 
@@ -206,7 +179,7 @@ public class ShowUserProfileFragment extends Fragment implements ShowUserProfile
 
     @Override
     public void onError(String message) {
-        Snackbar.make(getActivity().findViewById(R.id.coordinator_main), message != null ? message : getString(R.string.default_error_action), Snackbar.LENGTH_SHORT).show();
+        Snackbar.make(getView(), message != null ? message : getString(R.string.default_error_action), Snackbar.LENGTH_SHORT).show();
     }
 
     @Override
@@ -218,7 +191,6 @@ public class ShowUserProfileFragment extends Fragment implements ShowUserProfile
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        viewBottomSheetReview.setVisibility(View.GONE);
         presenter.onDestroy();
     }
 
@@ -233,5 +205,10 @@ public class ShowUserProfileFragment extends Fragment implements ShowUserProfile
         });
 
         presenter.loadUserStateFollow(user);
+    }
+
+    @Override
+    public void updateRating() {
+        presenter.loadRatingUser(user.getEmail());
     }
 }

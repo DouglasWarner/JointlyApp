@@ -26,6 +26,9 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+/**
+ * Entity who connect with the APIS and LOCALDB
+ */
 public class InfoUserInteractorImpl {
 
     interface ProfileInteractor {
@@ -42,7 +45,7 @@ public class InfoUserInteractorImpl {
     private ProfileInteractor interactor;
     private static InitiativeService initiativeService;
     private static UserService userService;
-    private SimpleDateFormat simpleDateFormat = new SimpleDateFormat(JointlyApplication.DATETIMEFORMAT, Locale.getDefault());
+    private SimpleDateFormat simpleDateFormat = new SimpleDateFormat(JointlyApplication.FORMAT_DD_MM_YYYY_HH_MM, Locale.getDefault());
 
     public InfoUserInteractorImpl(ProfileInteractor interactor) {
         this.interactor = interactor;

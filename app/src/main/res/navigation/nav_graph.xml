@@ -59,9 +59,6 @@
         <action
             android:id="@+id/action_profileFragment_to_settingFragment"
             app:destination="@id/settingFragment" />
-        <action
-            android:id="@+id/action_profileFragment_to_reviewBottomSheetDialog"
-            app:destination="@id/reviewBottomSheetDialog" />
     </fragment>
     <fragment
         android:id="@+id/manageInitiativeFragment"
@@ -108,9 +105,6 @@
         <action
             android:id="@+id/action_userProfileFragment_to_showInitiativeFragment2"
             app:destination="@id/showInitiativeFragment" />
-        <action
-            android:id="@+id/action_showUserProfileFragment_to_reviewBottomSheetDialog"
-            app:destination="@id/reviewBottomSheetDialog" />
     </fragment>
     <fragment
         android:id="@+id/chatFragment"
@@ -121,8 +115,4 @@
         android:name="com.douglas.jointlyapp.ui.preferences.AboutUsFragment"
         android:label="fragment_about_us"
         tools:layout="@layout/fragment_about_us" />
-    <dialog
-        android:id="@+id/reviewBottomSheetDialog"
-        android:name="com.douglas.jointlyapp.ui.reviewdialog.ReviewBottomSheetDialog"
-        android:label="ReviewBottomSheetDialog" />
 </navigation>

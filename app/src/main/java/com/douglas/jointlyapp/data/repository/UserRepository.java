@@ -9,29 +9,26 @@ import com.douglas.jointlyapp.data.dao.UserReviewUserDao;
 import com.douglas.jointlyapp.data.model.User;
 import com.douglas.jointlyapp.data.model.UserFollowUser;
 import com.douglas.jointlyapp.data.model.UserReviewUser;
-import com.douglas.jointlyapp.ui.JointlyApplication;
-import com.douglas.jointlyapp.ui.utils.CommonUtils;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
+/**
+ * Entity that connect to SQlite
+ */
 public class UserRepository {
 
     private static final UserRepository userRepository;
     private final UserDao userDao;
     private final UserFollowUserDao userFollowUserDao;
     private final UserReviewUserDao userReviewUserDao;
-    private List<User> list;
-    private int countUserFollowers;
 
     static {
         userRepository = new UserRepository();
     }
 
     private UserRepository() {
-        this.list = new ArrayList<>();
-        countUserFollowers = 0;
         JointlyDatabase db = JointlyDatabase.getDatabase();
         userDao = db.userDao();
         userFollowUserDao = db.userFollowUserDao();
@@ -43,18 +40,6 @@ public class UserRepository {
         return userRepository;
     }
 
-    public long tmpInsert() {
-        User u = new User(1,"douglas@gmail.com","Dou123456","douglas","600500400", CommonUtils.getImagenUserDefault(JointlyApplication.getContext()), "location", "description", "10/10/2021", false);
-        long l = -1;
-        try {
-            l = JointlyDatabase.DATABASE_WRITE_EXECUTOR.submit(() -> userDao.insert(u)).get();
-            return l;
-        } catch (ExecutionException | InterruptedException e) {
-            e.printStackTrace();
-        }
-        return l;
-    }
-
     //region User
 
     /**
@@ -62,13 +47,11 @@ public class UserRepository {
      * @return list
      */
     public List<User> getList() {
-        List<User> result;
+        List<User> result = new ArrayList<>();
         try {
-            list = JointlyDatabase.DATABASE_WRITE_EXECUTOR.submit(userDao::getList).get();
+            result = JointlyDatabase.DATABASE_WRITE_EXECUTOR.submit(userDao::getList).get();
         } catch (ExecutionException | InterruptedException e) {
             e.printStackTrace();
-        } finally {
-            result = list;
         }
         return result;
     }
@@ -77,8 +60,7 @@ public class UserRepository {
      * Inserta un usuario nuevo
      * @param user
      */
-    public void insert(User user)
-    {
+    public void insert(User user) {
         Boolean b = null;
 
         b = JointlyDatabase.DATABASE_WRITE_EXECUTOR.submit(() -> userDao.insert(user)).isDone();
@@ -106,16 +88,6 @@ public class UserRepository {
      */
     public void update(User user) {
         JointlyDatabase.DATABASE_WRITE_EXECUTOR.submit(() -> userDao.update(user));
-    }
-
-    /**
-     * Update or Insert for Sync with the API
-     * @param list
-     */
-    public void upsertUser(List<User> list) {
-        boolean b = JointlyDatabase.DATABASE_WRITE_EXECUTOR.submit(() -> userDao.upsert(list)).isDone();
-
-        Log.e("TAG", "User from api ----> " + b);
     }
 
     /**
@@ -238,7 +210,7 @@ public class UserRepository {
     }
 
     /**
-     *
+     *  deleteAllUser
      */
     public void deleteAllUser() {
         JointlyDatabase.DATABASE_WRITE_EXECUTOR.submit(userDao::deleteAll);
@@ -253,13 +225,11 @@ public class UserRepository {
      */
     public List<UserFollowUser> getListUserFollow() {
         List<UserFollowUser> result = null;
-
         try {
             result = JointlyDatabase.DATABASE_WRITE_EXECUTOR.submit(userFollowUserDao::getList).get();
         } catch (ExecutionException | InterruptedException e) {
             e.printStackTrace();
         }
-
         return result;
     }
 
@@ -326,16 +296,6 @@ public class UserRepository {
     }
 
     /**
-     * Update or Insert for Sync From the API
-     * @param list
-     */
-    public void upsertListUserFollowUser(List<UserFollowUser> list) {
-        boolean b = JointlyDatabase.DATABASE_WRITE_EXECUTOR.submit(() -> userFollowUserDao.upsert(list)).isDone();
-
-        Log.e("TAG", "UserFollowUser from api ----> " + b);
-    }
-
-    /**
      * Devuelve la cantidad de usuarios que le siguen
      * @param userEmail
      * @return row count
@@ -397,13 +357,13 @@ public class UserRepository {
      * @return
      */
     public List<UserReviewUser> getListUserReview(boolean is_deleted) {
-        List<UserReviewUser> userReviewUsers = new ArrayList<>();
+        List<UserReviewUser> result = new ArrayList<>();
         try {
-            List<UserReviewUser> listReview = JointlyDatabase.DATABASE_WRITE_EXECUTOR.submit(() -> userReviewUserDao.getList(is_deleted)).get();
+            result = JointlyDatabase.DATABASE_WRITE_EXECUTOR.submit(() -> userReviewUserDao.getList(is_deleted)).get();
         } catch (ExecutionException | InterruptedException e) {
             e.printStackTrace();
         }
-        return userReviewUsers;
+        return result;
     }
 
     /**
@@ -424,7 +384,7 @@ public class UserRepository {
      * Inserta una lista de review en un usuario
      * @param userReviewUser
      */
-    public List<Long> insertUserReview(List<UserReviewUser> userReviewUser) {
+    public List<Long>  insertUserReview(List<UserReviewUser> userReviewUser) {
         List<Long> result = null;
         try {
             result = JointlyDatabase.DATABASE_WRITE_EXECUTOR.submit(() -> userReviewUserDao.insert(userReviewUser)).get();
@@ -481,22 +441,17 @@ public class UserRepository {
     }
 
     /**
-     * Update or Insert for Sync with the API
-     * @param list
-     */
-    public void upsertUserReviewUser(List<UserReviewUser> list) {
-        boolean b = JointlyDatabase.DATABASE_WRITE_EXECUTOR.submit(() -> userReviewUserDao.upsert(list)).isDone();
-
-        Log.e("TAG", "UserReviewUser from api ----> " + b);
-    }
-
-    /**
      * Elimina todos los datos de la tabla
      */
     public void deleteAllUserReview() {
         JointlyDatabase.DATABASE_WRITE_EXECUTOR.submit(userReviewUserDao::deleteAll);
     }
 
+    /**
+     * getListUserToSync
+     * @param isSync
+     * @return
+     */
     public List<User> getListUserToSync(boolean isSync) {
 
         return null;
@@ -506,14 +461,26 @@ public class UserRepository {
 
     //region SyncFromAPI
 
+    /**
+     * Update or Insert for Sync UserReview with the API
+     * @param list
+     */
     public void syncUserReviewFromAPI(List<UserReviewUser> list) {
         JointlyDatabase.DATABASE_WRITE_EXECUTOR.submit(() -> userReviewUserDao.syncFromAPI(list));
     }
 
+    /**
+     * Update or Insert for Sync UserFollow with the API
+     * @param list
+     */
     public void syncUserFollowFromAPI(List<UserFollowUser> list) {
         JointlyDatabase.DATABASE_WRITE_EXECUTOR.submit(() -> userFollowUserDao.syncFromAPI(list));
     }
 
+    /**
+     * Update or Insert for Sync User with the API
+     * @param list
+     */
     public void syncUserFromAPI(List<User> list) {
         JointlyDatabase.DATABASE_WRITE_EXECUTOR.submit(() -> userDao.syncFromAPI(list));
     }

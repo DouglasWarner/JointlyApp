@@ -13,15 +13,23 @@ import com.douglas.jointlyapp.data.JointlyDatabase;
 import com.douglas.jointlyapp.ui.broadcast.NotificationNewMessageChatBroadCast;
 import com.douglas.jointlyapp.ui.preferences.JointlyPreferences;
 
+/**
+ * Entity main application
+ */
 public class JointlyApplication extends Application {
 
-    public static final String DATEFORMAT = "yyyy/MM/dd";
-    public static final String DATEFORMAT2 = "dd/MM/yyyy";
-    public static final String DATETIMEFORMAT = "dd/MM/yyyy hh:mm";
+    public static final String FORMAT_DD_MM_YYYY = "dd/MM/yyyy";
+    public static final String FORMAT_DD_MM_YYYY_HH_MM = "dd/MM/yyyy hh:mm";
+    public static final String FORMAT_DD_MM_YYYY_HH_MM_SS = "dd/MM/yyyy hh:mm:ss";
+    public static final String FORMAT_YYYY_MM_DD = "yyyy-MM-dd";
+    public static final String FORMAT_YYYY_MM_DD_HH_MM = "yyyy-MM-dd hh:mm";
+    public static final String FORMAT_YYYY_MM_DD_HH_MM_SS = "yyyy-MM-dd hh:mm:ss";
+
     public static final String CHECK_CONNECTION_BROADCAST = "com.douglas.check_internet_connection";
 
     public static final int REQUEST_IMAGE_GALLERY = 101;
     public static final int REQUEST_PERMISSION_CODE = 100;
+    public static final int REQUEST_PERMISSION_CAMERA_CODE = 102;
     public static final String CHANNEL_ID = "1234";
     public static JobScheduler jobScheduler;
 
@@ -43,15 +51,15 @@ public class JointlyApplication extends Application {
         context = getApplicationContext();
     }
 
-    public static Context getContext()
-    {
+    public static Context getContext() {
         return context;
     }
 
-    private void createNotificationChannel()
-    {
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
-        {
+    /**
+     * create the notification channel
+     */
+    private void createNotificationChannel() {
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationChannel channel = new NotificationChannel(CHANNEL_ID, "Urgent", NotificationManager.IMPORTANCE_DEFAULT);
             channel.setDescription("Channel description");
             channel.setShowBadge(true);
@@ -63,7 +71,6 @@ public class JointlyApplication extends Application {
             notificationManager.createNotificationChannel(channel);
         }
     }
-
 
     public static boolean getConnection() {
         return connection;

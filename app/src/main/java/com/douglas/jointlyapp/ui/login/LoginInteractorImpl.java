@@ -5,9 +5,11 @@ import android.text.TextUtils;
 
 import com.douglas.jointlyapp.data.model.User;
 import com.douglas.jointlyapp.data.repository.UserRepository;
-import com.douglas.jointlyapp.ui.preferences.JointlyPreferences;
 import com.douglas.jointlyapp.ui.utils.CommonUtils;
 
+/**
+ * Entity who connect with the APIS and LOCALDB
+ */
 public class LoginInteractorImpl {
 
     public interface LoginInteractor {

@@ -1,7 +1,12 @@
 package com.douglas.jointlyapp.ui.profile;
 
+import android.net.Uri;
+
 import com.douglas.jointlyapp.data.model.User;
 
+/**
+ * Entity that connects within view and interactor
+ */
 public class ProfilePresenter implements ProfileContract.Presenter, ProfileInteractorImpl.ProfileInteractor {
 
     private ProfileContract.View view;
@@ -18,48 +23,38 @@ public class ProfilePresenter implements ProfileContract.Presenter, ProfileInter
     }
 
     @Override
-    public void updateImage(User user) {
-        interactor.updateUser(user);
+    public void updateImage(User user, Uri image) {
+        interactor.updateImage(user, image);
+    }
+
+    @Override
+    public void onLoadUser(User user) {
+        view.onLoadUser(user);
+    }
+
+    @Override
+    public void onRatingUser(float average) {
+        view.setRatingUser(average);
+    }
+
+    @Override
+    public void onUpdateImage() {
+        view.setUpdateImage();
+    }
+
+    @Override
+    public void onError(String message) {
+        view.onError(message);
+    }
+
+    @Override
+    public void loadRatingUser(String user) {
+        interactor.loadRatingUser(user);
     }
 
     @Override
     public void onDestroy() {
         view = null;
         interactor = null;
-    }
-
-    @Override
-    public void onLocationEmpty() {
-        view.setLocationEmpty();
-    }
-
-    @Override
-    public void onPhoneEmpty() {
-        view.setPhoneEmpty();
-    }
-
-    @Override
-    public void onDescriptionEmpty() {
-        view.setDescriptionEmpty();
-    }
-
-    @Override
-    public void onUserFollowersEmpty() {
-        view.setUserFollowersEmpty();
-    }
-
-    @Override
-    public void onInitiativeCreatedEmpty() {
-        view.setInitiativeCreatedEmpty();
-    }
-
-    @Override
-    public void onInitiativeJointedEmpty() {
-        view.setInitiativeJointedEmpty();
-    }
-
-    @Override
-    public void onSuccess(User user, long countUserFollowers, int initiativeCreated, int initiativeJoined) {
-        view.onSuccess(user, countUserFollowers, initiativeCreated, initiativeJoined);
     }
 }

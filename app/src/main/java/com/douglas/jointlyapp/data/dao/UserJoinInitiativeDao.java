@@ -4,7 +4,6 @@ import android.util.Log;
 
 import androidx.room.Dao;
 import androidx.room.Delete;
-import androidx.room.Ignore;
 import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
@@ -15,8 +14,11 @@ import com.douglas.jointlyapp.data.model.UserJoinInitiative;
 
 import java.util.List;
 
+/**
+ * Interface UserJoinInitiativeDao
+ */
 @Dao
-public interface UserJoinInitiativeDao {
+public interface UserJoinInitiativeDao extends BaseDao<UserJoinInitiative>{
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     long insert(UserJoinInitiative userJoinInitiative);
@@ -70,7 +72,7 @@ public interface UserJoinInitiativeDao {
         deleteAll();
         List<Long> insertResult = insert(list);
 
-        Log.e("TAG", "Tipo ------> UserJoin");
+        Log.e("TAG", "Tipo ---------------> USER JOIN INITIATIVE <------------------");
         insertResult.forEach(x-> Log.e("TAG", "Sync Insert -------------------> " + x));
     }
 }

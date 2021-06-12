@@ -4,7 +4,10 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
+import android.widget.RatingBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -17,30 +20,48 @@ import com.douglas.jointlyapp.R;
 import com.douglas.jointlyapp.data.model.User;
 import com.douglas.jointlyapp.data.model.UserReviewUser;
 import com.douglas.jointlyapp.ui.adapter.ReviewAdapter;
-import com.douglas.jointlyapp.ui.reviewdialog.ReviewDialogContract;
-import com.douglas.jointlyapp.ui.reviewdialog.ReviewDialogPresenter;
+import com.douglas.jointlyapp.ui.preferences.JointlyPreferences;
+import com.douglas.jointlyapp.ui.utils.CommonUtils;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class ReviewUserFragment extends Fragment implements ReviewUserContract.View, ReviewDialogContract.View {
+/**
+ * Fragment that shows the current review on ViewPager2 from UserProfile
+ */
+public class ReviewUserFragment extends Fragment implements ReviewUserContract.View {
+
+    /**
+     * listener that connect this view with his parent
+     */
+    public interface onSendRating {
+        void updateRating();
+    }
 
     //region Variables
 
     private User user;
+
+    private TextInputLayout tilSendMessage;
+    private TextInputEditText tieSendMessage;
+    private RatingBar rbStars;
+    private ImageButton imgBtnSendMessage;
     private TextView tvNoReviewData;
     private RecyclerView rvReview;
     private ReviewAdapter reviewAdapter;
+    private View flSendMessage;
 
+    private onSendRating onSendRating;
     private ReviewUserContract.Presenter presenter;
-    private ReviewDialogContract.Presenter presenterDialog;
 
     //endregion
 
-
-    public ReviewUserFragment(User user) {
+    public ReviewUserFragment(User user, onSendRating onSendRating) {
         this.user = user;
+        this.onSendRating = onSendRating;
     }
 
     @Override
@@ -60,6 +81,7 @@ public class ReviewUserFragment extends Fragment implements ReviewUserContract.V
 
         initUI(view);
         initRecycler();
+        setListener();
 
         presenter = new ReviewUserPresenter(this);
     }
@@ -71,6 +93,16 @@ public class ReviewUserFragment extends Fragment implements ReviewUserContract.V
     private void initUI(@NonNull View view) {
         tvNoReviewData = view.findViewById(R.id.tvNoReviewData);
         rvReview = view.findViewById(R.id.rvReview);
+        tilSendMessage = view.findViewById(R.id.tilSendMessage);
+        tieSendMessage =view.findViewById(R.id.tieSendMessage);
+        imgBtnSendMessage = view.findViewById(R.id.imgBtnSendReview);
+        rbStars = view.findViewById(R.id.rbStars);
+        flSendMessage = view.findViewById(R.id.flSendMessage);
+
+        // set visibility
+        if(JointlyPreferences.getInstance().getUser().equals(user.getEmail())) {
+            flSendMessage.setVisibility(View.GONE);
+        }
     }
 
     /**
@@ -85,11 +117,23 @@ public class ReviewUserFragment extends Fragment implements ReviewUserContract.V
         rvReview.setAdapter(reviewAdapter);
     }
 
-    private void initListener() {
-
+    /**
+     * setListeners
+     */
+    private void setListener() {
+        tilSendMessage.setEndIconOnClickListener(v -> {
+            if(user != null) {
+                String loginUser = JointlyPreferences.getInstance().getUser();
+                UserReviewUser userReviewUser = new UserReviewUser(loginUser, user.getEmail(), CommonUtils.getDateNow(), tieSendMessage.getText().toString(),
+                        (int)rbStars.getRating());
+                presenter.sendMessage(userReviewUser);
+            }
+        });
     }
 
-    //TODO probar
+    /**
+     * load all the review of the current user
+     */
     public void load() {
         presenter.loadReview(user);
     }
@@ -111,11 +155,13 @@ public class ReviewUserFragment extends Fragment implements ReviewUserContract.V
     @Override
     public void onSuccessSendMessage(UserReviewUser userReviewUser) {
         reviewAdapter.addMessage(userReviewUser);
+        onSendRating.updateRating();
+        Toast.makeText(getContext(), getString(R.string.success_send_review), Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void setError(String message) {
-        Snackbar.make(getActivity().findViewById(R.id.coordinator_main), message != null ? message : getString(R.string.default_error_action), Snackbar.LENGTH_SHORT);
+        Snackbar.make(getView(), message != null ? message : getString(R.string.default_error_action), Snackbar.LENGTH_SHORT);
     }
 
     @Override

@@ -2,12 +2,13 @@ package com.douglas.jointlyapp.ui.login;
 
 import com.douglas.jointlyapp.data.model.User;
 import com.douglas.jointlyapp.ui.base.BasePresenter;
-import com.douglas.jointlyapp.ui.base.BaseView;
 
+/**
+ * Interface that set the call logic within view and presenter
+ */
 public interface LoginContract {
 
-    interface View
-    {
+    interface View {
         void setEmailEmptyError();
         void setPasswordEmptyError();
         void setEmailFormatError();
@@ -21,8 +22,7 @@ public interface LoginContract {
         void onSuccess(User user);
     }
 
-    interface Presenter extends BasePresenter
-    {
+    interface Presenter extends BasePresenter {
         void validateCredentialsUser(String email, String password);
     }
 }

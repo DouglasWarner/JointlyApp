@@ -8,6 +8,7 @@ import android.os.Handler;
 import com.douglas.jointlyapp.data.model.Initiative;
 import com.douglas.jointlyapp.data.repository.ChatRepository;
 
+//TODO quizas quitar
 public class BackgroundJobService extends JobService {
 
     private static final int TIME = 10000;

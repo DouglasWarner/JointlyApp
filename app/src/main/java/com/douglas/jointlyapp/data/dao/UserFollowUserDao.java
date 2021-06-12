@@ -14,11 +14,17 @@ import com.douglas.jointlyapp.data.model.UserFollowUser;
 
 import java.util.List;
 
+/**
+ * Interface UserFollowUserDao
+ */
 @Dao
-public interface UserFollowUserDao extends BaseDao<UserFollowUser> {
+public interface UserFollowUserDao {
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     long insert(UserFollowUser userFollowUser);
+
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    List<Long> insert(List<UserFollowUser> userFollowUser);
 
     @Update
     void update(UserFollowUser userFollowUser);
@@ -45,11 +51,19 @@ public interface UserFollowUserDao extends BaseDao<UserFollowUser> {
     List<UserFollowUser> getListToSync(boolean isDeleted, boolean isSync);
 
     @Transaction
+    default void upsert(UserFollowUser obj) {
+        long id = insert(obj);
+        if (id == -1) {
+            update(obj);
+        }
+    }
+
+    @Transaction
     default void syncFromAPI(List<UserFollowUser> list) {
         deleteAll();
         List<Long> insertResult = insert(list);
 
-        Log.e("TAG", "Tipo ------> UserFollow");
+        Log.e("TAG", "Tipo -----------> USER FOLLOW USER <-------------");
         insertResult.forEach(x-> Log.e("TAG", "Sync Insert -------------------> " + x));
     }
 }

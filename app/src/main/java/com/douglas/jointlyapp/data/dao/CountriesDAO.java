@@ -10,6 +10,9 @@ import com.douglas.jointlyapp.data.model.Countries;
 
 import java.util.List;
 
+/**
+ * Interface CountriesDAO
+ */
 @Dao
 public interface CountriesDAO extends BaseDao<Countries> {
 

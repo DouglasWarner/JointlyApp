@@ -1,6 +1,5 @@
 package com.douglas.jointlyapp.data.model;
 
-import android.graphics.Bitmap;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -15,6 +14,9 @@ import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
 
+/**
+ * Entity User
+ */
 @Entity(tableName = "user",
         indices = {@Index(value = "email", unique = true)})
 public class User implements Comparable<User>, Serializable, Parcelable {
@@ -46,7 +48,7 @@ public class User implements Comparable<User>, Serializable, Parcelable {
     private String phone;
 
     @SerializedName("imagen")
-    private Bitmap imagen;
+    private String imagen;
 
     @SerializedName("location")
     private String location;
@@ -71,7 +73,7 @@ public class User implements Comparable<User>, Serializable, Parcelable {
     }
 
     @Ignore
-    public User(@NonNull String email, @NonNull String password, @NonNull String name, String phone, Bitmap imagen, String location, String description, @NonNull String created_at) {
+    public User(@NonNull String email, @NonNull String password, @NonNull String name, String phone, String imagen, String location, String description, @NonNull String created_at) {
         this.email = email;
         this.password = password;
         this.name = name;
@@ -95,7 +97,7 @@ public class User implements Comparable<User>, Serializable, Parcelable {
      * @param created_at
      */
     public User(long id, @NonNull String email, @NonNull String password, @NonNull String name, String phone,
-                Bitmap imagen, String location, String description, @NonNull String created_at,
+                String imagen, String location, String description, @NonNull String created_at,
                 boolean is_sync) {
         this.id = id;
         this.email = email;
@@ -116,7 +118,7 @@ public class User implements Comparable<User>, Serializable, Parcelable {
         password = in.readString();
         name = in.readString();
         phone = in.readString();
-        imagen = in.readParcelable(Bitmap.class.getClassLoader());
+        imagen = in.readString();
         location = in.readString();
         description = in.readString();
         created_at = in.readString();
@@ -179,11 +181,11 @@ public class User implements Comparable<User>, Serializable, Parcelable {
         this.phone = phone;
     }
 
-    public Bitmap getImagen() {
+    public String getImagen() {
         return imagen;
     }
 
-    public void setImagen(Bitmap imagen) {
+    public void setImagen(String imagen) {
         this.imagen = imagen;
     }
 
@@ -269,7 +271,7 @@ public class User implements Comparable<User>, Serializable, Parcelable {
         dest.writeString(password);
         dest.writeString(name);
         dest.writeString(phone);
-        imagen.writeToParcel(dest, flags);
+        dest.writeString(imagen);
         dest.writeString(location);
         dest.writeString(description);
         dest.writeString(created_at);

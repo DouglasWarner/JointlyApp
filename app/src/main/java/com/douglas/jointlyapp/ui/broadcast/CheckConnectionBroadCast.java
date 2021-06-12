@@ -3,12 +3,13 @@ package com.douglas.jointlyapp.ui.broadcast;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.view.View;
 import android.widget.TextView;
 
-import com.douglas.jointlyapp.R;
 import com.douglas.jointlyapp.ui.JointlyApplication;
 
+/**
+ * Entity that manage the message reciever of CheckConnectionService
+ */
 public class CheckConnectionBroadCast extends BroadcastReceiver {
 
     TextView tvNoConnection;
@@ -23,6 +24,7 @@ public class CheckConnectionBroadCast extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         if(intent.getAction().equals(JointlyApplication.CHECK_CONNECTION_BROADCAST)){
+            //TODO si voy a poner sync esto lo tengo que activar
 //            boolean isConnectionAvailable = intent.getExtras().getBoolean("connection");
 //            JointlyApplication.setConnection(isConnectionAvailable);
 //            if(isConnectionAvailable) {

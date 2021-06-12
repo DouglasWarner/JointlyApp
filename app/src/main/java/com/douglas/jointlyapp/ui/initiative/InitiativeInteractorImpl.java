@@ -12,17 +12,18 @@ import com.douglas.jointlyapp.ui.preferences.JointlyPreferences;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Locale;
-import java.util.TimeZone;
 import java.util.stream.Collectors;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+/**
+ * Entity who connect with the APIS and LOCALDB
+ */
 public class InitiativeInteractorImpl {
 
     interface ListInitiativeInteractor {
@@ -45,7 +46,7 @@ public class InitiativeInteractorImpl {
     public InitiativeInteractorImpl(ListInitiativeInteractor interactor) {
         this.interactor = interactor;
         this.userService = Apis.getInstance().getUserService();
-        this.simpleDateFormat = new SimpleDateFormat(JointlyApplication.DATETIMEFORMAT, Locale.getDefault());
+        this.simpleDateFormat = new SimpleDateFormat(JointlyApplication.FORMAT_DD_MM_YYYY_HH_MM, Locale.getDefault());
     }
 
     //region loadCreated
@@ -224,7 +225,7 @@ public class InitiativeInteractorImpl {
         return list.stream()
                 .filter(x -> {
                     try {
-                        Log.e("TAG", simpleDateFormat.parse(x.getTarget_date()).after(GregorianCalendar.getInstance(Locale.getDefault()).getTime()) + "");
+                        Log.e("TAG", simpleDateFormat.parse(x.getTarget_date()) + "-------" + GregorianCalendar.getInstance(Locale.getDefault()).getTime() + "");
                         return simpleDateFormat.parse(x.getTarget_date()).after(GregorianCalendar.getInstance(Locale.getDefault()).getTime());
                     } catch (ParseException e) {
                         Log.e("TAG", "------ERROR de filtrado in progress---------");
@@ -242,7 +243,7 @@ public class InitiativeInteractorImpl {
         return list.stream()
                 .filter(x -> {
                     try {
-                        Log.e("TAG", simpleDateFormat.parse(x.getTarget_date()).before(GregorianCalendar.getInstance(Locale.getDefault()).getTime()) + "");
+                        Log.e("TAG", simpleDateFormat.parse(x.getTarget_date())+ "---------" + GregorianCalendar.getInstance(Locale.getDefault()).getTime() + "");
                         return simpleDateFormat.parse(x.getTarget_date()).before(GregorianCalendar.getInstance(Locale.getDefault()).getTime());
                     } catch (ParseException e) {
                         Log.e("TAG", "------ERROR de filtrado history------");

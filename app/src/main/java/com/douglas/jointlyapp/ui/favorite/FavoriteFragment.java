@@ -3,7 +3,6 @@ package com.douglas.jointlyapp.ui.favorite;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
@@ -18,7 +17,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.douglas.jointlyapp.R;
 import com.douglas.jointlyapp.data.model.User;
 import com.douglas.jointlyapp.ui.adapter.UserFavoriteAdapter;
-import com.douglas.jointlyapp.ui.preferences.JointlyPreferences;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -63,6 +61,10 @@ public class FavoriteFragment extends Fragment implements FavoriteContract.View,
         presenter = new FavoritePresenter(this);
     }
 
+    /**
+     * initUI
+     * @param view
+     */
     private void initUI(@NonNull View view) {
         llLoading = view.findViewById(R.id.llLoading);
         llNoData = view.findViewById(R.id.llNoDataCreatedInProgress);
@@ -70,6 +72,9 @@ public class FavoriteFragment extends Fragment implements FavoriteContract.View,
         rvUserFavorite = view.findViewById(R.id.rvUserFavorite);
     }
 
+    /**
+     * initRecycler
+     */
     private void initRecycler() {
         adapter = new UserFavoriteAdapter(new ArrayList<>(), this);
 
@@ -132,33 +137,14 @@ public class FavoriteFragment extends Fragment implements FavoriteContract.View,
     }
 
     @Override
-    public void onDestroy() {
-        super.onDestroy();
+    public void onDestroyView() {
+        super.onDestroyView();
         presenter.onDestroy();
     }
 
     @Override
-    public void onPrepareOptionsMenu(@NonNull Menu menu) {
-        super.onPrepareOptionsMenu(menu);
-        menu.setGroupVisible(R.id.group_action_order_favorite, true);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-
-        switch (item.getItemId())
-        {
-            case R.id.action_order_favorite_by_location:
-                adapter.sortByLocation();
-                break;
-            case R.id.action_order_favorite_by_name:
-                adapter.sortByName();
-                break;
-            case R.id.action_order_favorite_by_users_follows:
-                adapter.sortByUsersFollows();
-                break;
-        }
-
-        return super.onOptionsItemSelected(item);
+    public void onDestroy() {
+        super.onDestroy();
+        presenter.onDestroy();
     }
 }

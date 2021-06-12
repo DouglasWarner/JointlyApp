@@ -10,9 +10,11 @@ import androidx.room.ForeignKey;
 import androidx.room.Ignore;
 import androidx.room.Index;
 
-import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+/**
+ * Entity UserFollowUser
+ */
 @Entity(tableName = "userFollowUser", primaryKeys = {"user","user_follow"},
 foreignKeys = {@ForeignKey(entity = User.class, parentColumns = "email", childColumns = "user"),
             @ForeignKey(entity = User.class, parentColumns = "email", childColumns = "user_follow")},

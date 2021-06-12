@@ -7,6 +7,7 @@ import androidx.room.Room;
 import androidx.room.RoomDatabase;
 import androidx.room.TypeConverters;
 
+import com.douglas.jointlyapp.data.converters.ConverterUri;
 import com.douglas.jointlyapp.data.dao.ChatDao;
 import com.douglas.jointlyapp.data.dao.CountriesDAO;
 import com.douglas.jointlyapp.data.dao.InitiativeDao;
@@ -27,8 +28,11 @@ import com.douglas.jointlyapp.data.model.UserReviewUser;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-@Database(entities = {User.class, Initiative.class, UserFollowUser.class, UserJoinInitiative.class, Chat.class, UserReviewUser.class, TargetArea.class, Countries.class}, version = 24, exportSchema = false)
-@TypeConverters(Converters.class)
+/**
+ * DB SQLite config
+ */
+@Database(entities = {User.class, Initiative.class, UserFollowUser.class, UserJoinInitiative.class, Chat.class, UserReviewUser.class, TargetArea.class, Countries.class}, version = 28, exportSchema = false)
+@TypeConverters(ConverterUri.class)
 public abstract class JointlyDatabase extends RoomDatabase {
 
     public abstract UserDao userDao();
@@ -44,12 +48,9 @@ public abstract class JointlyDatabase extends RoomDatabase {
     public static final int NUMBER_OF_THREADS = 6;
     public static final ExecutorService DATABASE_WRITE_EXECUTOR = Executors.newFixedThreadPool(NUMBER_OF_THREADS);
 
-    public static void create(final Context context)
-    {
-        if(instance == null)
-        {
-            synchronized (JointlyDatabase.class)
-            {
+    public static void create(final Context context) {
+        if(instance == null) {
+            synchronized (JointlyDatabase.class) {
                 if(instance == null)
                     instance = Room.databaseBuilder(context.getApplicationContext(),
                             JointlyDatabase.class, "jointlyapp").fallbackToDestructiveMigration().build();

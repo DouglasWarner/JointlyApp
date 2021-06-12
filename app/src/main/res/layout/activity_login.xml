@@ -27,6 +27,8 @@
         style="@style/TextInputLayout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:hint="@string/tieEmail"
+        app:startIconDrawable="@drawable/ic_email"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/guideline2"
         app:layout_constraintStart_toStartOf="@+id/guideline"
@@ -35,10 +37,9 @@
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/tieEmail"
-            style="@style/TextInputLayout"
+            style="@style/TextOnPrimary.TextInputLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/tieEmail"
             android:inputType="textEmailAddress">
 
             <requestFocus />
@@ -51,6 +52,8 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         app:endIconMode="password_toggle"
+        android:hint="@string/tiePassword"
+        app:startIconDrawable="@drawable/ic_password"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/guideline2"
         app:layout_constraintStart_toStartOf="@+id/guideline"
@@ -62,7 +65,6 @@
             style="@style/TextInputLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/tiePassword"
             android:inputType="textPassword" />
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -108,23 +110,22 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:indeterminate="true"
-        android:visibility="visible"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/guideline2"
         app:layout_constraintStart_toStartOf="@+id/guideline"
         app:layout_constraintTop_toBottomOf="@+id/btnSignIn"
         app:layout_constraintVertical_bias="0.15" />
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/btnSignInGoogle"
         style="@style/MiButton"
+        app:icon="@drawable/googleg_standard_color_18"
+        app:iconTint="@null"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="5dp"
+        android:layout_marginHorizontal="5dp"
         android:text="@string/btnGoogle"
-        android:paddingStart="10dp"
-        android:drawableStart="@drawable/ic_google_colored"
-        app:iconTint="@null"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/guideline3"
         app:layout_constraintHorizontal_bias="1.0"
@@ -132,21 +133,20 @@
         app:layout_constraintTop_toBottomOf="@+id/btnSignIn"
         app:layout_constraintVertical_bias="0.804" />
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/btnSignInFacebook"
         style="@style/MiButton"
+        app:icon="@drawable/com_facebook_button_icon_blue"
+        app:iconTint="@null"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/default_dimen_small"
         android:text="@string/btnFacebook"
-        android:paddingStart="10dp"
-        android:drawableStart="@drawable/ic_facebook_colored"
-        app:iconTint="@null"
-        android:layout_marginStart="5dp"
         app:layout_constraintBottom_toBottomOf="@+id/btnSignInGoogle"
         app:layout_constraintEnd_toStartOf="@+id/guideline2"
         app:layout_constraintStart_toStartOf="@+id/guideline3"
         app:layout_constraintTop_toTopOf="@+id/btnSignInGoogle"
-        app:layout_constraintVertical_bias="0.5" />
+        app:layout_constraintVertical_bias="0.804" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline"

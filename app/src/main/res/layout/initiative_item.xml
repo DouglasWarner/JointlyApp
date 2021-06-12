@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/cardView"
     android:layout_width="150dp"
-    android:layout_height="200dp"
+    android:layout_height="@dimen/default_height_extra_extra_large"
     android:layout_margin="10dp"
     android:clickable="true"
     app:cardElevation="8dp">
@@ -44,6 +44,7 @@
                 android:layout_height="0dp"
                 android:gravity="center_vertical"
                 android:text="Nombre iniciativa"
+                android:ellipsize="end"
                 app:layout_constraintBottom_toTopOf="@+id/tvInitiativeDate"
                 app:layout_constraintEnd_toStartOf="@+id/guideline5"
                 app:layout_constraintStart_toStartOf="@+id/guideline4"
@@ -84,7 +85,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            app:layout_constraintGuide_end="60dp" />
+            app:layout_constraintGuide_percent="0.65" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

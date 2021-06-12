@@ -9,6 +9,9 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.douglas.jointlyapp.R;
 
+/**
+ * Activity display message no connection
+ */
 public class NoConnectionActivity extends AppCompatActivity {
 
     private ImageView ivNoConnection;

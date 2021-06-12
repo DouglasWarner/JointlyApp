@@ -4,6 +4,9 @@ import com.douglas.jointlyapp.data.model.User;
 
 import java.util.List;
 
+/**
+ * Entity that connects within view and interactor
+ */
 public class FavoritePresenter implements FavoriteContract.Presenter, FavoriteInteractorImpl.FavoriteInteractor {
     private FavoriteContract.View view;
     private FavoriteInteractorImpl interactor;

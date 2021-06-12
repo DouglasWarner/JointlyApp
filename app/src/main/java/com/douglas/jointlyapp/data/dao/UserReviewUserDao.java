@@ -14,11 +14,17 @@ import com.douglas.jointlyapp.data.model.UserReviewUser;
 
 import java.util.List;
 
+/**
+ * Interface UserReviewUser
+ */
 @Dao
-public interface UserReviewUserDao extends BaseDao<UserReviewUser> {
+public interface UserReviewUserDao {
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     long insert(UserReviewUser userReviewUser);
+
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    List<Long> insert(List<UserReviewUser> userReviewUser);
 
     @Update
     void update(UserReviewUser userReviewUser);
@@ -43,7 +49,7 @@ public interface UserReviewUserDao extends BaseDao<UserReviewUser> {
         deleteAll();
         List<Long> insertResult = insert(list);
 
-        Log.e("TAG", "Tipo ------> UserReview");
+        Log.e("TAG", "Tipo ----------> USER REVIEW <-------------");
         insertResult.forEach(x-> Log.e("TAG", "Sync Insert -------------------> " + x));
     }
 }

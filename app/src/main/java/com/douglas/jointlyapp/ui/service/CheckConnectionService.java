@@ -12,14 +12,17 @@ import androidx.annotation.Nullable;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.douglas.jointlyapp.services.APIResponse;
-import com.douglas.jointlyapp.ui.JointlyApplication;
 import com.douglas.jointlyapp.services.Apis;
+import com.douglas.jointlyapp.ui.JointlyApplication;
 
 import java.io.IOException;
 
 import retrofit2.Call;
 import retrofit2.Response;
 
+/**
+ * Entity that manage the connection with network
+ */
 public class CheckConnectionService extends Service {
 
     CheckInternetAsyncTask checkInternetAsyncTask;

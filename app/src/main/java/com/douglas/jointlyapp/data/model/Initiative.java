@@ -1,6 +1,5 @@
 package com.douglas.jointlyapp.data.model;
 
-import android.graphics.Bitmap;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -16,6 +15,9 @@ import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
 
+/**
+ * Entity Initiative
+ */
 @Entity(tableName = "initiative",
         foreignKeys = {@ForeignKey(entity = User.class, parentColumns = "email", childColumns = "created_by")},
         indices = {@Index("created_by")})
@@ -26,10 +28,9 @@ public class Initiative implements Comparable<Initiative>, Serializable, Parcela
 
     //region Variables
 
-    //TODO quizas autoincrement
     @SerializedName("id")
     @NonNull
-    @PrimaryKey
+    @PrimaryKey(autoGenerate = true)
     private long id;
 
     @SerializedName("name")
@@ -56,7 +57,7 @@ public class Initiative implements Comparable<Initiative>, Serializable, Parcela
     private String location;
 
     @SerializedName("imagen")
-    private Bitmap imagen;
+    private String image;
 
     @SerializedName("target_amount")
     @NonNull
@@ -103,28 +104,28 @@ public class Initiative implements Comparable<Initiative>, Serializable, Parcela
 
     @Ignore
     public Initiative(String name, String created_at, String target_date, String description, String target_area,
-                      String location, Bitmap imagen, String target_amount, String created_by) {
+                      String location, String image, String target_amount, String created_by) {
         this.name = name;
         this.created_at = created_at;
         this.target_date = target_date;
         this.description = description;
         this.target_area = target_area;
         this.location = location;
-        this.imagen = imagen;
+        this.image = image;
         this.target_amount = target_amount;
         this.created_by = created_by;
     }
 
     @Ignore
     public Initiative(String name, String created_at, String target_date, String description, String target_area,
-                      String location, Bitmap imagen, String target_amount, String created_by, String ref_code) {
+                      String location, String image, String target_amount, String created_by, String ref_code) {
         this.name = name;
         this.created_at = created_at;
         this.target_date = target_date;
         this.description = description;
         this.target_area = target_area;
         this.location = location;
-        this.imagen = imagen;
+        this.image = image;
         this.target_amount = target_amount;
         this.created_by = created_by;
         this.ref_code = ref_code;
@@ -139,12 +140,12 @@ public class Initiative implements Comparable<Initiative>, Serializable, Parcela
      * @param description
      * @param target_area
      * @param location
-     * @param imagen
+     * @param image
      * @param target_amount
      * @param created_by
      */
     public Initiative(long id, String name, String created_at, String target_date, String description, String target_area,
-                      String location, Bitmap imagen, String target_amount, String created_by, String ref_code,
+                      String location, String image, String target_amount, String created_by, String ref_code,
                       boolean is_deleted, boolean is_sync) {
         this.id = id;
         this.name = name;
@@ -153,7 +154,7 @@ public class Initiative implements Comparable<Initiative>, Serializable, Parcela
         this.description = description;
         this.target_area = target_area;
         this.location = location;
-        this.imagen = imagen;
+        this.image = image;
         this.target_amount = target_amount;
         this.created_by = created_by;
         this.ref_code = ref_code;
@@ -170,7 +171,7 @@ public class Initiative implements Comparable<Initiative>, Serializable, Parcela
         description = in.readString();
         target_area = in.readString();
         location = in.readString();
-        imagen = in.readParcelable(Bitmap.class.getClassLoader());
+        image = in.readString();
         target_amount = in.readString();
         status = in.readString();
         created_by = in.readString();
@@ -251,14 +252,13 @@ public class Initiative implements Comparable<Initiative>, Serializable, Parcela
         this.location = location;
     }
 
-    public Bitmap getImagen()
-    {
-        return imagen;
+    public String getImage() {
+        return image;
     }
 
-    public void setImagen(Bitmap imagen)
+    public void setImage(String image)
     {
-        this.imagen = imagen;
+        this.image = image;
     }
 
     public String getTarget_amount() {
@@ -336,7 +336,7 @@ public class Initiative implements Comparable<Initiative>, Serializable, Parcela
                 ", description='" + description + '\'' +
                 ", targetArea='" + target_area + '\'' +
                 ", location='" + location + '\'' +
-                ", imagen=" + imagen +
+                ", image=" + image +
                 ", targetAmount='" + target_amount + '\'' +
                 ", created_by='" + created_by + '\'' +
                 ", ref_code='" + ref_code + '\'' +
@@ -362,7 +362,7 @@ public class Initiative implements Comparable<Initiative>, Serializable, Parcela
         dest.writeString(description);
         dest.writeString(target_area);
         dest.writeString(location);
-        imagen.writeToParcel(dest, flags);
+        dest.writeString(image);
         dest.writeString(target_amount);
         dest.writeString(status);
         dest.writeString(created_by);

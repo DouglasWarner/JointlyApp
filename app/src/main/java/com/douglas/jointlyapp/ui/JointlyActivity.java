@@ -29,7 +29,12 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+/**
+ * Activity main of app
+ */
 public class JointlyActivity extends AppCompatActivity {
+
+    //region Variable
 
     private BottomNavigationView bottomNavigationView;
     private Toolbar toolbar;
@@ -42,6 +47,8 @@ public class JointlyActivity extends AppCompatActivity {
     private TextView tvNoConnection;
     private Intent intentCheckConnection;
     private CheckConnectionBroadCast checkConnectionBroadCast;
+
+    //endregion
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -106,6 +113,9 @@ public class JointlyActivity extends AppCompatActivity {
         createCheckConnectionService();
     }
 
+    /**
+     * init the service that check if connection is available
+     */
     public void createCheckConnectionService() {
         checkConnectionBroadCast = new CheckConnectionBroadCast(tvNoConnection);
         registerReceiver(checkConnectionBroadCast, new IntentFilter(JointlyApplication.CHECK_CONNECTION_BROADCAST));
@@ -113,6 +123,9 @@ public class JointlyActivity extends AppCompatActivity {
         startService(intentCheckConnection);
     }
 
+    /**
+     * stop the service that check if connection is available
+     */
     public void stopCheckConnectionService() {
         stopService(intentCheckConnection);
         checkConnectionBroadCast = null;

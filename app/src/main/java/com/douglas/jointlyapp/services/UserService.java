@@ -7,14 +7,20 @@ import com.douglas.jointlyapp.data.model.UserReviewUser;
 
 import java.util.List;
 
+import okhttp3.MultipartBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.DELETE;
 import retrofit2.http.GET;
+import retrofit2.http.Multipart;
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
+import retrofit2.http.Part;
 import retrofit2.http.Query;
 
+/**
+ * Interface that represent api request
+ */
 public interface UserService {
 
     //region USER
@@ -26,14 +32,21 @@ public interface UserService {
     Call<APIResponse<User>> getUserByEmail(@Query("email") String email);
 
     @POST("api/users/user/")
-    Call<APIResponse<User>> postUser(@Body String email, @Body String password, @Body String name,
-                        @Body String phone, @Body byte[] imagen, @Body String location,
-                        @Body String description);
+    Call<APIResponse<User>> postUser(@Query("email") String email, @Query("password") String password, @Query("name") String name,
+                                     @Query("phone") String phone, @Query("location") String location,
+                                     @Query("description") String description, @Query("created_at") String created_at);
 
+    @Multipart
     @PUT("api/users/user/")
-    Call<APIResponse<User>> putUser(@Body String email, @Body String password, @Body String name,
-                       @Body String phone, @Body byte[] imagen, @Body String location,
-                       @Body String description, @Body int id);
+    Call<APIResponse<User>> putUserWithoutImage(@Query("email") String email, @Query("password") String password, @Query("name") String name,
+                                    @Query("phone") String phone, @Query("location") String location,
+                                    @Query("description") String description, @Query("id") long id);
+
+    @Multipart
+    @PUT("api/users/user/")
+    Call<APIResponse<User>> putUserWithImage(@Query("email") String email, @Query("password") String password, @Query("name") String name,
+                                    @Query("phone") String phone, @Query("location") String location,
+                                    @Query("description") String description, @Part("file") MultipartBody.Part file, @Query("id") long id);
 
     @GET("api/users/initiatives/created/")
     Call<APIResponse<List<Initiative>>> getListInitiativeCreated(@Query("email") String email);
@@ -76,13 +89,6 @@ public interface UserService {
 
     @POST("api/users/reviews/")
     Call<APIResponse<UserReviewUser>> postUserReview(@Body UserReviewUser userReviewUser);
-
-//    String date, @Body String userEmail,
-//    @Body String userReviewEmail,
-//    @Body String review, @Body int stars
-
-    @POST("api/users/follows/sync/")
-    Call<APIResponse<UserFollowUser>> syncToAPI(@Body List<UserFollowUser> followUserList);
 
     //endregion
 }

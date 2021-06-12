@@ -10,6 +10,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
+/**
+ * Entity that connect to SQlite for aux tables
+ */
 public class SettingsRepository {
 
     private static final SettingsRepository respository;
@@ -59,7 +62,6 @@ public class SettingsRepository {
         } catch (ExecutionException | InterruptedException e) {
             e.printStackTrace();
         }
-
         return targetAreaList;
     }
 

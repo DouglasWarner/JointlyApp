@@ -15,10 +15,14 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+/**
+ * Entity who connect with the APIS and LOCALDB
+ */
 public class ReviewUserInteractorImpl {
 
     interface ReviewInteractor {
         void onReviewEmpty();
+        void onSuccessSendMessage(UserReviewUser userReviewUser);
         void onSuccess(List<UserReviewUser> userReviewUserList);
         void onError(String message);
     }
@@ -61,7 +65,7 @@ public class ReviewUserInteractorImpl {
                         if(reviewUser.isEmpty()) {
                             interactor.onReviewEmpty();
                         } else {
-                            UserRepository.getInstance().upsertUserReviewUser(reviewUser);
+                            UserRepository.getInstance().insertUserReview(reviewUser);
                             interactor.onSuccess(reviewUser);
                         }
                     } else {
@@ -75,6 +79,57 @@ public class ReviewUserInteractorImpl {
 
             @Override
             public void onFailure(Call<APIResponse<List<UserReviewUser>>> call, Throwable t) {
+                Log.e("ERR", t.getMessage());
+                interactor.onError(null);
+                apiResponseCall.cancel();
+            }
+        });
+    }
+
+    //endregion
+
+    //region sendReview
+
+    public void sendReview(final UserReviewUser userReviewUser) {
+        if(JointlyApplication.getConnection() && JointlyApplication.isIsSyncronized()) {
+            sendReviewToAPI(userReviewUser);
+        } else {
+            sendReviewToLocal(userReviewUser);
+        }
+    }
+
+    private void sendReviewToLocal(UserReviewUser userReviewUser) {
+        userReviewUser.setIs_sync(false);
+        long result = UserRepository.getInstance().insertUserReview(userReviewUser);
+
+        if(result != 0) {
+            interactor.onSuccessSendMessage(userReviewUser);
+        } else {
+            interactor.onError(null);
+        }
+    }
+
+    private void sendReviewToAPI(UserReviewUser userReviewUser) {
+        Call<APIResponse<UserReviewUser>> apiResponseCall = Apis.getInstance().getUserService().postUserReview(userReviewUser);
+        apiResponseCall.enqueue(new Callback<APIResponse<UserReviewUser>>() {
+            @Override
+            public void onResponse(Call<APIResponse<UserReviewUser>> call, Response<APIResponse<UserReviewUser>> response) {
+                if(response.isSuccessful() && response.body() != null) {
+                    if(!response.body().isError()) {
+                        Log.e("TAG-------------> ", String.valueOf(response.body().getData()));
+                        UserReviewUser reviewUser = response.body().getData();
+                        UserRepository.getInstance().insertUserReview(reviewUser);
+                        interactor.onSuccessSendMessage(reviewUser);
+                    } else {
+                        interactor.onError(response.body().getMessage());
+                    }
+                } else {
+                    interactor.onError(null);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<APIResponse<UserReviewUser>> call, Throwable t) {
                 Log.e("ERR", t.getMessage());
                 interactor.onError(null);
                 apiResponseCall.cancel();

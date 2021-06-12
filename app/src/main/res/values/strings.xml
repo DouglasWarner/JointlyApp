@@ -133,6 +133,7 @@
     <string name="action_search_initiative">Buscar por nombre...</string>
     <string name="dialog_title_qr_initiative">QR</string>
     <string name="dialog_positive_qr">Aceptar</string>
+    <string name="dialog_neutral_qr">Volver</string>
     <string name="dialog_negative_qr">Cancelar</string>
     <string name="scanQR">Escanear QR</string>
     <string name="hint_etSendMessage">Opina sobre este usuario...</string>
@@ -146,4 +147,13 @@
     <string name="success_send_review">Enviado con exito</string>
     <string name="spTitleTargetArea">Selecciona un area</string>
     <string name="spHintTargetArea">Selecciona un area</string>
+    <string name="message_permission_galery">Se necesitan los permisos para abrir la galeria</string>
+    <string name="message_permission_camare">Se necesitan los permisos para abrir la camara</string>
+    <string name="error_qr_camare">\"Error ejecutando la camara \"</string>
+    <string name="cancel_qr_lector">Lector QR cancelado</string>
+    <string name="error_cancel_qr_lector">ERROR se ha cerrado el lector QR</string>
+    <string name="prompt_lector_qr">Escanear código qr de iniciativa</string>
+    <string name="key_sync">sync</string>
+    <string name="error_auth_failed">Authentication Failed</string>
+    <string name="hint_send_message">Escribe un mensaje...</string>
 </resources>

@@ -1,6 +1,5 @@
 package com.douglas.jointlyapp.data.dao;
 
-import android.graphics.Bitmap;
 import android.util.Log;
 
 import androidx.room.Dao;
@@ -13,19 +12,27 @@ import androidx.room.Update;
 
 import com.douglas.jointlyapp.data.model.Initiative;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
+/**
+ * Interface InitiativeDao
+ */
 @Dao
-public interface InitiativeDao extends BaseDao<Initiative> {
+public interface InitiativeDao {
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     long insert(Initiative initiative);
 
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    List<Long> insert(List<Initiative> obj);
+
     @Query("INSERT OR IGNORE INTO initiative (id,name,target_date,description,target_area,location," +
-            "imagen,target_amount,created_by,ref_code) VALUES(:id,:name,:target_date,:description,:target_area,:location," +
+            "image,target_amount,created_by,ref_code) VALUES(:id,:name,:target_date,:description,:target_area,:location," +
             ":imagen,:target_amount,:created_by,:ref_code) ")
     long insert(long id, String name, String target_date, String description, String target_area, String location,
-                Bitmap imagen, String target_amount, String created_by, String ref_code);
+                String imagen, String target_amount, String created_by, String ref_code);
 
     @Delete
     void delete(Initiative initiative);
@@ -33,10 +40,13 @@ public interface InitiativeDao extends BaseDao<Initiative> {
     @Update
     void update(Initiative initiative);
 
+    @Update
+    void update(List<Initiative> initiatives);
+
     @Query("UPDATE initiative SET name=:name, target_date=:target_date, description=:description, location=:location," +
-            " imagen=:imagen, target_amount=:target_amount, is_deleted=:is_deleted, is_sync=:is_sync WHERE id=:id")
-    void update(long id, String name, String target_date, String description, String location,
-                Bitmap imagen, String target_amount, boolean is_deleted, boolean is_sync);
+            " image=:imagen, target_amount=:target_amount, is_deleted=:is_deleted, is_sync=:is_sync WHERE id=:id")
+    int update(long id, String name, String target_date, String description, String location,
+                String imagen, String target_amount, boolean is_deleted, boolean is_sync);
 
     @Query("SELECT * FROM initiative WHERE is_deleted=:is_deleted")
     List<Initiative> getList(boolean is_deleted);
@@ -62,19 +72,49 @@ public interface InitiativeDao extends BaseDao<Initiative> {
     @Transaction
     default void upsert(Initiative obj) {
         long id = insert(obj.getId(),obj.getName(),obj.getTarget_date(),obj.getDescription(), obj.getTarget_area() ,obj.getLocation(),
-                obj.getImagen(),obj.getTarget_amount(), obj.getCreated_by(), obj.getRef_code());
+                obj.getImage(),obj.getTarget_amount(), obj.getCreated_by(), obj.getRef_code());
         if (id == -1) {
             update(obj.getId(),obj.getName(),obj.getTarget_date(),obj.getDescription(),obj.getLocation(),
-                    obj.getImagen(),obj.getTarget_amount(), obj.getIs_deleted(), obj.getIs_sync());
+                    obj.getImage(),obj.getTarget_amount(), obj.getIs_deleted(), obj.getIs_sync());
         }
     }
 
-    @Transaction
-    default void syncFromAPI(List<Initiative> list) {
-        deleteAll();
-        List<Long> insertResult = insert(list);
+    @Query("DELETE FROM initiative WHERE id IN (SELECT id FROM initiative WHERE id NOT IN (:ids))")
+    void deleteUnused(List<Long> ids);
 
-        Log.e("TAG", "Tipo ------> Initiative");
-        insertResult.forEach(x-> Log.e("TAG", "Sync Insert -------------------> " + x));
+    @Transaction
+    default void syncFromAPI(List<Initiative> initiativeList) {
+        if (initiativeList.isEmpty()) {
+            deleteAll();
+            return;
+        }
+
+        deleteUnused(initiativeList.stream().map(Initiative::getId).collect(Collectors.toList()));
+
+        List<Long> insertResult = insert(initiativeList);
+        List<Initiative> updateList = new ArrayList<>();
+
+        Log.e("TAG", "Tipo ------> INITIATIVE <-------------");
+
+        for (int i = 0; i < insertResult.size(); i++) {
+            Log.e("TAG", "Insert -------------------> " + insertResult.get(i));
+            if (insertResult.get(i) == -1) {
+                updateList.add(initiativeList.get(i));
+            }
+        }
+
+        if (!updateList.isEmpty()) {
+            update(updateList);
+        }
     }
+
+    //TODO quizas quitar
+//    @Transaction
+//    default void syncFromAPI(List<Initiative> list) {
+//        deleteAll();
+//        List<Long> insertResult = insert(list);
+//
+//        Log.e("TAG", "Tipo ------> Initiative");
+//        insertResult.forEach(x-> Log.e("TAG", "Sync Insert -------------------> " + x));
+//    }
 }

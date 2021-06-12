@@ -5,6 +5,9 @@ import com.douglas.jointlyapp.data.model.User;
 
 import java.util.List;
 
+/**
+ * Entity that connects within view and interactor
+ */
 public class InfoUserPresenter implements InfoUserContract.Presenter, InfoUserInteractorImpl.ProfileInteractor {
 
     private InfoUserContract.View view;

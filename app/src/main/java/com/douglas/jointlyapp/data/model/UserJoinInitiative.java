@@ -14,7 +14,9 @@ import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
 
-
+/**
+ * Entity UserJoinInitiative
+ */
 @Entity(tableName = "userJoinInitiative", primaryKeys = {"id_initiative","user_email"},
     foreignKeys = {@ForeignKey(entity = Initiative.class, parentColumns = "id", childColumns = "id_initiative"),
                 @ForeignKey(entity = User.class, parentColumns = "email", childColumns = "user_email")},

@@ -6,6 +6,7 @@ import android.app.job.JobScheduler;
 import android.content.ComponentName;
 import android.content.Context;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -24,9 +25,11 @@ import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.douglas.jointlyapp.R;
 import com.douglas.jointlyapp.data.model.Initiative;
 import com.douglas.jointlyapp.data.model.User;
+import com.douglas.jointlyapp.services.Apis;
 import com.douglas.jointlyapp.ui.JointlyApplication;
 import com.douglas.jointlyapp.ui.adapter.UserJoinedAdapter;
 import com.douglas.jointlyapp.ui.initiative.InitiativeFragment;
@@ -36,11 +39,15 @@ import com.douglas.jointlyapp.ui.utils.CommonUtils;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.snackbar.Snackbar;
 
+import net.glxn.qrgen.android.QRCode;
+
+import org.jetbrains.annotations.NotNull;
+
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * La ventada de la iniciativa en particular
+ * Fragment that represents the initiative display
  */
 public class ShowInitiativeFragment extends Fragment implements ShowInitiativeContract.View, UserJoinedAdapter.ManageInitiative {
 
@@ -84,7 +91,6 @@ public class ShowInitiativeFragment extends Fragment implements ShowInitiativeCo
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        //TODO Quizas quitar algo de CardView
         return inflater.inflate(R.layout.fragment_show_initiative, container, false);
     }
 
@@ -104,14 +110,11 @@ public class ShowInitiativeFragment extends Fragment implements ShowInitiativeCo
         if(!isHistory)
             showBottomSheetBehavior();
         if(isCreated) {
-            imgBtnChat.setEnabled(true);
-            imgBtnChat.setImageResource(R.drawable.ic_qr);
-            btnJoin.setText(R.string.show_initiative_go_to_chat);
-            btnJoin.setPaddingRelative((int) getResources().getDimension(R.dimen.default_dimen_large), 0, 0, 0);
-            btnJoin.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_chat,0,0,0);
+            setIsCreated();
         } else {
             imgBtnChat.setImageResource(R.drawable.ic_chat);
             btnJoin.setText(R.string.join_user_join);
+            //TODO
 //            btnJoin.setPaddingRelative((int) getResources().getDimension(R.dimen.default_dimen_large), 0, 0, 0);
             btnJoin.setCompoundDrawablesWithIntrinsicBounds(0,0,0,0);
         }
@@ -123,7 +126,19 @@ public class ShowInitiativeFragment extends Fragment implements ShowInitiativeCo
     }
 
     /**
-     *
+     * setIsCreated
+     * set view to display fragment for initiative created by user
+     */
+    private void setIsCreated() {
+        imgBtnChat.setEnabled(true);
+        imgBtnChat.setImageResource(R.drawable.ic_qr);
+        btnJoin.setText(R.string.show_initiative_go_to_chat);
+        btnJoin.setPaddingRelative((int) getResources().getDimension(R.dimen.default_dimen_large), 0, 0, 0);
+        btnJoin.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_chat,0,0,0);
+    }
+
+    /**
+     * initUI
      * @param view
      */
     private void initUI(@NonNull View view) {
@@ -147,12 +162,19 @@ public class ShowInitiativeFragment extends Fragment implements ShowInitiativeCo
     }
 
     /**
-     *
+     * setInitiative
      * @param init
      */
     private void setInitiative(Initiative init) {
         initiative = init;
-        imgInitiative.setImageBitmap(init.getImagen() != null ? init.getImagen() : CommonUtils.getImagenInitiativeDefault(JointlyApplication.getContext()));
+        if(init.getImage() != null){
+            Glide.with(JointlyApplication.getContext())
+                    .setDefaultRequestOptions(CommonUtils.getGlideOptions(Initiative.TAG))
+                    .load(Apis.getURLIMAGE()+init.getImage())
+                    .into(imgInitiative);
+        } else {
+            imgInitiative.setImageBitmap(CommonUtils.getImagenInitiativeDefault(JointlyApplication.getContext()));
+        }
         tvTitle.setText(init.getName());
         tvDescription.setText(init.getDescription());
         tvLocation.setText(init.getLocation());
@@ -163,7 +185,7 @@ public class ShowInitiativeFragment extends Fragment implements ShowInitiativeCo
     }
 
     /**
-     *
+     * initRecycler
      */
     private void initRecycler() {
         adapter = new UserJoinedAdapter(new ArrayList<>(), this);
@@ -173,7 +195,7 @@ public class ShowInitiativeFragment extends Fragment implements ShowInitiativeCo
     }
 
     /**
-     *
+     * setOnClickUI
      */
     private void setOnClickUI() {
         imgUserCreator.setOnClickListener(v -> {
@@ -201,26 +223,41 @@ public class ShowInitiativeFragment extends Fragment implements ShowInitiativeCo
         });
 
         imgBtnChat.setOnClickListener(v -> {
+            // isCreated -> ShowQRGenerator
             if(isCreated) {
+                View view = getViewQRGenerated();
                 AlertDialog.Builder dialog = new AlertDialog.Builder(getActivity())
                         .setTitle(R.string.dialog_title_qr_initiative)
-                        .setView(R.layout.layout_qr)
-                        .setPositiveButton(R.string.dialog_positive_qr, (dialog1, which) -> {
-                            dialog1.dismiss();
-                        })
-                        .setNegativeButton(R.string.dialog_negative_qr, (dialog1, which) -> {
+                        .setView(view)
+                        .setNeutralButton(R.string.dialog_neutral_qr, (dialog1, which) -> {
                             dialog1.dismiss();
                         });
                 dialog.show();
-                //TODO mostrar un fragment con el codigo qr para que otro lo escanee
             } else {
+                // isJoined -> ShowChatInitiative
                 goToChatFragment();
             }
         });
     }
 
     /**
-     *
+     * Init view for display qr generated
+     * @return
+     */
+    @NotNull
+    private View getViewQRGenerated() {
+        View view = getActivity().getLayoutInflater().inflate(R.layout.layout_qr, null, false);
+        ImageView qr = view.findViewById(R.id.ivQR);
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        getActivity().getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+        int height = displayMetrics.heightPixels/2;
+        int width = displayMetrics.widthPixels/2;
+        qr.setImageBitmap(QRCode.from(initiative.getRef_code()).withSize(width, height).bitmap());
+        return view;
+    }
+
+    /**
+     * goToChatFragment
      */
     private void goToChatFragment() {
         Bundle bundle = new Bundle();
@@ -229,7 +266,7 @@ public class ShowInitiativeFragment extends Fragment implements ShowInitiativeCo
     }
 
     /**
-     *
+     * showBottomSheetBehavior
      */
     private void showBottomSheetBehavior() {
         if(bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_HIDDEN || bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_COLLAPSED)
@@ -237,7 +274,7 @@ public class ShowInitiativeFragment extends Fragment implements ShowInitiativeCo
     }
 
     /**
-     *
+     * hideBottomSheetBehavior
      */
     private void hideBottomSheetBehavior() {
         if(bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED) {
@@ -270,19 +307,13 @@ public class ShowInitiativeFragment extends Fragment implements ShowInitiativeCo
         String email = JointlyPreferences.getInstance().getUser();
 
         if(email != null) {
+            presenter.loadInitiative(initiative.getId());
             presenter.loadUserOwner(initiative.getCreated_by());
             presenter.loadListUserJoined(initiative.getId());
             if(!isCreated) {
                 presenter.loadUserStateJoined(email, initiative.getId());
             }
         }
-    }
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        presenter.onDestroy();
-        new Thread(this::hideBottomSheetBehavior).start();
     }
 
     @Override
@@ -326,7 +357,7 @@ public class ShowInitiativeFragment extends Fragment implements ShowInitiativeCo
     }
 
     /**
-     *
+     * goToEditInitiative
      */
     private void goToEditInitiative() {
         Bundle bundle = new Bundle();
@@ -335,7 +366,7 @@ public class ShowInitiativeFragment extends Fragment implements ShowInitiativeCo
     }
 
     /**
-     *
+     * deleteInitiative
      */
     private void deleteInitiative() {
         AlertDialog.Builder dialog = new AlertDialog.Builder(getActivity())
@@ -344,6 +375,7 @@ public class ShowInitiativeFragment extends Fragment implements ShowInitiativeCo
                 .setIcon(R.drawable.ic_alert)
                 .setPositiveButton(R.string.dialog_positive_btn_delete_initiative, (dialog1, which) -> {
                     presenter.delete(initiative);
+                    dialog1.dismiss();
                 })
                 .setNegativeButton(R.string.dialog_negative_btn_delete_initiative, (dialog1, which) -> {
                     dialog1.dismiss();
@@ -356,7 +388,6 @@ public class ShowInitiativeFragment extends Fragment implements ShowInitiativeCo
     public void setJoined() {
         if(!isCreated) {
             btnJoin.setText(R.string.undo_user_join);
-//        Snackbar.make(coordinatorLayout, getString(R.string.add_user_joined), Snackbar.LENGTH_SHORT).show();
             imgBtnChat.setEnabled(true);
         }
     }
@@ -365,7 +396,6 @@ public class ShowInitiativeFragment extends Fragment implements ShowInitiativeCo
     public void setUnJoined() {
         if(!isCreated) {
             btnJoin.setText(R.string.join_user_join);
-//        Snackbar.make(coordinatorLayout, getString(R.string.delete_user_joined), Snackbar.LENGTH_SHORT).show();
             imgBtnChat.setEnabled(true);
         }
     }
@@ -394,23 +424,42 @@ public class ShowInitiativeFragment extends Fragment implements ShowInitiativeCo
     @Override
     public void setLoadUserOwner(User user) {
         this.userOwner = user;
-        imgUserCreator.setImageBitmap(user.getImagen() != null ? user.getImagen() : CommonUtils.getImagenUserDefault(JointlyApplication.getContext()));
+        if(user.getImagen() != null) {
+            Glide.with(JointlyApplication.getContext())
+                    .setDefaultRequestOptions(CommonUtils.getGlideOptions(User.TAG))
+                    .load(Apis.getURLIMAGE()+user.getImagen())
+                    .into(imgUserCreator);
+        } else {
+            imgUserCreator.setImageBitmap(CommonUtils.getImagenUserDefault(JointlyApplication.getContext()));
+        }
     }
 
     @Override
     public void setCannotDeleted() {
-        Snackbar.make(coordinatorLayout, getString(R.string.error_initiative_user_joined), Snackbar.LENGTH_SHORT).show();
+        Snackbar.make(getView(), getString(R.string.error_initiative_user_joined), Snackbar.LENGTH_LONG).show();
     }
 
     @Override
     public void setSuccessDeleted() {
-        Snackbar.make(coordinatorLayout, String.format(getString(R.string.initiative_success_deleted), initiative.getName()), Snackbar.LENGTH_SHORT).show();
+        Snackbar.make(getView(), String.format(getString(R.string.initiative_success_deleted), initiative.getName()), Snackbar.LENGTH_SHORT).show();
         NavHostFragment.findNavController(this).popBackStack();
     }
 
     @Override
     public void onError(String message) {
-        Snackbar.make(coordinatorLayout, message != null ? message : getString(R.string.default_error_action), Snackbar.LENGTH_SHORT).show();
+        Snackbar.make(getView(), message != null ? message : getString(R.string.default_error_action), Snackbar.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onLoadInitiative(Initiative initiative) {
+        setInitiative(initiative);
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        presenter.onDestroy();
+        new Thread(this::hideBottomSheetBehavior).start();
     }
 
     @Override

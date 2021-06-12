@@ -1,6 +1,6 @@
 package com.douglas.jointlyapp.ui.initiative.manage;
 
-import android.graphics.Bitmap;
+import android.net.Uri;
 
 import com.douglas.jointlyapp.data.model.Countries;
 import com.douglas.jointlyapp.data.model.Initiative;
@@ -8,6 +8,9 @@ import com.douglas.jointlyapp.data.model.TargetArea;
 
 import java.util.List;
 
+/**
+ * Entity that connects within view and interactor
+ */
 public class ManageInitiativePresenter implements ManageInitiativeContract.Presenter, ManageInitiativeInteractorImpl.ManageInitiativeInteractor {
 
     private ManageInitiativeContract.View view;
@@ -20,14 +23,14 @@ public class ManageInitiativePresenter implements ManageInitiativeContract.Prese
 
     @Override
     public void addInitiative(String name, String targetDate, String targetTime, String description, String targetArea,
-                              String location, Bitmap imagen, String targetAmount, String created_by) {
-        interactor.addInitiative(name, targetDate, targetTime, description,targetArea,location,imagen,targetAmount,created_by);
+                              String location, Uri pathImagen, String targetAmount, String created_by) {
+        interactor.addInitiative(name, targetDate, targetTime, description,targetArea,location, pathImagen,targetAmount,created_by);
     }
 
     @Override
     public void editInitiative(long id, String name, String createAt, String targetDate, String targetTime, String description,
-                               String targetArea, String location, Bitmap imagen, String targetAmount, String created_by, String ref_code) {
-        interactor.editInitiative(id,name,createAt,targetDate,targetTime,description,targetArea,location,imagen,targetAmount,created_by,ref_code);
+                               String targetArea, String location, Uri pathImagen, String targetAmount, String created_by, String ref_code) {
+        interactor.editInitiative(id,name,createAt,targetDate,targetTime,description,targetArea,location, pathImagen, targetAmount,created_by,ref_code);
     }
 
     @Override

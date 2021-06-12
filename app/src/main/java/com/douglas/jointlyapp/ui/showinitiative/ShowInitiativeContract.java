@@ -6,6 +6,9 @@ import com.douglas.jointlyapp.ui.base.BasePresenter;
 
 import java.util.List;
 
+/**
+ * Interface that set the call logic within view and presenter
+ */
 public interface ShowInitiativeContract {
 
     interface View {
@@ -19,9 +22,12 @@ public interface ShowInitiativeContract {
         void setCannotDeleted();
         void setSuccessDeleted();
         void onError(String message);
+
+        void onLoadInitiative(Initiative initiative);
     }
 
     interface Presenter extends BasePresenter {
+        void loadInitiative(long idInitiative);
         void joinInitiative(Initiative initiative);
         void loadListUserJoined(long idInitiative);
         void loadUserStateJoined(String email, long idInitiative);

@@ -8,25 +8,24 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
+/**
+ * Entity that connect to SQlite
+ */
 public class ChatRepository {
 
     private static final ChatRepository chatRepository;
     private final ChatDao chatDao;
-    private List<Chat> list;
 
     static {
         chatRepository = new ChatRepository();
     }
 
-    private ChatRepository()
-    {
-        this.list = new ArrayList<>();
+    private ChatRepository() {
         JointlyDatabase db = JointlyDatabase.getDatabase();
         chatDao = db.chatDao();
     }
 
-    public static ChatRepository getInstance()
-    {
+    public static ChatRepository getInstance() {
         return chatRepository;
     }
 
@@ -36,13 +35,11 @@ public class ChatRepository {
      * @return list
      */
     public List<Chat> getChatInitiative(long idInitiative) {
-        List<Chat> result;
+        List<Chat> result = new ArrayList<>();
         try {
-            list = JointlyDatabase.DATABASE_WRITE_EXECUTOR.submit(() -> chatDao.getChatInitiative(idInitiative)).get();
+            result = JointlyDatabase.DATABASE_WRITE_EXECUTOR.submit(() -> chatDao.getChatInitiative(idInitiative)).get();
         } catch (ExecutionException | InterruptedException e) {
             e.printStackTrace();
-        } finally {
-            result = list;
         }
         return result;
     }
@@ -53,24 +50,12 @@ public class ChatRepository {
      * @return id chat
      */
     public long insert(Chat chat) {
-        long res;
         long result = 0;
         try {
             result = JointlyDatabase.DATABASE_WRITE_EXECUTOR.submit(() -> chatDao.insert(chat)).get();
         } catch (ExecutionException | InterruptedException e) {
             e.printStackTrace();
-        } finally {
-            res = result;
         }
-        return res;
+        return result;
     }
-
-    /**
-     * Update or Insert for Sync with the API
-     * @param list
-     */
-    public void upsertChat(List<Chat> list) {
-        JointlyDatabase.DATABASE_WRITE_EXECUTOR.submit(() -> chatDao.upsert(list));
-    }
-
 }

@@ -5,6 +5,9 @@ import com.douglas.jointlyapp.data.model.UserReviewUser;
 
 import java.util.List;
 
+/**
+ * Entity that connects within view and interactor
+ */
 public class ReviewUserPresenter implements ReviewUserInteractorImpl.ReviewInteractor, ReviewUserContract.Presenter {
 
     private ReviewUserContract.View view;
@@ -23,6 +26,16 @@ public class ReviewUserPresenter implements ReviewUserInteractorImpl.ReviewInter
     @Override
     public void onReviewEmpty() {
         view.setReviewEmpty();
+    }
+
+    @Override
+    public void sendMessage(UserReviewUser userReviewUser) {
+        interactor.sendReview(userReviewUser);
+    }
+
+    @Override
+    public void onSuccessSendMessage(UserReviewUser userReviewUser) {
+        view.onSuccessSendMessage(userReviewUser);
     }
 
     @Override

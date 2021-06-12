@@ -1,14 +1,16 @@
 package com.douglas.jointlyapp.ui.initiative;
 
 import com.douglas.jointlyapp.data.model.Initiative;
-import com.douglas.jointlyapp.ui.base.BaseListView;
 import com.douglas.jointlyapp.ui.base.BasePresenter;
 
 import java.util.List;
 
+/**
+ * Interface that set the call logic within view and presenter
+ */
 public interface InitiativeContract {
-    interface View
-    {
+
+    interface View {
         void showProgress();
         void hideProgress();
         void onNoDataCreatedInProgress();
@@ -22,8 +24,7 @@ public interface InitiativeContract {
         void onError(String message);
     }
 
-    interface Presenter extends BasePresenter
-    {
+    interface Presenter extends BasePresenter {
         void loadCreated(String history);
         void loadJoined(String history, int type);
     }

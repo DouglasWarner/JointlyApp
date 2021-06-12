@@ -45,9 +45,8 @@
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/tieNameInitiative"
-            style="@style/TextOnPrimary"
+            style="@style/TextOnPrimary.TextInputLayout"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/default_height_small"
             android:inputType="text">
             <requestFocus />
         </com.google.android.material.textfield.TextInputEditText>
@@ -59,19 +58,19 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:hint="@string/tieDescription"
+        android:textAlignment="viewStart"
+        android:visibility="visible"
         app:endIconMode="clear_text"
         app:layout_constraintEnd_toStartOf="@+id/guideline2"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="@+id/guideline"
-        app:layout_constraintTop_toBottomOf="@+id/tilNameInitiative"
-        android:textAlignment="viewStart">
+        app:layout_constraintTop_toBottomOf="@+id/tilNameInitiative">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/tieDescription"
-            style="@style/TextOnPrimary"
+            style="@style/TextOnPrimary.TextInputLayout"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/default_height_small"
-            android:inputType="textMultiLine"/>
+            android:inputType="textMultiLine" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
@@ -89,9 +88,8 @@
 
         <AutoCompleteTextView
             android:id="@+id/tieLocation"
-            style="@style/TextOnPrimary"
+            style="@style/TextOnPrimary.TextInputLayout"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/default_height_small"
             android:layout_weight="1"
             android:padding="@dimen/default_dimen_medium"
             android:inputType="textAutoComplete" />
@@ -99,25 +97,25 @@
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/tilTargetArea"
-        style="@style/TextInputLayoutBox"
+        style="@style/TextInputLayoutDropdown"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:hint="@string/tieTargetArea"
+        android:visibility="visible"
+        app:helperText="*Requerido"
+        app:helperTextEnabled="true"
         app:layout_constraintEnd_toStartOf="@+id/guideline2"
         app:layout_constraintStart_toStartOf="@+id/guideline"
         app:layout_constraintTop_toBottomOf="@+id/tilLocation"
-        app:helperTextEnabled="true"
-        app:startIconDrawable="@drawable/ic_area"
-        app:helperText="*Requerido">
+        app:startIconDrawable="@drawable/ic_area">
 
         <AutoCompleteTextView
             android:id="@+id/tieTargetArea"
-            style="@style/TextOnPrimary"
+            style="@style/TextOnPrimary.TextInputLayout"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/default_height_small"
             android:layout_weight="1"
-            android:padding="@dimen/default_dimen_medium"
-            android:inputType="none" />
+            android:inputType="none"
+            android:padding="@dimen/default_dimen_medium" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
@@ -126,18 +124,18 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:hint="@string/tieTargetDate"
+        android:visibility="visible"
+        app:helperText="*Requerido"
+        app:helperTextEnabled="true"
         app:layout_constraintEnd_toStartOf="@+id/guideline2"
         app:layout_constraintStart_toStartOf="@+id/guideline"
         app:layout_constraintTop_toBottomOf="@+id/tilTargetArea"
-        app:startIconDrawable="@drawable/ic_date"
-        app:helperTextEnabled="true"
-        app:helperText="*Requerido">
+        app:startIconDrawable="@drawable/ic_date">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/tieTargetDate"
-            style="@style/TextOnPrimary"
+            style="@style/TextOnPrimary.TextInputLayout"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/default_height_small"
             android:clickable="true"
             android:focusable="false"
             android:inputType="date" />
@@ -158,9 +156,8 @@
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/tieTargetTime"
-            style="@style/TextOnPrimary"
+            style="@style/TextOnPrimary.TextInputLayout"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/default_height_small"
             android:clickable="true"
             android:focusable="false"
             android:inputType="time" />
@@ -175,8 +172,8 @@
         app:layout_constraintEnd_toStartOf="@+id/guideline2"
         app:layout_constraintStart_toStartOf="@+id/guideline"
         app:layout_constraintTop_toBottomOf="@+id/tilTargetTime"
-        android:clickable="true"
         app:suffixText="kg"
+        app:suffixTextAppearance="@style/TextOnPrimary"
         app:suffixTextColor="@color/primaryTextColor"
         app:helperTextEnabled="true"
         app:helperText="*Requerido"
@@ -184,9 +181,8 @@
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/tieTargetAmount"
-            style="@style/TextOnPrimary"
+            style="@style/TextOnPrimary.TextInputLayout"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/default_height_small"
             android:inputType="number"/>
     </com.google.android.material.textfield.TextInputLayout>
 

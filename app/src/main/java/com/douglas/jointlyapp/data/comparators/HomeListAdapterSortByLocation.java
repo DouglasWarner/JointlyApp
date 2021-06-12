@@ -4,6 +4,9 @@ import com.douglas.jointlyapp.data.model.HomeListAdapter;
 
 import java.util.Comparator;
 
+/**
+ * Entity Order adapter homeList by Location
+ */
 public class HomeListAdapterSortByLocation implements Comparator<HomeListAdapter> {
 
     @Override

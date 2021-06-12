@@ -4,7 +4,6 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -12,7 +11,8 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -20,38 +20,51 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
-import androidx.navigation.Navigation;
-import androidx.recyclerview.widget.RecyclerView;
+import androidx.viewpager2.widget.ViewPager2;
 
+import com.bumptech.glide.Glide;
 import com.douglas.jointlyapp.R;
 import com.douglas.jointlyapp.data.model.User;
+import com.douglas.jointlyapp.services.Apis;
 import com.douglas.jointlyapp.ui.JointlyApplication;
+import com.douglas.jointlyapp.ui.infouser.InfoUserFragment;
 import com.douglas.jointlyapp.ui.preferences.JointlyPreferences;
-import com.google.android.material.bottomsheet.BottomSheetBehavior;
+import com.douglas.jointlyapp.ui.reviewuser.ReviewUserFragment;
+import com.douglas.jointlyapp.ui.utils.CommonUtils;
+import com.douglas.jointlyapp.ui.viewpager.UserViewPagerAdapter;
 import com.google.android.material.imageview.ShapeableImageView;
+import com.google.android.material.snackbar.Snackbar;
+import com.google.android.material.tabs.TabLayout;
+import com.google.android.material.tabs.TabLayoutMediator;
+
+import java.util.Locale;
 
 /**
  * Fragment that represent the current user
  */
-public class ProfileFragment extends Fragment implements ProfileContract.View{
+public class ProfileFragment extends Fragment implements ProfileContract.View {
 
     //region Variables
 
     public static final String LOGINUSER = "LOGINUSER";
 
-    private ShapeableImageView shImgUser;
+    private ShapeableImageView imgUser;
+    private ImageView ivEditImagenUser;
     private TextView tvUserName;
     private TextView tvUserLocation;
     private TextView tvUserEmail;
     private TextView tvUserPhome;
-    private TextView tvUserInitiativeCreateds;
-    private TextView tvUserInitiativeJoineds;
-    private TextView tvUserFollows;
-    private TextView tvUserDescription;
-    private TextView tvUserCreatedAt;
+    private RatingBar rbUser;
+    private TextView tvRatingUser;
 
-    private BitmapDrawable imageUser;
     private User user;
+    private ViewPager2 viewPager2;
+    private TabLayout tabLayout;
+
+    private Uri pathImagen;
+
+    private InfoUserFragment infoUserFragment;
+    private ReviewUserFragment reviewUserFragment;
 
     private ProfileContract.Presenter presenter;
 
@@ -67,7 +80,6 @@ public class ProfileFragment extends Fragment implements ProfileContract.View{
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
         return inflater.inflate(R.layout.fragment_profile, container, false);
     }
 
@@ -76,8 +88,55 @@ public class ProfileFragment extends Fragment implements ProfileContract.View{
         super.onViewCreated(view, savedInstanceState);
 
         initUI(view);
+        setListeners();
 
-        shImgUser.setOnClickListener(v -> {
+        presenter = new ProfilePresenter(this);
+    }
+
+    /**
+     * setUpViewPager for ViewPager2
+     * @param viewPager2
+     */
+    private void setUpViewPager(ViewPager2 viewPager2) {
+        UserViewPagerAdapter userViewPagerAdapter = new UserViewPagerAdapter(getActivity().getSupportFragmentManager(), getLifecycle());
+        userViewPagerAdapter.addUser(user);
+        infoUserFragment = new InfoUserFragment(user);
+        reviewUserFragment = new ReviewUserFragment(user, null);
+        userViewPagerAdapter.addFragment(infoUserFragment);
+        userViewPagerAdapter.addFragment(reviewUserFragment);
+        String[] title = new String[]{"Info","Review"};
+
+        viewPager2.setAdapter(userViewPagerAdapter);
+        viewPager2.setUserInputEnabled(false);
+        viewPager2.setOffscreenPageLimit(2);
+
+        new TabLayoutMediator(tabLayout, viewPager2, (tab, position) -> tab.setText(title[position])).attach();
+    }
+
+    /**
+     * initUI
+     * @param view
+     */
+    private void initUI(@NonNull View view) {
+        imgUser = view.findViewById(R.id.imgUser);
+        ivEditImagenUser = view.findViewById(R.id.ivEditImageUser);
+        tvUserName = view.findViewById(R.id.tvUserName);
+        tvUserLocation = view.findViewById(R.id.tvUserLocation);
+        tvUserEmail = view.findViewById(R.id.tvUserEmail);
+        tvUserPhome = view.findViewById(R.id.tvUserPhone);
+        rbUser = view.findViewById(R.id.rbUser);
+        tvRatingUser = view.findViewById(R.id.tvAverageRating);
+
+        // set UserViewPager
+        viewPager2 = view.findViewById(R.id.vpUser);
+        tabLayout = view.findViewById(R.id.tbLayoutUser);
+    }
+
+    /**
+     * setListeners
+     */
+    private void setListeners() {
+        ivEditImagenUser.setOnClickListener(v -> {
             if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 if(ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
                     openGallery();
@@ -88,30 +147,10 @@ public class ProfileFragment extends Fragment implements ProfileContract.View{
                 openGallery();
             }
         });
-
-        view.findViewById(R.id.linearLayoutInitiatives).setVisibility(View.GONE);
-        view.findViewById(R.id.divider4).setVisibility(View.GONE);
-
-        presenter = new ProfilePresenter(this);
-
-        presenter.loadUser(JointlyPreferences.getInstance().getUser());
-    }
-
-    private void initUI(@NonNull View view) {
-        shImgUser = view.findViewById(R.id.imgUser);
-        tvUserName = view.findViewById(R.id.tvUserName);
-        tvUserLocation = view.findViewById(R.id.tvUserLocation);
-        tvUserEmail = view.findViewById(R.id.tvUserEmail);
-        tvUserPhome = view.findViewById(R.id.tvUserPhone);
-        tvUserInitiativeCreateds = view.findViewById(R.id.tvInitiativeCreatedCount);
-        tvUserInitiativeJoineds = view.findViewById(R.id.tvInitiativeJoinedCount);
-        tvUserFollows = view.findViewById(R.id.tvUserFollows);
-        tvUserDescription = view.findViewById(R.id.tvUserDescription);
-        tvUserCreatedAt = view.findViewById(R.id.tvUserCreatedAt);
     }
 
     /**
-     *
+     * openGallery to select the imagen file
      */
     private void openGallery() {
         Intent intent = new Intent(Intent.ACTION_PICK);
@@ -119,15 +158,34 @@ public class ProfileFragment extends Fragment implements ProfileContract.View{
         startActivityForResult(intent, JointlyApplication.REQUEST_IMAGE_GALLERY);
     }
 
+    /**
+     * setUser
+     * @param user
+     */
+    private void setUser(User user) {
+        if(user.getImagen() != null) {
+            Glide.with(JointlyApplication.getContext())
+                    .setDefaultRequestOptions(CommonUtils.getGlideOptions(User.TAG))
+                    .load(Apis.getURLIMAGE()+user.getImagen())
+                    .into(imgUser);
+        } else {
+            imgUser.setImageBitmap(CommonUtils.getImagenUserDefault(JointlyApplication.getContext()));
+        }
+        tvUserName.setText(user.getName());
+        tvUserLocation.setText(user.getLocation());
+        tvUserEmail.setText(user.getEmail());
+        tvUserPhome.setText(user.getPhone());
+
+        this.user = user;
+    }
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         if(requestCode == JointlyApplication.REQUEST_IMAGE_GALLERY) {
             if(resultCode == Activity.RESULT_OK && data != null) {
-                Uri imagen = data.getData();
-                shImgUser.setImageURI(imagen);
-                imageUser = ((BitmapDrawable)shImgUser.getDrawable());
-                user.setImagen(imageUser.getBitmap());
-                presenter.updateImage(user);
+                pathImagen = data.getData();
+                user.setImagen(pathImagen.toString());
+                presenter.updateImage(user, pathImagen);
             } else {
                 Toast.makeText(getActivity(), "No se ha seleccionado ninguna imagen", Toast.LENGTH_SHORT).show();
             }
@@ -157,53 +215,41 @@ public class ProfileFragment extends Fragment implements ProfileContract.View{
     @Override
     public void onStart() {
         super.onStart();
+        //TODO Quizar obtener de firebase
+
+        String user = JointlyPreferences.getInstance().getUser();
+
+        presenter.loadUser(user);
+        presenter.loadRatingUser(user);
         getActivity().findViewById(R.id.faButton).setVisibility(View.GONE);
     }
 
     @Override
-    public void setLocationEmpty() {
-        tvUserLocation.setText("Ubicacion");
+    public void onLoadUser(User user) {
+        setUser(user);
+        setUpViewPager(viewPager2);
     }
 
     @Override
-    public void setPhoneEmpty() {
-        tvUserPhome.setText("Telefono");
+    public void setRatingUser(float average) {
+        rbUser.setRating(average);
+        tvRatingUser.setText(String.format(Locale.getDefault(),"%.2f/%d", average, rbUser.getNumStars()));
     }
 
     @Override
-    public void setDescriptionEmpty() {
-        tvUserDescription.setText("Descripcion");
+    public void setUpdateImage() {
+        imgUser.setImageURI(pathImagen);
     }
 
     @Override
-    public void setUserFollowersEmpty() {
-        tvUserFollows.setText("Seguidores");
+    public void onError(String message) {
+        Snackbar.make(getView(), message != null ? message : getString(R.string.default_error_action), Snackbar.LENGTH_SHORT).show();
     }
 
     @Override
-    public void setInitiativeCreatedEmpty() {
-        tvUserInitiativeCreateds.setText("0");
-    }
-
-    @Override
-    public void setInitiativeJointedEmpty() {
-        tvUserInitiativeJoineds.setText("0");
-    }
-
-    @Override
-    public void onSuccess(User user, long countUserFollowers, int initiativeCreated, int initiativeJoined) {
-        shImgUser.setImageBitmap(user.getImagen());
-        tvUserName.setText(user.getName());
-        tvUserEmail.setText(user.getEmail());
-        tvUserLocation.setText(user.getLocation());
-        tvUserPhome.setText(user.getPhone());
-        tvUserDescription.setText(user.getDescription());
-        tvUserFollows.setText(String.format(getString(R.string.tvUserFollowsFormat), countUserFollowers));
-        tvUserInitiativeJoineds.setText(String.valueOf(initiativeJoined));
-        tvUserInitiativeCreateds.setText(String.valueOf(initiativeCreated));
-        tvUserCreatedAt.setText(user.getCreated_at());
-
-        this.user = user;
+    public void onDestroyView() {
+        super.onDestroyView();
+        presenter.onDestroy();
     }
 
     @Override

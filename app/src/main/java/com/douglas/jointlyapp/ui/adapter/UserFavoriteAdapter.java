@@ -1,6 +1,5 @@
 package com.douglas.jointlyapp.ui.adapter;
 
-import android.content.res.Resources;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -8,22 +7,26 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.core.content.res.ResourcesCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.douglas.jointlyapp.R;
-import com.douglas.jointlyapp.data.comparators.FavoriteSortByFollowers;
-import com.douglas.jointlyapp.data.comparators.FavoriteSortByLocation;
-import com.douglas.jointlyapp.data.comparators.FavoriteSortByName;
 import com.douglas.jointlyapp.data.model.User;
+import com.douglas.jointlyapp.services.Apis;
 import com.douglas.jointlyapp.ui.JointlyApplication;
+import com.douglas.jointlyapp.ui.utils.CommonUtils;
 import com.google.android.material.imageview.ShapeableImageView;
 
-import java.util.Collections;
 import java.util.List;
 
+/**
+ * Adapter that manage user favorite item recycler
+ */
 public class UserFavoriteAdapter extends RecyclerView.Adapter<UserFavoriteAdapter.ViewHolder> {
 
+    /**
+     * interface that connects click on item with his parent
+     */
     public interface ManageUserFavorite
     {
         void onClick(View User);
@@ -48,7 +51,13 @@ public class UserFavoriteAdapter extends RecyclerView.Adapter<UserFavoriteAdapte
 
     @Override
     public void onBindViewHolder(@NonNull UserFavoriteAdapter.ViewHolder holder, int position) {
-        holder.imgUser.setImageBitmap(list.get(position).getImagen());
+        if(list.get(position).getImagen() != null)
+            Glide.with(JointlyApplication.getContext())
+                    .setDefaultRequestOptions(CommonUtils.getGlideOptions(User.TAG))
+                    .load(Apis.getURLIMAGE()+list.get(position).getImagen())
+                    .into(holder.imgUser);
+        else
+            holder.imgUser.setImageBitmap(CommonUtils.getImagenUserDefault(JointlyApplication.getContext()));
         holder.tvUserName.setText(list.get(position).getName());
     }
 
@@ -57,6 +66,10 @@ public class UserFavoriteAdapter extends RecyclerView.Adapter<UserFavoriteAdapte
         return list.size();
     }
 
+    /**
+     * update list
+     * @param list
+     */
     public void update(List<User> list)
     {
         this.list.clear();
@@ -64,29 +77,26 @@ public class UserFavoriteAdapter extends RecyclerView.Adapter<UserFavoriteAdapte
         notifyDataSetChanged();
     }
 
-    public void sortByName() {
-        Collections.sort(list, new FavoriteSortByName());
-        notifyDataSetChanged();
-    }
-
-    public void sortByLocation() {
-        Collections.sort(list, new FavoriteSortByLocation());
-        notifyDataSetChanged();
-    }
-
-    public void sortByUsersFollows() {
-        Collections.sort(list, new FavoriteSortByFollowers());
-        notifyDataSetChanged();
-    }
-
+    /**
+     * get user
+     * @param position
+     * @return User
+     */
     public User getUserItem(int position) {
         return list.get(position);
     }
 
+    /**
+     * update the follow state
+     * @param b
+     */
     public void updateUnFollow(boolean b) {
         follow = b;
     }
 
+    /**
+     * ViewHolder for item layout
+     */
     public class ViewHolder extends RecyclerView.ViewHolder {
         ShapeableImageView imgUser;
         TextView tvUserName;

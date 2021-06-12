@@ -8,12 +8,17 @@
         <item name="boxStrokeColor">@color/primaryDarkColor</item>
         <item name="android:layout_marginTop">@dimen/default_margin_extra_large</item>
     </style>
-    <style name="TextInputLayoutBox" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
+    <style name="TextInputLayoutDropdown" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
         <item name="android:fontFamily">@font/raleway</item>
         <item name="android:textColor">@color/primaryTextColor</item>
         <item name="errorEnabled">true</item>
         <item name="errorTextColor">@android:color/holo_red_light</item>
         <item name="android:layout_marginTop">@dimen/default_margin_extra_large</item>
+    </style>
+    <style name="TextOnPrimary.TextInputLayout" parent="TextAppearance.AppCompat">
+        <item name="android:fontFamily">@font/raleway</item>
+        <item name="android:textColor">@color/primaryTextColor</item>
+        <item name="android:layout_height">@dimen/default_textinput_box_height</item>
     </style>
     <style name="TextOnPrimary" parent="TextAppearance.AppCompat">
         <item name="android:fontFamily">@font/raleway</item>
@@ -31,17 +36,15 @@
         <item name="android:fontFamily">@font/raleway</item>
         <item name="android:textColor">@color/secondaryDarkColor</item>
     </style>
-    <style name="MiButton">
+    <style name="MiButton" parent="Widget.MaterialComponents.Button">
         <item name="android:fontFamily">@font/raleway</item>
-        <item name="android:textSize">10sp</item>
+        <item name="android:textSize">@dimen/default_text_size_small</item>
         <item name="backgroundTint">@color/secondaryColor</item>
         <item name="android:background">@drawable/shape_button</item>
         <item name="android:textColor">@color/secondaryTextColor</item>
+        <item name="android:textStyle">bold</item>
     </style>
     <style name="imageCircular">
         <item name="cornerSize">50%</item>
-    </style>
-    <style name="dateTimePickerDialog" parent="Theme.AppCompat.Light.Dialog">
-        <item name="android:foreground">@color/primaryColor</item>
     </style>
 </resources>

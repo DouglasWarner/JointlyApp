@@ -14,5 +14,5 @@
     <string name="error_initiative_time_empty">Se requiere una hora</string>
     <string name="error_initiative_amount_empty">Se requiere una cantidad prevista a modo de información</string>
     <string name="error_initiative_amount_format">No puede ser 0 o inferior</string>
-    <string name="error_initiative_user_joined">Imposible eliminar porque ya hay usuarios unidos</string>
+    <string name="error_initiative_user_joined">Imposible eliminar porque hay usuarios unidos. Avisa a los usuarios unidos de que salga, y podras borrarlo.</string>
 </resources>

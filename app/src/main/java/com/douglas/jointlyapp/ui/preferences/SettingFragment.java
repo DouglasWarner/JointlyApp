@@ -13,6 +13,9 @@ import androidx.preference.PreferenceManager;
 import com.douglas.jointlyapp.R;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+/**
+ * Fragment Settings of the app
+ */
 public class SettingFragment extends PreferenceFragmentCompat implements SharedPreferences.OnSharedPreferenceChangeListener {
 
     @Override
@@ -20,12 +23,15 @@ public class SettingFragment extends PreferenceFragmentCompat implements SharedP
         addPreferencesFromResource(R.xml.settings_preferences);
         initPreferenceAccount();
         initPreferenceAboutUs();
+
         // Se quiere recoger el evento onSharedPreferenceChanged cuando la preferencia lista
         // cambie
         onSharedPreferenceChanged(PreferenceManager.getDefaultSharedPreferences(getContext()), getString(R.string.key_orderby_initiative));
-        onSharedPreferenceChanged(PreferenceManager.getDefaultSharedPreferences(getContext()), getString(R.string.key_orderby_favorite));
     }
 
+    /**
+     * initPreferenceAboutUs
+     */
     private void initPreferenceAboutUs() {
         Preference aboutUs = getPreferenceScreen().findPreference(getString(R.string.key_aboutus));
 
@@ -35,15 +41,15 @@ public class SettingFragment extends PreferenceFragmentCompat implements SharedP
         });
     }
 
+    /**
+     * initPreferenceAccount
+     */
     private void initPreferenceAccount() {
         Preference accountPreferences = getPreferenceManager().findPreference(getString(R.string.key_account));
 
-        accountPreferences.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-            @Override
-            public boolean onPreferenceClick(Preference preference) {
-                NavHostFragment.findNavController(SettingFragment.this).navigate(R.id.action_settingFragment_to_accountFragment);
-                return true;
-            }
+        accountPreferences.setOnPreferenceClickListener(preference -> {
+            NavHostFragment.findNavController(SettingFragment.this).navigate(R.id.action_settingFragment_to_accountFragment);
+            return true;
         });
     }
 
@@ -79,22 +85,7 @@ public class SettingFragment extends PreferenceFragmentCompat implements SharedP
             int index = listPreference.findIndexOfValue(sharedPreferences.getString(key,""));
             //Vemos si el valor es mayor a cero y por tanto existe el valor y se modifica el summary
             if(index >= 0)
-            {
                 preference.setSummary(listPreference.getEntries()[index]);
-            }
-            else
-                preference.setSummary(sharedPreferences.getString(key,""));
-        }
-
-        if(key.equals(getString(R.string.key_orderby_favorite)))
-        {
-            ListPreference listPreference = (ListPreference) preference;
-
-            int index = listPreference.findIndexOfValue(sharedPreferences.getString(key,""));
-            if(index >= 0)
-            {
-                preference.setSummary(listPreference.getEntries()[index]);
-            }
             else
                 preference.setSummary(sharedPreferences.getString(key,""));
         }

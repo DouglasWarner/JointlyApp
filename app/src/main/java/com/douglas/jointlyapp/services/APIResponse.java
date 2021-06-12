@@ -2,6 +2,10 @@ package com.douglas.jointlyapp.services;
 
 import com.google.gson.annotations.SerializedName;
 
+/**
+ * Entity manage responsebody from API
+ * @param <T>
+ */
 public class APIResponse<T> {
 
     @SerializedName("error")

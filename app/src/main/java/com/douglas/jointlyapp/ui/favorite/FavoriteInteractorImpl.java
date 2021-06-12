@@ -17,6 +17,9 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+/**
+ * Entity who connect with the APIS and LOCALDB
+ */
 public class FavoriteInteractorImpl {
 
     interface FavoriteInteractor {

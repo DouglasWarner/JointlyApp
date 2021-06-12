@@ -8,12 +8,12 @@ import com.douglas.jointlyapp.data.model.UserJoinInitiative;
 import com.douglas.jointlyapp.data.repository.InitiativeRepository;
 import com.douglas.jointlyapp.data.repository.UserRepository;
 import com.douglas.jointlyapp.services.APIResponse;
+import com.douglas.jointlyapp.services.Apis;
 import com.douglas.jointlyapp.services.InitiativeService;
 import com.douglas.jointlyapp.services.UserService;
 import com.douglas.jointlyapp.ui.JointlyApplication;
 import com.douglas.jointlyapp.ui.preferences.JointlyPreferences;
 import com.douglas.jointlyapp.ui.utils.CommonUtils;
-import com.douglas.jointlyapp.services.Apis;
 
 import java.util.List;
 
@@ -21,12 +21,16 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+/**
+ * Entity who connect with the APIS and LOCALDB
+ */
 public class ShowInitiativeInteractorImpl {
 
     interface ShowInitiativeInteractor {
         void onUserListEmpty();
         void onJoined();
         void onUnJoined();
+        void onLoadInitiative(Initiative initiative);
         void onLoadUserStateJoined(boolean joined);
         void onLoadListUserJoined(List<User> userList);
         void onLoadUserOwner(User user);
@@ -45,6 +49,21 @@ public class ShowInitiativeInteractorImpl {
         this.initiativeService = Apis.getInstance().getInitiativeService();
         this.userService = Apis.getInstance().getUserService();
     }
+
+    //region loadInitiative
+
+    /**
+     * get the initiative selected
+     * @param idInitiative
+     */
+    public void loadInitiative(final long idInitiative) {
+        Initiative initiative = InitiativeRepository.getInstance().getInitiative(idInitiative, false);
+
+        if(initiative!=null)
+            interactor.onLoadInitiative(initiative);
+    }
+
+    //endregion
 
     //region loadUserStateJoined
 

@@ -7,8 +7,6 @@ import androidx.lifecycle.Lifecycle;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
 import com.douglas.jointlyapp.data.model.User;
-import com.douglas.jointlyapp.ui.infouser.InfoUserFragment;
-import com.douglas.jointlyapp.ui.reviewuser.ReviewUserFragment;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,7 +16,7 @@ import java.util.List;
  */
 public class UserViewPagerAdapter extends FragmentStateAdapter {
 
-    private List<Fragment> fragmentList = new ArrayList<>();
+    private final List<Fragment> fragmentList = new ArrayList<>();
     private User user;
 
     public UserViewPagerAdapter(@NonNull FragmentManager fragmentManager, @NonNull Lifecycle lifecycle) {
@@ -31,21 +29,12 @@ public class UserViewPagerAdapter extends FragmentStateAdapter {
     @NonNull
     @Override
     public Fragment createFragment(int position) {
-        Fragment fragment = new Fragment();
-        switch (position) {
-            case 0:
-                fragment = new InfoUserFragment(user);
-                break;
-            case 1:
-                fragment = new ReviewUserFragment(user);
-                break;
-        }
-        return fragment;
+        return fragmentList.get(position);
     }
 
     @Override
     public int getItemCount() {
-        return 2;
+        return fragmentList.size();
     }
 
     /**
@@ -53,7 +42,8 @@ public class UserViewPagerAdapter extends FragmentStateAdapter {
      * @param fragment
      */
     public void addFragment(Fragment fragment) {
-        fragmentList.add(fragment);
+        if(!fragmentList.contains(fragment))
+            fragmentList.add(fragment);
     }
 
     /**
@@ -62,9 +52,5 @@ public class UserViewPagerAdapter extends FragmentStateAdapter {
      */
     public void addUser(User user) {
         this.user = user;
-    }
-
-    public Fragment getFragment(int position) {
-        return fragmentList.get(position);
     }
 }

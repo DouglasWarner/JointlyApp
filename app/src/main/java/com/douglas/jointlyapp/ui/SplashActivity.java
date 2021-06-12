@@ -10,6 +10,9 @@ import com.douglas.jointlyapp.ui.login.LoginActivity;
 import com.douglas.jointlyapp.ui.preferences.JointlyPreferences;
 import com.douglas.jointlyapp.ui.sync.SyncFromAPI;
 
+/**
+ * Activity launcher
+ */
 public class SplashActivity extends AppCompatActivity {
 
     private static final long WAIT_TIME = 2000;
@@ -47,12 +50,18 @@ public class SplashActivity extends AppCompatActivity {
         }).start();
     }
 
+    /**
+     * display NoConnectionActivity
+     */
     private void initNoConnectionActivity() {
         startActivity(new Intent(this, NoConnectionActivity.class));
 
         finish();
     }
 
+    /**
+     * display Login
+     */
     private void initLogin() {
         startActivity(new Intent(this, LoginActivity.class));
         // Vamos a llamar de forma explicita al metodo finish() que destruye la activity
@@ -60,6 +69,9 @@ public class SplashActivity extends AppCompatActivity {
         finish();
     }
 
+    /**
+     * display JointlyActivity
+     */
     private void initJointlyApp() {
         startActivity(new Intent(this, JointlyActivity.class));
 

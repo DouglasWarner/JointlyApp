@@ -1,16 +1,21 @@
 package com.douglas.jointlyapp.ui.initiative;
 
+import android.Manifest;
+import android.app.Activity;
+import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -18,19 +23,25 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.douglas.jointlyapp.R;
 import com.douglas.jointlyapp.data.model.Initiative;
+import com.douglas.jointlyapp.ui.JointlyApplication;
 import com.douglas.jointlyapp.ui.adapter.InitiativeAdapter;
+import com.douglas.jointlyapp.ui.utils.QRCaptureActivity;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.zxing.integration.android.IntentIntegrator;
+import com.google.zxing.integration.android.IntentResult;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * La ventana de mis iniciativas
+ * Fragment that represents the list of initiative created
+ * and joined by user
  */
 public class InitiativeFragment extends Fragment implements InitiativeContract.View, InitiativeAdapter.ManageInitiative {
 
     //region Variables
+
     public static final String TYPE_INPROGRESS = "INPROGRESS";
     public static final String TYPE_HISTORY = "HISTORY";
     public static final String TYPE_CREATED = "CREATED";
@@ -59,13 +70,16 @@ public class InitiativeFragment extends Fragment implements InitiativeContract.V
     private View coordinatorLayout;
     private FloatingActionButton floatingActionButton;
 
+    private TextView qrEscaneado;
     private InitiativeContract.Presenter presenter;
+
     //endregion
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
+        setHasOptionsMenu(true);
     }
 
     @Override
@@ -81,6 +95,8 @@ public class InitiativeFragment extends Fragment implements InitiativeContract.V
         initUI(view);
         initRecyclers();
         setOnClickUI();
+
+        qrEscaneado = view.findViewById(R.id.qrEscaneado);
 
         presenter = new InitiativePresenter(this);
     }
@@ -111,7 +127,7 @@ public class InitiativeFragment extends Fragment implements InitiativeContract.V
     }
 
     /**
-     *
+     * initRecyclers
      */
     private void initRecyclers() {
         adapterInitiativeCreatedInProgress = new InitiativeAdapter(getContext(), new ArrayList<>(), this, TYPE_CREATED + TYPE_INPROGRESS);
@@ -137,7 +153,7 @@ public class InitiativeFragment extends Fragment implements InitiativeContract.V
     }
 
     /**
-     *
+     * setOnClickUI
      */
     private void setOnClickUI() {
         tvCreated.setOnClickListener(v -> {
@@ -189,7 +205,7 @@ public class InitiativeFragment extends Fragment implements InitiativeContract.V
     }
 
     /**
-     *
+     * hideFloatingButton
      */
     private void hideFloatingButton() {
         floatingActionButton.setVisibility(View.GONE);
@@ -259,7 +275,7 @@ public class InitiativeFragment extends Fragment implements InitiativeContract.V
 
     @Override
     public void onError(String message) {
-        Snackbar.make(coordinatorLayout, (message != null) ? message : getString(R.string.default_error_action), Snackbar.LENGTH_SHORT).show();
+        Snackbar.make(getView(), (message != null) ? message : getString(R.string.default_error_action), Snackbar.LENGTH_SHORT).show();
     }
 
     @Override
@@ -312,14 +328,14 @@ public class InitiativeFragment extends Fragment implements InitiativeContract.V
     }
 
     /**
-     *
+     * goToAddInitiative
      */
     private void goToAddInitiative() {
         NavHostFragment.findNavController(this).navigate(R.id.action_initiativeFragment_to_manageInitiativeFragment);
     }
 
     /**
-     *
+     * goToShowInitiative
      * @param bundle
      */
     private void goToShowInitiative(Bundle bundle) {
@@ -330,13 +346,76 @@ public class InitiativeFragment extends Fragment implements InitiativeContract.V
     public void onPrepareOptionsMenu(@NonNull Menu menu) {
         super.onPrepareOptionsMenu(menu);
         menu.findItem(R.id.action_scan_qr).setVisible(true);
-        menu.findItem(R.id.action_scan_qr).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                //TODO aqui va la llamada para abrir el scaner
-                return true;
-            }
+        menu.findItem(R.id.action_scan_qr).setOnMenuItemClickListener(item -> {
+            requestCamera();
+            floatingActionButton.setVisibility(View.GONE);
+            return true;
         });
+    }
+
+    /**
+     * show the QRScanner
+     */
+    private void showQRscanner() {
+        IntentIntegrator.forSupportFragment(this)
+                .setDesiredBarcodeFormats(IntentIntegrator.ALL_CODE_TYPES)
+                .setPrompt(getString(R.string.prompt_lector_qr))
+                .setRequestCode(JointlyApplication.REQUEST_PERMISSION_CAMERA_CODE)
+                .setCameraId(0)
+                .setOrientationLocked(false)
+                .setCaptureActivity(QRCaptureActivity.class)
+                .setBeepEnabled(false)
+                .setBarcodeImageEnabled(false)
+                .initiateScan();
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        if(requestCode == JointlyApplication.REQUEST_PERMISSION_CAMERA_CODE) {
+            if(resultCode == Activity.RESULT_OK && data != null) {
+                IntentResult intentResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
+                if (intentResult != null) {
+                    if (intentResult.getContents() == null) {
+                        Toast.makeText(getActivity(), getString(R.string.cancel_qr_lector), Toast.LENGTH_SHORT).show();
+                    } else {
+                        qrEscaneado.setText(intentResult.getContents().toString());
+                    }
+                } else {
+                    super.onActivityResult(requestCode, resultCode, data);
+                }
+            } else {
+                Toast.makeText(getActivity(), getString(R.string.error_cancel_qr_lector), Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    /**
+     * request permission camare
+     */
+    private void requestCamera() {
+        if (ActivityCompat.checkSelfPermission(JointlyApplication.getContext(), Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
+            showQRscanner();
+        } else {
+            requestPermissions(new String[]{Manifest.permission.CAMERA}, JointlyApplication.REQUEST_PERMISSION_CAMERA_CODE);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (requestCode == JointlyApplication.REQUEST_PERMISSION_CAMERA_CODE) {
+            if(permissions.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                showQRscanner();
+            } else {
+                Toast.makeText(getActivity(), getString(R.string.message_permission_camare), Toast.LENGTH_SHORT).show();
+            }
+        }
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        presenter.onDestroy();
     }
 
     @Override

@@ -27,13 +27,6 @@
             android:summary="@string/summary_orderby_initiative"
             android:entries="@array/orderby_initiative"
             android:entryValues="@array/orderby_initiative_values"/>
-
-        <ListPreference
-            android:title="@string/title_orderby_favorite"
-            android:key="@string/key_orderby_favorite"
-            android:summary="@string/summary_orderby_favorite"
-            android:entries="@array/orderby_favorite"
-            android:entryValues="@array/orderby_favorite_values"/>
     </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/title_category_help" android:summary="@string/summary_category_help">

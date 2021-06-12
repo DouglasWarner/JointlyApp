@@ -7,12 +7,14 @@ import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
+/**
+ * Entity Client retrofit
+ */
 public class Client {
 
     private static Retrofit retrofit = null;
 
-    public static Retrofit getClient(String url)
-    {
+    public static Retrofit getClient(String url) {
         HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
         interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
         //TODO cuidado con el callTimeout, puede ser muy poco tiempo

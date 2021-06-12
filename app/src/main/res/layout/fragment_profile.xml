@@ -44,6 +44,8 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:padding="@dimen/default_dimen_small"
+
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/guideline13"
             app:layout_constraintStart_toStartOf="@+id/guideline12"
             app:layout_constraintTop_toBottomOf="@+id/tbLayoutUser" />

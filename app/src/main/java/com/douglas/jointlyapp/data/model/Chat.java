@@ -12,6 +12,9 @@ import androidx.room.Index;
 
 import com.google.gson.annotations.SerializedName;
 
+/**
+ * Entity Chat
+ */
 @Entity(tableName = "chat", primaryKeys = {"dateMessage","idInitiative","userEmail"},
         foreignKeys = {@ForeignKey(entity = User.class, parentColumns = "email", childColumns = "userEmail"),
                     @ForeignKey(entity = Initiative.class, parentColumns = "id", childColumns = "idInitiative")},

@@ -1,12 +1,12 @@
 package com.douglas.jointlyapp.ui.chat;
 
-import android.app.ActionBar;
-import android.app.job.JobInfo;
-import android.app.job.JobScheduler;
-import android.content.ComponentName;
-import android.content.Context;
-import android.icu.text.CaseMap;
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageButton;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -15,27 +15,21 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ImageButton;
-import android.widget.LinearLayout;
-import android.widget.TextView;
-
 import com.douglas.jointlyapp.R;
 import com.douglas.jointlyapp.data.model.Chat;
 import com.douglas.jointlyapp.data.model.Initiative;
-import com.douglas.jointlyapp.data.model.User;
-import com.douglas.jointlyapp.ui.JointlyApplication;
 import com.douglas.jointlyapp.ui.adapter.ChatAdapter;
-import com.douglas.jointlyapp.ui.broadcast.NotificationNewMessageChatBroadCast;
 import com.douglas.jointlyapp.ui.preferences.JointlyPreferences;
-import com.douglas.jointlyapp.ui.service.BackgroundJobService;
 
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Fragment that represent chat message for initiative
+ */
 public class ChatFragment extends Fragment implements ChatContract.View {
+
+    //TODO terminar
 
     private LinearLayout llLoading;
     private LinearLayout llNoData;

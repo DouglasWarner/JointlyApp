@@ -4,6 +4,9 @@ import com.douglas.jointlyapp.data.model.Initiative;
 
 import java.util.List;
 
+/**
+ * Entity that connects within view and interactor
+ */
 public class InitiativePresenter implements InitiativeContract.Presenter, InitiativeInteractorImpl.ListInitiativeInteractor {
 
     private InitiativeContract.View view;

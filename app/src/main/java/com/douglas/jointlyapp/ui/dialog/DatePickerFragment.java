@@ -8,23 +8,26 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
-import com.douglas.jointlyapp.R;
-
 import java.util.Calendar;
 
+/**
+ * Dialog that display datepicker
+ */
 public class DatePickerFragment extends DialogFragment {
 
     private DatePickerDialog.OnDateSetListener listener;
+    private static final DatePickerFragment datePickerFragment;
 
-    public static DatePickerFragment newInstance(DatePickerDialog.OnDateSetListener listener)
-    {
-        DatePickerFragment datePickerFragment = new DatePickerFragment();
+    static {
+        datePickerFragment = new DatePickerFragment();
+    }
+
+    public static DatePickerFragment newInstance(DatePickerDialog.OnDateSetListener listener) {
         datePickerFragment.setListener(listener);
         return datePickerFragment;
     }
 
-    public void setListener(DatePickerDialog.OnDateSetListener listener)
-    {
+    public void setListener(DatePickerDialog.OnDateSetListener listener) {
         this.listener = listener;
     }
 
@@ -36,6 +39,6 @@ public class DatePickerFragment extends DialogFragment {
         int month = calendar.get(Calendar.MONTH);
         int day = calendar.get(Calendar.DAY_OF_MONTH)+1;
 
-        return new DatePickerDialog(getActivity(), R.style.dateTimePickerDialog, listener, year, month, day);
+        return new DatePickerDialog(getActivity(), listener, year, month, day);
     }
 }

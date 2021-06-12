@@ -64,13 +64,16 @@
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:id="@+id/tvMessage"
-            android:hint="Escribe un mensaje..."/>
+            android:hint="@string/hint_send_message"/>
+
         <ImageButton
             android:id="@+id/imgBtnSend"
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:background="@drawable/ic_send"
-            android:layout_alignParentEnd="true"/>
+            android:layout_alignParentEnd="true"
+            android:layout_alignBottom="parent"
+            android:layout_alignTop="parent"
+            android:background="@drawable/ic_send" />
     </RelativeLayout>
 
     <androidx.constraintlayout.widget.Guideline

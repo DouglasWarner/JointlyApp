@@ -14,6 +14,9 @@ import com.douglas.jointlyapp.data.model.UserReviewUser;
 
 import java.util.List;
 
+/**
+ * Adapter that manage user review item recycler
+ */
 public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ViewHolder> {
 
     private List<UserReviewUser> reviewUserList;
@@ -34,6 +37,8 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ViewHolder
         holder.tvName.setText(reviewUserList.get(position).getUser());
         holder.tvReview.setText(reviewUserList.get(position).getReview());
         holder.rbStarsReview.setRating(reviewUserList.get(position).getStars());
+        //TODO mirar con servidor en aws
+//        holder.tvDateReview.setText(CommonUtils.formatDateFromAPI(reviewUserList.get(position).getDate()));
         holder.tvDateReview.setText(reviewUserList.get(position).getDate());
     }
 
@@ -43,7 +48,7 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ViewHolder
     }
 
     /**
-     *
+     * update list
      * @param list
      */
     public void update(List<UserReviewUser> list) {
@@ -53,7 +58,7 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ViewHolder
     }
 
     /**
-     *
+     * add message to list
      * @param reviewUser
      */
     public void addMessage(UserReviewUser reviewUser) {
@@ -62,7 +67,7 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ViewHolder
     }
 
     /**
-     *
+     * ViewHolder for item layout
      */
     class ViewHolder extends RecyclerView.ViewHolder {
         TextView tvName;

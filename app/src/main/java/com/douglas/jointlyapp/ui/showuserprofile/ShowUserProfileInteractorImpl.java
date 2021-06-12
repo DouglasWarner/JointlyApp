@@ -11,6 +11,7 @@ import com.douglas.jointlyapp.services.Apis;
 import com.douglas.jointlyapp.services.UserService;
 import com.douglas.jointlyapp.ui.JointlyApplication;
 import com.douglas.jointlyapp.ui.preferences.JointlyPreferences;
+import com.douglas.jointlyapp.ui.utils.CommonUtils;
 
 import java.util.List;
 
@@ -18,6 +19,9 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+/**
+ * Entity who connect with the APIS and LOCALDB
+ */
 public class ShowUserProfileInteractorImpl {
 
     interface ProfileInteractor {
@@ -165,6 +169,12 @@ public class ShowUserProfileInteractorImpl {
         });
     }
 
+    /**
+     * call to delete user to API
+     * @param user
+     * @param userFollow
+     * @return Callback<APIResponse<UserFollowUser>>
+     */
     private Callback<APIResponse<UserFollowUser>> deleteUserFollowCallBack(String user, String userFollow) {
         return new Callback<APIResponse<UserFollowUser>>() {
             @Override
@@ -194,12 +204,11 @@ public class ShowUserProfileInteractorImpl {
 
     //region loadRatingUser
 
-    //TODO mirar la media / 5
     /**
      *
      * @param user
      */
-    public void loadRatingUser(final User user) {
+    public void loadRatingUser(final String user) {
         if(JointlyApplication.getConnection() && JointlyApplication.isIsSyncronized()) {
             loadRatingUserFromAPI(user);
         } else {
@@ -211,19 +220,23 @@ public class ShowUserProfileInteractorImpl {
      *
      * @param user
      */
-    private void loadRatingUserFromLocal(User user) {
-        List<UserReviewUser> userReviewUsers = UserRepository.getInstance().getListUserReviews(user.getEmail(), false);
+    private void loadRatingUserFromLocal(String user) {
+        List<UserReviewUser> userReviewUsers = UserRepository.getInstance().getListUserReviews(user, false);
 
         if(userReviewUsers.isEmpty()) {
             interactor.onRatingUser(0);
         } else {
-            float average = getAverage(userReviewUsers);
+            float average = CommonUtils.getAverage(userReviewUsers);
             interactor.onRatingUser(average);
         }
     }
 
-    private void loadRatingUserFromAPI(User user) {
-        Call<APIResponse<List<UserReviewUser>>> apiResponseCall = Apis.getInstance().getUserService().getListUserReview(user.getEmail());
+    /**
+     * call to load user rating review from API
+     * @param user
+     */
+    private void loadRatingUserFromAPI(String user) {
+        Call<APIResponse<List<UserReviewUser>>> apiResponseCall = Apis.getInstance().getUserService().getListUserReview(user);
         apiResponseCall.enqueue(new Callback<APIResponse<List<UserReviewUser>>>() {
             @Override
             public void onResponse(Call<APIResponse<List<UserReviewUser>>> call, Response<APIResponse<List<UserReviewUser>>> response) {
@@ -234,7 +247,7 @@ public class ShowUserProfileInteractorImpl {
                         if(reviewUser.isEmpty()) {
                             interactor.onRatingUser(0);
                         } else {
-                            float average = getAverage(reviewUser);
+                            float average = CommonUtils.getAverage(reviewUser);
                             interactor.onRatingUser(average);
                         }
                     } else {
@@ -252,27 +265,6 @@ public class ShowUserProfileInteractorImpl {
                 apiResponseCall.cancel();
             }
         });
-    }
-
-    /**
-     * Average of all stars review
-     * @param reviewUser
-     * @return float
-     */
-    private float getAverage(List<UserReviewUser> reviewUser) {
-        float divisor = 0;
-        float dividendo = 0;
-        reviewUser.get(2).setStars(5);
-        long[] value = new long[6];
-        reviewUser.forEach(x-> value[x.getStars()]++);
-        float totalStars = (float) reviewUser.stream().mapToDouble(UserReviewUser::getStars).sum();
-        for (int i = 0; i < value.length; i++) {
-            divisor+= ((value[i]/totalStars)*100) * i;
-        }
-        for (int i = 0; i < value.length; i++) {
-            dividendo+=  ((value[i]/totalStars)*100);
-        }
-        return divisor/dividendo;
     }
 
     //endregion

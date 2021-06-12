@@ -2,6 +2,9 @@ package com.douglas.jointlyapp.ui.login;
 
 import com.douglas.jointlyapp.data.model.User;
 
+/**
+ * Entity that connects within view and interactor
+ */
 public class LoginPresenter implements LoginContract.Presenter, LoginInteractorImpl.LoginInteractor {
 
     private LoginContract.View view;

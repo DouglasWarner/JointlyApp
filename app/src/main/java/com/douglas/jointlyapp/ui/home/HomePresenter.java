@@ -4,6 +4,9 @@ import com.douglas.jointlyapp.data.model.HomeListAdapter;
 
 import java.util.List;
 
+/**
+ * Entity that connects within view and interactor
+ */
 public class HomePresenter implements HomeContract.Presenter, HomeInteractorImpl.ListInitiativeInteractor {
 
     private HomeContract.View view;

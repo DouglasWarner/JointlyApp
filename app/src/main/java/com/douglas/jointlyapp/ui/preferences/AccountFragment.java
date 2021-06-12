@@ -17,10 +17,12 @@ import com.douglas.jointlyapp.data.repository.UserRepository;
 import com.douglas.jointlyapp.ui.preferences.JointlyPreferences;
 import com.douglas.jointlyapp.ui.utils.CommonUtils;
 
+/**
+ * Fragmet that represents the account settings for display on settings
+ */
 public class AccountFragment extends PreferenceFragmentCompat {
 
     private User user;
-
     private EditTextPreference emailPreferences;
     private EditTextPreference namePreferences;
     private EditTextPreference phonePreferences;
@@ -41,6 +43,9 @@ public class AccountFragment extends PreferenceFragmentCompat {
         initListenerPreferenceDescription();
     }
 
+    /**
+     * initPreferences
+     */
     private void initPreferences() {
         emailPreferences = getPreferenceManager().findPreference(getString(R.string.key_user));
         namePreferences = getPreferenceManager().findPreference(getString(R.string.key_name));
@@ -63,14 +68,12 @@ public class AccountFragment extends PreferenceFragmentCompat {
         });
 
         emailPreferences.setOnPreferenceChangeListener((preference, newValue) -> {
-
             String text = (String)newValue;
 
             if (noValidEmail(text))
                 return false;
 
             user.setEmail((String)newValue);
-
             UserRepository.getInstance().update(user);
             Toast.makeText(getContext(), "Email actualizado con exito", Toast.LENGTH_SHORT).show();
 
@@ -93,8 +96,7 @@ public class AccountFragment extends PreferenceFragmentCompat {
         namePreferences.setOnPreferenceChangeListener((preference, newValue) -> {
             String text = (String)newValue;
 
-            if(TextUtils.isEmpty(text))
-            {
+            if(TextUtils.isEmpty(text)) {
                 Toast.makeText(getContext(), "El nombre de usuario no puede estar vacio", Toast.LENGTH_SHORT).show();
                 return false;
             }
@@ -122,8 +124,7 @@ public class AccountFragment extends PreferenceFragmentCompat {
         phonePreferences.setOnPreferenceChangeListener((preference, newValue) -> {
             String text = (String)newValue;
 
-            if(!TextUtils.isEmpty(text))
-            {
+            if(!TextUtils.isEmpty(text)) {
                 if(!CommonUtils.isPhoneValid(text)) {
                     Toast.makeText(getContext(), "El telefono no es valido", Toast.LENGTH_SHORT).show();
                     return false;
@@ -150,9 +151,7 @@ public class AccountFragment extends PreferenceFragmentCompat {
         });
 
         locationPreferences.setOnPreferenceChangeListener((preference, newValue) -> {
-
             String text = (String)newValue;
-
             user.setLocation(text);
             UserRepository.getInstance().update(user);
             Toast.makeText(getContext(), "El localidad actualizado con exito", Toast.LENGTH_SHORT).show();
@@ -172,7 +171,6 @@ public class AccountFragment extends PreferenceFragmentCompat {
 
         descriptionPreferences.setOnPreferenceChangeListener((preference, newValue) -> {
             String text = (String)newValue;
-
             user.setDescription(text);
             UserRepository.getInstance().update(user);
             Toast.makeText(getContext(), "El descripcion actualizado con exito", Toast.LENGTH_SHORT).show();
@@ -185,20 +183,17 @@ public class AccountFragment extends PreferenceFragmentCompat {
      * Metodo que valida el texto introducido por el usuario de la preferencia Email
      */
     private boolean noValidEmail(String text) {
-        if(TextUtils.isEmpty(text))
-        {
+        if(TextUtils.isEmpty(text)) {
             Toast.makeText(getContext(), "El email no puede estar vacio", Toast.LENGTH_SHORT).show();
             return true;
         }
 
-        if(!CommonUtils.isEmailValid(text))
-        {
+        if(!CommonUtils.isEmailValid(text)) {
             Toast.makeText(getContext(), "El email no es valido", Toast.LENGTH_SHORT).show();
             return true;
         }
 
-        if(UserRepository.getInstance().getUser(text) != null)
-        {
+        if(UserRepository.getInstance().getUser(text) != null) {
             Toast.makeText(getContext(), "El email ya esta en uso", Toast.LENGTH_SHORT).show();
             return true;
         }

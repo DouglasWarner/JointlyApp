@@ -34,9 +34,9 @@ dependencies {
     //FireBase
     implementation platform('com.google.firebase:firebase-bom:26.5.0')
     implementation 'com.google.firebase:firebase-analytics'
-    implementation 'com.google.firebase:firebase-auth:20.0.4'
-    implementation 'com.google.firebase:firebase-core:18.0.3'
-    implementation 'com.google.firebase:firebase-bom:27.0.0'
+    implementation 'com.google.firebase:firebase-auth:21.0.1'
+    implementation 'com.google.firebase:firebase-core:19.0.0'
+    implementation 'com.google.firebase:firebase-bom:28.1.0'
     implementation 'com.firebaseui:firebase-ui-auth:6.4.0'
     implementation 'com.facebook.android:facebook-android-sdk:4.42.0'
 
@@ -54,7 +54,8 @@ dependencies {
     implementation 'com.squareup.picasso:picasso:2.5.2'
 
     //Glide
-    implementation 'com.github.bumptech.glide:glide:4.7.1'
+     implementation 'com.github.bumptech.glide:glide:4.12.0'
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.12.0'
 
     //Room
     def room_version = "2.2.6"
@@ -63,6 +64,13 @@ dependencies {
 
     //Preferences
     implementation 'androidx.preference:preference:1.1.1'
+
+    // QR SCANNER
+    implementation 'com.journeyapps:zxing-android-embedded:4.2.0'
+    implementation 'com.google.zxing:core:3.4.0'
+
+    // QR GENERATOR
+    implementation 'com.github.kenglxn.QRGen:android:2.6.0'
 
     //Notificacion
     implementation "com.android.support:support-compat:28.0.0"

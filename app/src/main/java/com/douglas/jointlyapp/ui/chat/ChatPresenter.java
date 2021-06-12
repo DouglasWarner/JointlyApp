@@ -4,6 +4,9 @@ import com.douglas.jointlyapp.data.model.Chat;
 
 import java.util.List;
 
+/**
+ * Entity that connects within view and interactor
+ */
 public class ChatPresenter implements ChatContract.Presenter, ChatInteractorImpl.ChatInteractor {
 
     private ChatContract.View view;

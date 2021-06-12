@@ -1,13 +1,13 @@
 package com.douglas.jointlyapp.ui.signup;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.douglas.jointlyapp.R;
 import com.douglas.jointlyapp.ui.JointlyActivity;
@@ -17,7 +17,12 @@ import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
+/**
+ * Activity that hold the signup user of the app
+ */
 public class SignUpActivity extends AppCompatActivity implements SignUpContract.View{
+
+    //region Variables
 
     private TextInputLayout tilEmail;
     private TextInputLayout tilPassword;
@@ -32,6 +37,8 @@ public class SignUpActivity extends AppCompatActivity implements SignUpContract.
 
     private SignUpPresenter signUpPresenter;
 
+    //endregion
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,6 +49,9 @@ public class SignUpActivity extends AppCompatActivity implements SignUpContract.
         signUpPresenter = new SignUpPresenter(this);
     }
 
+    /**
+     * initUI
+     */
     private void initUI() {
         tilEmail = findViewById(R.id.tilEmail);
         tilPassword = findViewById(R.id.tilPassword);
@@ -54,14 +64,19 @@ public class SignUpActivity extends AppCompatActivity implements SignUpContract.
         tieUserName = findViewById(R.id.tieUsername);
     }
 
-    public void signUp(View v)
-    {
+    /**
+     * signUp botton click
+     * @param v
+     */
+    public void signUp(View v) {
         signUpPresenter.addUser(tieEmail.getText().toString(), tiePassword.getText().toString(), tieConfirmPassword.getText().toString(), tieUserName.getText().toString());
         clearErrors();
     }
 
-    public void clearErrors()
-    {
+    /**
+     * clearErrors for inputtextfields
+     */
+    public void clearErrors() {
         tilEmail.setErrorEnabled(false);
         tilPassword.setErrorEnabled(false);
         tilConfirmPassword.setErrorEnabled(false);
@@ -121,7 +136,6 @@ public class SignUpActivity extends AppCompatActivity implements SignUpContract.
 
     @Override
     public void onSuccess() {
-
         JointlyPreferences.getInstance().putUser(tieEmail.getText().toString(), tieUserName.getText().toString(), " "," ", " ");
         JointlyPreferences.getInstance().putRemember(true);
         startActivity(new Intent(this, JointlyActivity.class));
@@ -129,15 +143,21 @@ public class SignUpActivity extends AppCompatActivity implements SignUpContract.
         finish();
     }
 
-    public void showKeyboard(View view)
-    {
+    /**
+     * show the keyboard
+     * @param view
+     */
+    public void showKeyboard(View view) {
         view.requestFocus();
         InputMethodManager imn = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         imn.showSoftInput(view, InputMethodManager.SHOW_IMPLICIT);
     }
 
-    public void hideKeyboard(View view)
-    {
+    /**
+     * hide the keyboard
+     * @param view
+     */
+    public void hideKeyboard(View view) {
         view.requestFocus();
         InputMethodManager imn = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         imn.hideSoftInputFromWindow(view.getWindowToken(), 0);

@@ -22,7 +22,6 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import com.douglas.jointlyapp.R;
 import com.douglas.jointlyapp.data.model.HomeListAdapter;
 import com.douglas.jointlyapp.data.model.Initiative;
-import com.douglas.jointlyapp.ui.JointlyApplication;
 import com.douglas.jointlyapp.ui.adapter.HomeAdapter;
 import com.douglas.jointlyapp.ui.preferences.JointlyPreferences;
 import com.google.android.material.snackbar.Snackbar;
@@ -33,7 +32,7 @@ import java.util.List;
 //TODO Quitar los iniciativas creadas por ti
 
 /**
- * La ventana home con todas la iniciativas
+ * Fragment Home that represents the main view of the app
  */
 public class HomeFragment extends Fragment implements HomeContract.View, HomeAdapter.ManageInitiative, SearchView.OnQueryTextListener {
 
@@ -70,19 +69,16 @@ public class HomeFragment extends Fragment implements HomeContract.View, HomeAda
         initUI(view);
         initRecycler();
 
-        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                Thread sync = new Thread(() -> {
-                    presenter.syncData();
+        swipeRefreshLayout.setOnRefreshListener(() -> {
+            Thread sync = new Thread(() -> {
+                presenter.syncData();
 
-                    getActivity().runOnUiThread(() -> {
-                        presenter.load();
-                        swipeRefreshLayout.setRefreshing(false);
-                    });
+                getActivity().runOnUiThread(() -> {
+                    presenter.load();
+                    swipeRefreshLayout.setRefreshing(false);
                 });
-                sync.start();
-            }
+            });
+            sync.start();
         });
 
         presenter = new HomePresenter(this);
@@ -101,11 +97,10 @@ public class HomeFragment extends Fragment implements HomeContract.View, HomeAda
     }
 
     /**
-     *
+     * initRecycler
      */
     private void initRecycler() {
         adapter = new HomeAdapter(new ArrayList<>(),this);
-
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext(), RecyclerView.VERTICAL, false);
         rvInitiative.setLayoutManager(layoutManager);
         rvInitiative.setAdapter(adapter);
@@ -144,7 +139,7 @@ public class HomeFragment extends Fragment implements HomeContract.View, HomeAda
 
     @Override
     public void showOnError(String message) {
-        Snackbar.make(getActivity().findViewById(R.id.coordinator_main), message != null ? message : getString(R.string.default_error_action), Snackbar.LENGTH_SHORT).show();
+        Snackbar.make(getView(), message != null ? message : getString(R.string.default_error_action), Snackbar.LENGTH_SHORT).show();
     }
 
     @Override
@@ -152,8 +147,12 @@ public class HomeFragment extends Fragment implements HomeContract.View, HomeAda
         swipeRefreshLayout.setRefreshing(!swipeRefreshLayout.isRefreshing());
     }
 
+    /**
+     * update the recycler with default order
+     * @param homeListAdapters
+     */
     private void updateListOrderByDefault(List<HomeListAdapter> homeListAdapters) {
-        switch (JointlyPreferences.getInstance().getOrderByFavorite()) {
+        switch (JointlyPreferences.getInstance().getOrderByInitiative()) {
             case "date":
                 adapter.sortByDate();
                 break;
@@ -167,12 +166,6 @@ public class HomeFragment extends Fragment implements HomeContract.View, HomeAda
                 adapter.update(homeListAdapters);
                 break;
         }
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        presenter.onDestroy();
     }
 
     @Override
@@ -204,6 +197,7 @@ public class HomeFragment extends Fragment implements HomeContract.View, HomeAda
 
         searchViewItem.setOnActionExpandListener(onActionExpandListener);
         SearchView searchView = (SearchView) searchViewItem.getActionView();
+        //TODO comprobar el ancho y el porque de este listener
         searchView.setOnCloseListener(new SearchView.OnCloseListener() {
             @Override
             public boolean onClose() {
@@ -241,5 +235,17 @@ public class HomeFragment extends Fragment implements HomeContract.View, HomeAda
     public boolean onQueryTextChange(String newText) {
         adapter.getFilter().filter(newText);
         return false;
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        presenter.onDestroy();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        presenter.onDestroy();
     }
 }

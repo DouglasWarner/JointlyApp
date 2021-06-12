@@ -1,21 +1,14 @@
 package com.douglas.jointlyapp.ui.firebase;
 
 import android.app.Activity;
-import android.content.Context;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
-
 import com.douglas.jointlyapp.R;
-import com.douglas.jointlyapp.ui.JointlyApplication;
-import com.douglas.jointlyapp.ui.login.LoginActivity;
 import com.facebook.AccessToken;
-import com.facebook.CallbackManager;
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
@@ -26,8 +19,10 @@ import com.google.firebase.auth.GoogleAuthProvider;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.Executor;
 
+/**
+ * Entity that represent the login with firebase
+ */
 public class FirebaseLogin {
 
     private static FirebaseLogin firebaseLogin;
@@ -47,6 +42,9 @@ public class FirebaseLogin {
         firebaseLogin = new FirebaseLogin();
     }
 
+    /**
+     * init the default firebaselogin
+     */
     private FirebaseLogin() {
         firebaseAuth = FirebaseAuth.getInstance();
 //        authStateListener = new FirebaseAuth.AuthStateListener() {
@@ -67,17 +65,29 @@ public class FirebaseLogin {
 //        };
     }
 
+    /**
+     * get firebase instance
+     * @return
+     */
     public static FirebaseLogin getInstance()
     {
         return firebaseLogin;
     }
 
+    /**
+     * get firebaseAuth
+     * @return
+     */
     public FirebaseAuth getFirebaseAuth() {
         return firebaseAuth;
     }
 
-    public void firebaseAuthWithGoogle(String idToken, Activity view)
-    {
+    /**
+     * set Auth with Google
+     * @param idToken
+     * @param view
+     */
+    public void firebaseAuthWithGoogle(String idToken, Activity view) {
         AuthCredential credential = GoogleAuthProvider.getCredential(idToken, null);
         firebaseAuth.signInWithCredential(credential).addOnCompleteListener(view, (OnCompleteListener<AuthResult>) task -> {
             if (task.isSuccessful()) {
@@ -94,8 +104,12 @@ public class FirebaseLogin {
         });
     }
 
-    public void firebaseAuthWithFacebook(AccessToken accessToken, Activity view)
-    {
+    /**
+     * set Auth with facebook
+     * @param accessToken
+     * @param view
+     */
+    public void firebaseAuthWithFacebook(AccessToken accessToken, Activity view) {
         Log.d("TAG", "handleFacebookAccessToken:" + accessToken);
 
         AuthCredential credential = FacebookAuthProvider.getCredential(accessToken.getToken());
@@ -118,7 +132,11 @@ public class FirebaseLogin {
 
     }
 
+    /**
+     * show default failed auth
+     * @param view
+     */
     private void showSnackbar(View view) {
-        Snackbar.make(view, "Authentication Failed.", Snackbar.LENGTH_SHORT).show();
+        Snackbar.make(view, R.string.error_auth_failed, Snackbar.LENGTH_SHORT).show();
     }
 }

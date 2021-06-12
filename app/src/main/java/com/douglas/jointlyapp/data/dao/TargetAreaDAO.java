@@ -10,6 +10,9 @@ import com.douglas.jointlyapp.data.model.TargetArea;
 
 import java.util.List;
 
+/**
+ * Interface TargetAreaDao
+ */
 @Dao
 public interface TargetAreaDAO extends BaseDao<TargetArea> {
 

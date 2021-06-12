@@ -11,12 +11,15 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.douglas.jointlyapp.R;
 import com.douglas.jointlyapp.data.comparators.HomeListAdapterSortByLocation;
 import com.douglas.jointlyapp.data.comparators.HomeListAdapterSortByUserJoineds;
 import com.douglas.jointlyapp.data.comparators.HomeListAdaptersSortByDate;
 import com.douglas.jointlyapp.data.model.HomeListAdapter;
+import com.douglas.jointlyapp.data.model.Initiative;
 import com.douglas.jointlyapp.data.model.User;
+import com.douglas.jointlyapp.services.Apis;
 import com.douglas.jointlyapp.ui.JointlyApplication;
 import com.douglas.jointlyapp.ui.utils.CommonUtils;
 import com.google.android.material.imageview.ShapeableImageView;
@@ -26,8 +29,14 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Adapter that manage home item recycler
+ */
 public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ViewHolder> implements Filterable {
 
+    /**
+     * interface that connects click on item with his parent
+     */
     public interface ManageInitiative {
         void onClick(View initiative);
     }
@@ -52,16 +61,18 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ViewHolder> im
 
     @Override
     public void onBindViewHolder(@NonNull HomeAdapter.ViewHolder holder, int position) {
-        if(homeListAdapters.get(position).getInitiative().getImagen() != null) {
-            holder.imgInitiative.setImageBitmap(homeListAdapters.get(position).getInitiative().getImagen());
-        } else {
-            holder.imgInitiative.setImageBitmap(CommonUtils.getImagenInitiativeDefault(JointlyApplication.getContext()));
-        }
+        Glide.with(JointlyApplication.getContext())
+                .setDefaultRequestOptions(CommonUtils.getGlideOptions(Initiative.TAG))
+                .load(Apis.getURLIMAGE()+homeListAdapters.get(position).getInitiative().getImage())
+                .into(holder.imgInitiative);
 
         User u = homeListAdapters.get(position).getUserOwner();
 
-        if(u != null && u.getImagen() != null)
-            holder.imgUser.setImageBitmap(u.getImagen());
+        if(u != null)
+            Glide.with(JointlyApplication.getContext())
+                    .setDefaultRequestOptions(CommonUtils.getGlideOptions(User.TAG))
+                    .load(Apis.getURLIMAGE()+u.getImagen())
+                    .into(holder.imgUser);
         else
             holder.imgUser.setImageBitmap(CommonUtils.getImagenUserDefault(JointlyApplication.getContext()));
 
@@ -85,7 +96,7 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ViewHolder> im
     }
 
     /**
-     *
+     * sortByDate
      */
     public void sortByDate() {
         Collections.sort(homeListAdapters, new HomeListAdaptersSortByDate());
@@ -93,7 +104,7 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ViewHolder> im
     }
 
     /**
-     *
+     * sortByLocation
      */
     public void sortByLocation() {
         Collections.sort(homeListAdapters, new HomeListAdapterSortByLocation());
@@ -101,7 +112,7 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ViewHolder> im
     }
 
     /**
-     *
+     * sortByUsersJoineds
      */
     public void sortByUsersJoineds() {
         Collections.sort(homeListAdapters, new HomeListAdapterSortByUserJoineds());
@@ -109,7 +120,7 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ViewHolder> im
     }
 
     /**
-     *
+     * update list
      * @param homeListAdapters
      */
     public void update(List<HomeListAdapter> homeListAdapters) {
@@ -122,16 +133,16 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ViewHolder> im
     }
 
     /**
-     *
+     * getInitiativeItem
      * @param position
-     * @return
+     * @return HomeListAdapter
      */
     public HomeListAdapter getInitiativeItem(int position) {
         return homeListAdapters.get(position);
     }
 
     /**
-     *
+     * ViewHolder for item layout
      */
     public class ViewHolder extends RecyclerView.ViewHolder {
         ImageView imgInitiative;

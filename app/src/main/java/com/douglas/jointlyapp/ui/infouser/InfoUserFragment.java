@@ -17,6 +17,7 @@ import com.douglas.jointlyapp.R;
 import com.douglas.jointlyapp.data.model.Initiative;
 import com.douglas.jointlyapp.data.model.User;
 import com.douglas.jointlyapp.ui.adapter.InitiativeAdapter;
+import com.douglas.jointlyapp.ui.preferences.JointlyPreferences;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
@@ -78,6 +79,12 @@ public class InfoUserFragment extends Fragment implements InfoUserContract.View,
         initRecycler();
         setUser(user);
 
+        // set visibility
+        if(JointlyPreferences.getInstance().getUser().equals(user.getEmail())){
+            view.findViewById(R.id.linearLayoutInitiatives).setVisibility(View.GONE);
+            view.findViewById(R.id.divider4).setVisibility(View.GONE);
+        }
+
         presenter = new InfoUserPresenter(this);
     }
 
@@ -98,7 +105,7 @@ public class InfoUserFragment extends Fragment implements InfoUserContract.View,
     }
 
     /**
-     *
+     * initRecycler
      */
     private void initRecycler() {
         adapterCreateds = new InitiativeAdapter(getContext(), new ArrayList<>(), this, TYPE_CREATED);
@@ -118,6 +125,10 @@ public class InfoUserFragment extends Fragment implements InfoUserContract.View,
     }
 
     //TODO probar
+
+    /**
+     * load data
+     */
     public void load() {
         presenter.loadCountParticipate(user);
         presenter.loadCountUserFollow(user);
@@ -125,7 +136,7 @@ public class InfoUserFragment extends Fragment implements InfoUserContract.View,
     }
 
     /**
-     *
+     * setUser
      * @param user
      */
     private void setUser(User user) {
@@ -210,7 +221,7 @@ public class InfoUserFragment extends Fragment implements InfoUserContract.View,
 
     @Override
     public void onError(String message) {
-        Snackbar.make(getActivity().findViewById(R.id.coordinator_main), message != null ? message : getString(R.string.default_error_action), Snackbar.LENGTH_SHORT).show();
+        Snackbar.make(getView(), message != null ? message : getString(R.string.default_error_action), Snackbar.LENGTH_SHORT).show();
     }
 
     @Override
@@ -222,5 +233,6 @@ public class InfoUserFragment extends Fragment implements InfoUserContract.View,
     @Override
     public void onDestroy() {
         super.onDestroy();
+        presenter.onDestroy();
     }
 }

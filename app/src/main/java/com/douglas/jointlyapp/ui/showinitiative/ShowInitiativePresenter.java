@@ -5,6 +5,9 @@ import com.douglas.jointlyapp.data.model.User;
 
 import java.util.List;
 
+/**
+ * Entity that connects within view and interactor
+ */
 public class ShowInitiativePresenter implements ShowInitiativeContract.Presenter, ShowInitiativeInteractorImpl.ShowInitiativeInteractor {
 
     private ShowInitiativeContract.View view;
@@ -13,6 +16,11 @@ public class ShowInitiativePresenter implements ShowInitiativeContract.Presenter
     public ShowInitiativePresenter(ShowInitiativeContract.View view) {
         this.view = view;
         interactor = new ShowInitiativeInteractorImpl(this);
+    }
+
+    @Override
+    public void loadInitiative(long idInitiative) {
+        interactor.loadInitiative(idInitiative);
     }
 
     @Override
@@ -53,6 +61,11 @@ public class ShowInitiativePresenter implements ShowInitiativeContract.Presenter
     @Override
     public void onUnJoined() {
         view.setUnJoined();
+    }
+
+    @Override
+    public void onLoadInitiative(Initiative initiative) {
+        view.onLoadInitiative(initiative);
     }
 
     @Override

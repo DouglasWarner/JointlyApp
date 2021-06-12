@@ -5,6 +5,9 @@ import com.douglas.jointlyapp.ui.base.BasePresenter;
 
 import java.util.List;
 
+/**
+ * Interface that set the call logic within view and presenter
+ */
 public interface HomeContract {
 
     interface View {

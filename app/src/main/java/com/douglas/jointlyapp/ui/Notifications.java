@@ -13,10 +13,19 @@ import com.douglas.jointlyapp.data.model.Initiative;
 
 import java.util.Random;
 
+/**
+ * Entity notifications
+ */
 public class Notifications {
 
-    public static void showNotificationAddInitiative(Context context, long initiative)
-    {
+    //TODO quizar quitar algo de aqui porque ya no haga falta
+
+    /**
+     * showNotificationAddInitiative
+     * @param context
+     * @param initiative
+     */
+    public static void showNotificationAddInitiative(Context context, long initiative) {
         Bundle bundle = new Bundle();
         bundle.putLong(Initiative.TAG, initiative);
 
@@ -39,8 +48,12 @@ public class Notifications {
         notificationManager.notify(new Random().nextInt(1000), builder.build());
     }
 
-    public static void showNotificationNewMessageChat(Context context, long initiative)
-    {
+    /**
+     * showNotificationNewMessageChat
+     * @param context
+     * @param initiative
+     */
+    public static void showNotificationNewMessageChat(Context context, long initiative) {
         Bundle bundle = new Bundle();
         bundle.putLong(Initiative.TAG, initiative);
 

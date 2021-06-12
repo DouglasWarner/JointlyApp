@@ -1,7 +1,6 @@
 package com.douglas.jointlyapp.ui.adapter;
 
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,14 +10,23 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.douglas.jointlyapp.R;
 import com.douglas.jointlyapp.data.model.Initiative;
+import com.douglas.jointlyapp.services.Apis;
+import com.douglas.jointlyapp.ui.JointlyApplication;
 import com.douglas.jointlyapp.ui.utils.CommonUtils;
 
 import java.util.List;
 
+/**
+ * Adapter that manage initiative item recycler
+ */
 public class InitiativeAdapter extends RecyclerView.Adapter<InitiativeAdapter.ViewHolder> {
 
+    /**
+     * interface that connects click on item with his parent
+     */
     public interface ManageInitiative {
         void onClick(View view, String status);
     }
@@ -44,8 +52,14 @@ public class InitiativeAdapter extends RecyclerView.Adapter<InitiativeAdapter.Vi
 
     @Override
     public void onBindViewHolder(@NonNull InitiativeAdapter.ViewHolder holder, int position) {
-        Bitmap bitmap = list.get(position).getImagen();
-        holder.imgInitiative.setImageBitmap((bitmap != null) ? bitmap : CommonUtils.getImagenInitiativeDefault(context));
+        if (list.get(position).getImage() != null) {
+            Glide.with(JointlyApplication.getContext())
+                    .setDefaultRequestOptions(CommonUtils.getGlideOptions(Initiative.TAG))
+                    .load(Apis.getURLIMAGE()+list.get(position).getImage())
+                    .into(holder.imgInitiative);
+        } else {
+            holder.imgInitiative.setImageBitmap(CommonUtils.getImagenInitiativeDefault(context));
+        }
         holder.tvInitiativeName.setText(list.get(position).getName());
         holder.tvDate.setText(list.get(position).getTarget_date().split(" ")[0]);
     }
@@ -55,16 +69,28 @@ public class InitiativeAdapter extends RecyclerView.Adapter<InitiativeAdapter.Vi
         return list.size();
     }
 
+    /**
+     * update list
+     * @param list
+     */
     public void update(List<Initiative> list) {
         this.list.clear();
         this.list.addAll(list);
         notifyDataSetChanged();
     }
 
+    /**
+     * get initiative
+     * @param position
+     * @return Initiative
+     */
     public Initiative getInitiativeItem(int position) {
         return list.get(position);
     }
 
+    /**
+     * ViewHolder for item layout
+     */
     public class ViewHolder extends RecyclerView.ViewHolder {
         ImageView imgInitiative;
         TextView tvInitiativeName;

@@ -7,14 +7,24 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.douglas.jointlyapp.R;
 import com.douglas.jointlyapp.data.model.User;
+import com.douglas.jointlyapp.services.Apis;
+import com.douglas.jointlyapp.ui.JointlyApplication;
+import com.douglas.jointlyapp.ui.utils.CommonUtils;
 import com.google.android.material.imageview.ShapeableImageView;
 
 import java.util.List;
 
+/**
+ * Adapter that manage user joined item recycler
+ */
 public class UserJoinedAdapter extends RecyclerView.Adapter<UserJoinedAdapter.ViewHolder>{
 
+    /**
+     * interface that connects click on item with his parent
+     */
     public interface ManageInitiative {
         void onClick(View User);
     }
@@ -36,7 +46,13 @@ public class UserJoinedAdapter extends RecyclerView.Adapter<UserJoinedAdapter.Vi
 
     @Override
     public void onBindViewHolder(@NonNull UserJoinedAdapter.ViewHolder holder, int position) {
-        holder.imgUser.setImageBitmap(list.get(position).getImagen());
+        if(list.get(position).getImagen() != null)
+            Glide.with(JointlyApplication.getContext())
+                    .setDefaultRequestOptions(CommonUtils.getGlideOptions(User.TAG))
+                    .load(Apis.getURLIMAGE()+list.get(position).getImagen())
+                    .into(holder.imgUser);
+        else
+            holder.imgUser.setImageBitmap(CommonUtils.getImagenUserDefault(JointlyApplication.getContext()));
     }
 
     @Override
@@ -44,17 +60,29 @@ public class UserJoinedAdapter extends RecyclerView.Adapter<UserJoinedAdapter.Vi
         return list.size();
     }
 
+    /**
+     * update list
+     * @param list
+     */
     public void update(List<User> list) {
         this.list.clear();
         this.list.addAll(list);
         notifyDataSetChanged();
     }
 
+    /**
+     * get the user item
+     * @param position
+     * @return User
+     */
     public User getUserItem(int position)
     {
         return list.get(position);
     }
 
+    /**
+     * ViewHolder for item layout
+     */
     public class ViewHolder extends RecyclerView.ViewHolder {
         ShapeableImageView imgUser;
 

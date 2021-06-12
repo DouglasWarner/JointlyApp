@@ -1,8 +1,5 @@
 package com.douglas.jointlyapp.ui.login;
 
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -12,6 +9,9 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.Toast;
+
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.douglas.jointlyapp.R;
 import com.douglas.jointlyapp.data.model.User;
@@ -37,7 +37,12 @@ import com.google.firebase.auth.FirebaseUser;
 
 import java.util.Arrays;
 
+/**
+ * Activity manage login of app
+ */
 public class LoginActivity extends AppCompatActivity implements LoginContract.View {
+
+    //region Variables
 
     private LoginContract.Presenter presenter;
 
@@ -52,15 +57,23 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Vi
     private Button btnLoginWithFacebook;
     private CallbackManager callbackManager;
 
+    //endregion
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
         initUI();
+        setListeners();
 
         presenter = new LoginPresenter(this);
+    }
 
+    /**
+     * setListeners
+     */
+    private void setListeners() {
         btnLoginWithGoogle.setOnClickListener(v -> {
             doLoginGoogle();
             Toast.makeText(this, "google", Toast.LENGTH_SHORT).show();
@@ -71,6 +84,9 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Vi
         });
     }
 
+    /**
+     * doLoginGoogle
+     */
     private void doLoginGoogle() {
         GoogleSignInOptions signOptions = new GoogleSignInOptions
                 .Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -87,18 +103,20 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Vi
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if(requestCode == FirebaseLogin.REQUEST_CODE_GOOGLE)
-        {
+        if(requestCode == FirebaseLogin.REQUEST_CODE_GOOGLE) {
             Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
             handleSignInResult(task);
         }
-        if(requestCode == FirebaseLogin.REQUEST_CODE_FACEBOOK)
-        {
+        if(requestCode == FirebaseLogin.REQUEST_CODE_FACEBOOK) {
             // Pass the activity result back to the Facebook SDK
             callbackManager.onActivityResult(requestCode, resultCode, data);
         }
     }
 
+    /**
+     * handleSignInResult for google
+     * @param task
+     */
     private void handleSignInResult(Task<GoogleSignInAccount> task) {
         try {
             GoogleSignInAccount googleSignInAccount = task.getResult(ApiException.class);
@@ -112,8 +130,10 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Vi
         }
     }
 
-    private void doLoginFacebook()
-    {
+    /**
+     * doLoginFacebook
+     */
+    private void doLoginFacebook() {
         callbackManager = CallbackManager.Factory.create();
 
         LoginManager.getInstance().registerCallback(callbackManager,
@@ -148,6 +168,9 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Vi
 
     }
 
+    /**
+     * initUI
+     */
     private void initUI() {
         tilEmail = findViewById(R.id.tilEmail);
         tilPassword = findViewById(R.id.tilPassword);
@@ -158,8 +181,11 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Vi
         btnLoginWithFacebook = findViewById(R.id.btnSignInFacebook);
     }
 
-    public void validateUser(View v)
-    {
+    /**
+     * validateUser
+     * @param v
+     */
+    public void validateUser(View v) {
         email = tieEmail.getText().toString();
         password = tiePassword.getText().toString();
 
@@ -170,6 +196,10 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Vi
         presenter.validateCredentialsUser(email, password);
     }
 
+    /**
+     * goToSignUp
+     * @param v
+     */
     public void goToSignUp(View v)
     {
         startActivity(new Intent(this, SignUpActivity.class));
@@ -225,21 +255,29 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Vi
         finish();
     }
 
-    public void clearErrors()
-    {
+    /**
+     * clearErrors on textview
+     */
+    public void clearErrors() {
         tilEmail.setErrorEnabled(false);
         tilPassword.setErrorEnabled(false);
     }
 
-    public void showKeyboard(View view)
-    {
+    /**
+     * showKeyboard
+     * @param view
+     */
+    public void showKeyboard(View view) {
         view.requestFocus();
         InputMethodManager imn = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         imn.showSoftInput(view, InputMethodManager.SHOW_IMPLICIT);
     }
 
-    public void hideKeyboard(View view)
-    {
+    /**
+     * hideKeyboard
+     * @param view
+     */
+    public void hideKeyboard(View view) {
         view.requestFocus();
         InputMethodManager imn = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         imn.hideSoftInputFromWindow(view.getWindowToken(), 0);

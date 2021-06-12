@@ -1,14 +1,10 @@
 package com.douglas.jointlyapp.data.repository;
 
-import android.util.Log;
-
 import com.douglas.jointlyapp.data.JointlyDatabase;
 import com.douglas.jointlyapp.data.dao.InitiativeDao;
 import com.douglas.jointlyapp.data.dao.UserJoinInitiativeDao;
 import com.douglas.jointlyapp.data.model.Initiative;
 import com.douglas.jointlyapp.data.model.UserJoinInitiative;
-import com.douglas.jointlyapp.ui.JointlyApplication;
-import com.douglas.jointlyapp.ui.utils.CommonUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -65,9 +61,6 @@ public class InitiativeRepository {
         } catch (ExecutionException | InterruptedException e) {
             e.printStackTrace();
         }
-//        finally {
-//            result = list.stream().filter(x -> !x.getCreated_by().equals(userEmail)).collect(Collectors.toList());
-//        }
         return result;
     }
 
@@ -122,16 +115,6 @@ public class InitiativeRepository {
      */
     public void update(Initiative editInitiative) {
         JointlyDatabase.DATABASE_WRITE_EXECUTOR.submit(() -> initiativeDao.update(editInitiative));
-    }
-
-    /**
-     * Update or Insert for Sync with the API
-     * @param list
-     */
-    public void upsertInitiative(List<Initiative> list) {
-        boolean b = JointlyDatabase.DATABASE_WRITE_EXECUTOR.submit(() -> initiativeDao.upsert(list)).isDone();
-
-        Log.e("TAG", "Initiative from api ----> " + b);
     }
 
     /**
@@ -205,13 +188,13 @@ public class InitiativeRepository {
      * @return
      */
     public List<UserJoinInitiative> getListUserJoinInitiative(boolean is_deleted) {
+        List<UserJoinInitiative> result = new ArrayList<>();
         try {
-            List<UserJoinInitiative> listJoin = JointlyDatabase.DATABASE_WRITE_EXECUTOR.submit(() -> userJoinInitiativeDao.getList(is_deleted)).get();
-            return listJoin;
+            result = JointlyDatabase.DATABASE_WRITE_EXECUTOR.submit(() -> userJoinInitiativeDao.getList(is_deleted)).get();
         } catch (ExecutionException | InterruptedException e) {
             e.printStackTrace();
-            return null;
         }
+        return result;
     }
 
     /**
@@ -249,14 +232,12 @@ public class InitiativeRepository {
      * @return list
      */
     public List<UserJoinInitiative> getListUsersJoinedToSync(boolean isDeleted, boolean isSync) {
-        List<UserJoinInitiative> result = null;
-
+        List<UserJoinInitiative> result = new ArrayList<>();
         try {
-            JointlyDatabase.DATABASE_WRITE_EXECUTOR.submit(() -> userJoinInitiativeDao.getListToSync(isDeleted, isSync)).get();
+            result = JointlyDatabase.DATABASE_WRITE_EXECUTOR.submit(() -> userJoinInitiativeDao.getListToSync(isDeleted, isSync)).get();
         } catch (ExecutionException | InterruptedException e) {
             e.printStackTrace();
         }
-
         return result;
     }
 
@@ -276,29 +257,16 @@ public class InitiativeRepository {
         return result;
     }
 
+    /**
+     * update a row of userJoinInitiative
+     * @param userJoinInitiative
+     */
     public void updateUserJoin(UserJoinInitiative userJoinInitiative) {
         JointlyDatabase.DATABASE_WRITE_EXECUTOR.submit(() -> userJoinInitiativeDao.update(userJoinInitiative));
     }
 
-    public void tmpInsert() {
-        Initiative i = new Initiative(1,"name","10/10/2021","10/12/2021","description","area","location", CommonUtils.getImagenInitiativeDefault(JointlyApplication.getContext()),"amount","status",
-                "douglas@gmail.com",false,false);
-        i.setRef_code("123456");
-        UserJoinInitiative j = new UserJoinInitiative(1, "douglas@gmail.com", false, false);
-        try {
-            if(UserRepository.getInstance().tmpInsert() != -1){
-                long l = JointlyDatabase.DATABASE_WRITE_EXECUTOR.submit(() -> initiativeDao.insert(i)).get();
-                if(l != -1) {
-                    JointlyDatabase.DATABASE_WRITE_EXECUTOR.submit(()-> userJoinInitiativeDao.insert(j));
-                }
-            }
-        } catch (ExecutionException | InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
-
     /**
-     *
+     * insert or update a row of userJoinInitiative
      * @param userJoinInitiative
      */
     public void upsertUserJoin(UserJoinInitiative userJoinInitiative) {
@@ -318,7 +286,7 @@ public class InitiativeRepository {
      * @param userJoinInitiative
      */
     public List<Long> insertUserJoin(List<UserJoinInitiative> userJoinInitiative) {
-        List<Long> result = null;
+        List<Long> result = new ArrayList<>();
         try {
             result = JointlyDatabase.DATABASE_WRITE_EXECUTOR.submit(()-> userJoinInitiativeDao.insert(userJoinInitiative)).get();
         } catch (ExecutionException | InterruptedException e) {
@@ -346,10 +314,18 @@ public class InitiativeRepository {
 
     //region SyncFromAPI
 
+    /**
+     * Update or Insert for Sync UserJoin with the API
+     * @param list
+     */
     public void syncUserJoinFromAPI(List<UserJoinInitiative> list) {
         JointlyDatabase.DATABASE_WRITE_EXECUTOR.submit(() -> userJoinInitiativeDao.syncFromAPI(list));
     }
 
+    /**
+     * Update or Insert for Sync Initiative with the API
+     * @param list
+     */
     public void syncInitiativeFromAPI(List<Initiative> list) {
         JointlyDatabase.DATABASE_WRITE_EXECUTOR.submit(() -> initiativeDao.syncFromAPI(list));
     }

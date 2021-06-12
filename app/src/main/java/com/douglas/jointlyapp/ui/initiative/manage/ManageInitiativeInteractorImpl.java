@@ -1,10 +1,9 @@
 package com.douglas.jointlyapp.ui.initiative.manage;
 
-import android.graphics.Bitmap;
+import android.net.Uri;
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.douglas.jointlyapp.data.Converters;
 import com.douglas.jointlyapp.data.model.Countries;
 import com.douglas.jointlyapp.data.model.Initiative;
 import com.douglas.jointlyapp.data.model.TargetArea;
@@ -16,13 +15,18 @@ import com.douglas.jointlyapp.services.InitiativeService;
 import com.douglas.jointlyapp.ui.JointlyApplication;
 import com.douglas.jointlyapp.ui.utils.CommonUtils;
 
+import net.glxn.qrgen.android.QRCode;
+
+import java.io.ByteArrayOutputStream;
 import java.util.List;
-import java.util.Set;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+/**
+ * Entity who connect with the APIS and LOCALDB
+ */
 public class ManageInitiativeInteractorImpl {
 
     private static final String TAG = "ManageInitiativeInteractorImpl";
@@ -65,19 +69,22 @@ public class ManageInitiativeInteractorImpl {
      * @param description
      * @param targetArea
      * @param location
-     * @param imagen
+     * @param pathImage
      * @param targetAmount
      * @param created_by
      */
     public void addInitiative(final String name, final String targetDate, final String targetTime,
-                              final String description, final String targetArea, final String location, final Bitmap imagen,
-                              final String targetAmount, final String created_by) {
+                              final String description, final String targetArea, final String location,
+                              final Uri pathImage, final String targetAmount, final String created_by) {
         if (isNotValidInitiative(name, targetDate, targetTime, targetArea, location, targetAmount))
             return;
 
-        Initiative initiative = new Initiative(name, CommonUtils.getDateNow(), String.format("%s %s", targetDate, targetTime), description, targetArea,
-                location, imagen, targetAmount, created_by);
-        initiative.setRef_code(String.valueOf(initiative.hashCode()));
+        Initiative initiative = new Initiative(name, CommonUtils.getDateNow(), CommonUtils.formatDateToAPI(targetDate, targetTime) , description, targetArea,
+                    location, pathImage.toString(), targetAmount, created_by);
+
+        ByteArrayOutputStream byteArrayOutputStream = QRCode.from(initiative.toString()).stream();
+
+        initiative.setRef_code(byteArrayOutputStream.toString());
 
         if(JointlyApplication.getConnection() && JointlyApplication.isIsSyncronized()) {
             insertToAPI(initiative);
@@ -85,6 +92,9 @@ public class ManageInitiativeInteractorImpl {
             insertToLocal(initiative);
         }
     }
+
+
+
     /**
      *
      * @param addInitiative
@@ -105,10 +115,10 @@ public class ManageInitiativeInteractorImpl {
      * @param initiative
      */
     private void insertToAPI(Initiative initiative) {
-        Call<APIResponse<Initiative>> initiativeCall =
-                initiativeService.postInitiative(initiative.getName(), CommonUtils.getDateNow(), initiative.getTarget_date(),
-                        initiative.getDescription(), initiative.getTarget_area(), initiative.getLocation(), new Converters().fromBitmap(initiative.getImagen()),
-                        Integer.parseInt(initiative.getTarget_amount()), initiative.getCreated_by(), initiative.getRef_code());
+        Call<APIResponse<Initiative>> initiativeCall = initiativeService.postInitiativeWithImage(initiative.getName(), CommonUtils.getDateNow(), initiative.getTarget_date(),
+                            initiative.getDescription(), initiative.getTarget_area(), initiative.getLocation(),
+                            Integer.parseInt(initiative.getTarget_amount()), initiative.getCreated_by(), initiative.getRef_code(),
+                            CommonUtils.uploadFile(Uri.parse(initiative.getImage())));
 
         initiativeCall.enqueue(new Callback<APIResponse<Initiative>>() {
             @Override
@@ -149,21 +159,21 @@ public class ManageInitiativeInteractorImpl {
      * @param description
      * @param targetArea
      * @param location
-     * @param imagen
+     * @param pathImage
      * @param targetAmount
      * @param created_by
      * @param ref_code
      */
     public void editInitiative(final long id, final String name, final String createAt, final String targetDate, final String targetTime, final String description,
-                               final String targetArea, final String location, final Bitmap imagen,
+                               final String targetArea, final String location, final Uri pathImage,
                                final String targetAmount, final String created_by, final String ref_code) {
         if (isNotValidInitiative(targetDate, targetTime, targetArea, location))
             return;
 
         if(JointlyApplication.getConnection() && JointlyApplication.isIsSyncronized()) {
-            editToAPI(id,name,createAt,targetDate,targetTime,description,targetArea,location,imagen,targetAmount,created_by,ref_code);
+            editToAPI(id,name,createAt,targetDate,targetTime,description,targetArea,location,pathImage,targetAmount,created_by,ref_code);
         } else {
-            editToLocal(id,name,createAt,targetDate,targetTime,description,targetArea,location,imagen,targetAmount,created_by,ref_code);
+            editToLocal(id,name,createAt,targetDate,targetTime,description,targetArea,location,pathImage,targetAmount,created_by,ref_code);
         }
 
     }
@@ -178,18 +188,19 @@ public class ManageInitiativeInteractorImpl {
      * @param description
      * @param targetArea
      * @param location
-     * @param imagen
+     * @param pathImage
      * @param targetAmount
      * @param created_by
      * @param ref_code
      */
-    private void editToLocal(final long id, final String name, final String createAt, final String targetDate, final String targetTime, final String description,
-                             final String targetArea, final String location, final Bitmap imagen,
-                             final String targetAmount, final String created_by, final String ref_code) {
+    private void editToLocal(long id, String name, String createAt, String targetDate, String targetTime, String description,
+                             String targetArea, String location, Uri pathImage,
+                             String targetAmount, String created_by, String ref_code) {
 
-        Initiative editInitiative = new Initiative(id, name, createAt, String.format("%s %s", targetDate, targetTime),
-                description, targetArea, location, imagen, targetAmount, created_by, ref_code,
+        Initiative editInitiative = new Initiative(id, name, createAt, CommonUtils.formatDateToAPI(targetDate,targetTime),
+                description, targetArea, location, pathImage.toString(), targetAmount, created_by, ref_code,
                 false, false);
+
         InitiativeRepository.getInstance().update(editInitiative);
         Initiative initiative = InitiativeRepository.getInstance().getInitiative(editInitiative.getId(), false);
 
@@ -210,18 +221,16 @@ public class ManageInitiativeInteractorImpl {
      * @param description
      * @param targetArea
      * @param location
-     * @param imagen
+     * @param pathImagen
      * @param targetAmount
      * @param created_by
      * @param ref_code
      */
-    private void editToAPI(final long id, final String name, final String createAt, final String targetDate, final String targetTime, final String description,
-                           final String targetArea, final String location, final Bitmap imagen,
-                           final String targetAmount, final String created_by, final String ref_code) {
-
-        Call<APIResponse<Initiative>> initiativeCall =
-                initiativeService.putInitiative(name, String.format("%s %s", targetDate, targetTime), description, targetArea, location,
-                        new Converters().fromBitmap(imagen), Integer.parseInt(targetAmount), id);
+    private void editToAPI(long id, String name, String createAt, String targetDate, String targetTime, String description,
+                           String targetArea, String location, Uri pathImagen,
+                           String targetAmount, String created_by, String ref_code) {
+        Call<APIResponse<Initiative>> initiativeCall = initiativeService.putInitiativeWithImage(name, CommonUtils.formatDateToAPI(targetDate, targetTime), description, targetArea, location,
+                Integer.parseInt(targetAmount), CommonUtils.uploadFile(pathImagen), id);
 
         initiativeCall.enqueue(new Callback<APIResponse<Initiative>>() {
             @Override

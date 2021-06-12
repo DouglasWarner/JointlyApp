@@ -42,7 +42,7 @@ public class SyncToAPI extends FutureTask<Boolean> {
         List<Initiative> initiatives = InitiativeRepository.getInstance().getListInitiativeToSync(true, false);
         List<User> users = UserRepository.getInstance().getListUserToSync(true);
 
-        Call<APIResponse<UserFollowUser>> userFollowCall = Apis.getInstance().getUserService().syncToAPI(userFollowUsers);
+        Call<APIResponse<UserFollowUser>> userFollowCall = Apis.getInstance().getJointlyService().syncUserFollowToAPI(userFollowUsers);
         try {
             Response<APIResponse<UserFollowUser>> userFollowResponse = userFollowCall.execute();
             if (userFollowResponse.isSuccessful() && userFollowResponse.body() != null) {

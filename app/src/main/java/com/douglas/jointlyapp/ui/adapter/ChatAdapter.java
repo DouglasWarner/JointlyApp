@@ -13,7 +13,9 @@ import com.douglas.jointlyapp.data.model.Chat;
 
 import java.util.List;
 
-
+/**
+ * Adapter that manage chat messages recycler
+ */
 public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder>  {
 
     public static final int LEFT_MESSAGE = 0;
@@ -50,18 +52,29 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder>  {
         return list.size();
     }
 
+    /**
+     * update list
+     * @param list
+     */
     public void update(List<Chat> list) {
         this.list.clear();
         this.list.addAll(list);
         notifyDataSetChanged();
     }
 
+    /**
+     * add message to the list
+     * @param chat
+     */
     public void addMessage(Chat chat) {
         list.add(chat);
         user = chat.getUserEmail();
         notifyDataSetChanged();
     }
 
+    /**
+     * ViewHolder for item layout
+     */
     public class ViewHolder extends RecyclerView.ViewHolder {
         TextView tvMessage;
         TextView tvUser;

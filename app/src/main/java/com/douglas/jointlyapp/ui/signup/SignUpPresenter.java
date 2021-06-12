@@ -1,5 +1,8 @@
 package com.douglas.jointlyapp.ui.signup;
 
+/**
+ * Entity that connects within view and interactor
+ */
 public class SignUpPresenter implements SignUpContract.Presenter, SignUpInteractorImpl.SignUpInteractor {
 
     private SignUpContract.View view;

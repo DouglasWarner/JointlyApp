@@ -8,16 +8,21 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
-import com.douglas.jointlyapp.R;
-
 import java.util.Calendar;
 
+/**
+ * Dialog that display timepicker
+ */
 public class TimePickerFragment extends DialogFragment {
 
     private TimePickerDialog.OnTimeSetListener listener;
+    private static final TimePickerFragment timePickerFragment;
+
+    static {
+        timePickerFragment = new TimePickerFragment();
+    }
 
     public static TimePickerFragment newInstance(TimePickerDialog.OnTimeSetListener listener) {
-        TimePickerFragment timePickerFragment = new TimePickerFragment();
         timePickerFragment.setListener(listener);
         return timePickerFragment;
     }
@@ -33,6 +38,6 @@ public class TimePickerFragment extends DialogFragment {
         int hour = calendar.get(Calendar.HOUR_OF_DAY);
         int minute = calendar.get(Calendar.MINUTE);
 
-        return new TimePickerDialog(getActivity(), R.style.dateTimePickerDialog, listener, hour, minute, true);
+        return new TimePickerDialog(getActivity(), listener, hour, minute, true);
     }
 }

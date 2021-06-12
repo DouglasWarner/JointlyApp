@@ -25,6 +25,9 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+/**
+ * Entity who connect with the APIS and LOCALDB
+ */
 public class HomeInteractorImpl {
 
     interface ListInitiativeInteractor {
@@ -48,7 +51,7 @@ public class HomeInteractorImpl {
     //region loadData
 
     /**
-     *
+     * loadData
      */
     public void loadData() {
         if (JointlyApplication.getConnection() && JointlyApplication.isIsSyncronized()) {
@@ -92,14 +95,14 @@ public class HomeInteractorImpl {
         });
     }
 
+    //TODO Quizas obtener de firebase
     /**
      * Get the data from the local DB
      */
     private void fromLocal() {
-        //TODO Quizas obtener de firebase
         String user = JointlyPreferences.getInstance().getUser();
 
-        List<Initiative> listInitiative = InitiativeRepository.getInstance().getList(false);
+        List<Initiative> listInitiative = InitiativeRepository.getInstance().getList(user,false);
         List<User> userOwner = UserRepository.getInstance().getListInitiativeOwners(false);
         List<UserJoinInitiative> joinInitiatives = InitiativeRepository.getInstance().getListUserJoinInitiative(false);
         List<Long> listCountUsersJoined = getCountUserJoineds(listInitiative, joinInitiatives);
@@ -114,11 +117,12 @@ public class HomeInteractorImpl {
     }
 
     /**
-     *
+     * getHomeListAdapters
+     * This make filter and order data to display on HomeFragment
      * @param listInitiative
      * @param userOwner
      * @param listCountUsersJoined
-     * @return
+     * @return List<HomeListAdapter>
      */
     @NotNull
     private List<HomeListAdapter> getHomeListAdapters(List<Initiative> listInitiative, List<User> userOwner, List<Long> listCountUsersJoined) {
@@ -136,7 +140,8 @@ public class HomeInteractorImpl {
     }
 
     /**
-     *
+     * Get count of users joined for each initiative from LOCAL
+     * getCountUserJoineds
      * @param listInitiative
      * @param joinInitiatives
      * @return
@@ -189,6 +194,12 @@ public class HomeInteractorImpl {
         });
     }
 
+    /**
+     * Get count of users joined for each initiative from API
+     * getCountUsersJoined
+     * @param initiatives
+     * @param listUserOwner
+     */
     private void getCountUsersJoined(List<Initiative> initiatives, List<User> listUserOwner) {
         Call<APIResponse<List<UserJoinInitiative>>> userCall = initiativeService.getListUserJoined();
         userCall.enqueue(new Callback<APIResponse<List<UserJoinInitiative>>>() {
@@ -220,9 +231,11 @@ public class HomeInteractorImpl {
 
     //endregion
 
+    /**
+     * sync data when make swipe refresh on homefragment
+     */
     public void syncData() {
 
-        InitiativeRepository.getInstance().tmpInsert();
 //        SyncToAPI syncToAPI = new SyncToAPI(() -> null);
 //        syncToAPI.run();
 //

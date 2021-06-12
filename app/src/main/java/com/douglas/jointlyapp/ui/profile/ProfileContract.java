@@ -1,22 +1,25 @@
 package com.douglas.jointlyapp.ui.profile;
 
+import android.net.Uri;
+
 import com.douglas.jointlyapp.data.model.User;
 import com.douglas.jointlyapp.ui.base.BasePresenter;
-import com.douglas.jointlyapp.ui.base.BaseProfileView;
 
+/**
+ * Interface that set the call logic within view and presenter
+ */
 public interface ProfileContract {
 
-    interface View extends BaseProfileView<User> {
-        void setLocationEmpty();
-        void setPhoneEmpty();
-        void setDescriptionEmpty();
-        void setUserFollowersEmpty();
-        void setInitiativeCreatedEmpty();
-        void setInitiativeJointedEmpty();
+    interface View {
+        void onLoadUser(User user);
+        void setRatingUser(float average);
+        void setUpdateImage();
+        void onError(String message);
     }
 
     interface Presenter extends BasePresenter {
         void loadUser(String userEmail);
-        void updateImage(User user);
+        void loadRatingUser(String user);
+        void updateImage(User user, Uri image);
     }
 }

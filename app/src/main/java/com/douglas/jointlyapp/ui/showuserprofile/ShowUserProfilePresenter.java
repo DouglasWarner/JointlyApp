@@ -2,6 +2,9 @@ package com.douglas.jointlyapp.ui.showuserprofile;
 
 import com.douglas.jointlyapp.data.model.User;
 
+/**
+ * Entity that connects within view and interactor
+ */
 public class ShowUserProfilePresenter implements ShowUserProfileContract.Presenter, ShowUserProfileInteractorImpl.ProfileInteractor {
 
     private ShowUserProfileContract.View view;
@@ -44,7 +47,7 @@ public class ShowUserProfilePresenter implements ShowUserProfileContract.Present
     }
 
     @Override
-    public void loadRatingUser(User user) {
+    public void loadRatingUser(String user) {
         interactor.loadRatingUser(user);
     }
 

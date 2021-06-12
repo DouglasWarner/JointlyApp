@@ -26,6 +26,7 @@
         style="@style/TextInputLayout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        app:startIconDrawable="@drawable/ic_email"
         app:layout_constraintBottom_toTopOf="@+id/guideline11"
         app:layout_constraintEnd_toStartOf="@+id/guideline2"
         app:layout_constraintStart_toStartOf="@+id/guideline"
@@ -34,7 +35,7 @@
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/tieEmail"
-            style="@style/TextInputLayout"
+            style="@style/FirebaseUI.TextInputLayout.EmailField"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/tieEmail"
@@ -49,7 +50,9 @@
         style="@style/TextInputLayout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        app:startIconDrawable="@drawable/ic_password"
         app:endIconMode="password_toggle"
+        android:hint="@string/tiePassword"
         app:layout_constraintBottom_toTopOf="@+id/guideline11"
         app:layout_constraintEnd_toStartOf="@+id/guideline2"
         app:layout_constraintStart_toStartOf="@+id/guideline"
@@ -58,10 +61,9 @@
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/tiePassword"
-            style="@style/TextInputLayout"
+            style="@style/TextOnPrimary.TextInputLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/tiePassword"
             android:inputType="textPassword" />
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -70,7 +72,9 @@
         style="@style/TextInputLayout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        app:startIconDrawable="@drawable/ic_password"
         app:endIconMode="password_toggle"
+        android:hint="@string/tieConfirmPassword"
         app:layout_constraintBottom_toTopOf="@+id/guideline11"
         app:layout_constraintEnd_toStartOf="@+id/guideline2"
         app:layout_constraintStart_toStartOf="@+id/guideline"
@@ -79,10 +83,9 @@
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/tieConfirmPassword"
-            style="@style/TextInputLayout"
+            style="@style/TextOnPrimary.TextInputLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/tieConfirmPassword"
             android:inputType="textPassword" />
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -91,6 +94,8 @@
         style="@style/TextInputLayout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        app:startIconDrawable="@drawable/ic_profile"
+        android:hint="@string/tieUserName"
         app:layout_constraintBottom_toTopOf="@+id/guideline11"
         app:layout_constraintEnd_toStartOf="@+id/guideline2"
         app:layout_constraintStart_toStartOf="@+id/guideline"
@@ -102,7 +107,6 @@
             style="@style/TextInputLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/tieUserName"
             android:inputType="textPersonName" />
     </com.google.android.material.textfield.TextInputLayout>
 

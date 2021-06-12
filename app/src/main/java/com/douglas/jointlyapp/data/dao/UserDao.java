@@ -12,13 +12,20 @@ import androidx.room.Update;
 
 import com.douglas.jointlyapp.data.model.User;
 
+import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Interface UserDao
+ */
 @Dao
-public interface UserDao extends BaseDao<User> {
+public interface UserDao {
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     long insert(User user);
+
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    List<Long> insert(List<User> user);
 
     @Delete
     void delete(User user);
@@ -26,11 +33,11 @@ public interface UserDao extends BaseDao<User> {
     @Update
     void update(User user);
 
+    @Update
+    void update(List<User> user);
+
     @Query("SELECT * FROM user")
     List<User> getList();
-
-    @Query("SELECT COUNT(*) FROM user")
-    int getRowCount();
 
     @Query("SELECT * FROM user WHERE email=:userEmail AND password=:userPassword")
     User getUser(String userEmail, String userPassword);
@@ -38,13 +45,6 @@ public interface UserDao extends BaseDao<User> {
     @Query("SELECT * FROM user WHERE email=:userEmail")
     User getUserExists(String userEmail);
 
-    @Query("SELECT * FROM user ORDER BY location")
-    List<User> getListOrderByLocation();
-
-    @Query("SELECT * FROM user u ORDER BY (SELECT COUNT(*) FROM userFollowUser f WHERE u.email=f.user)")
-    List<User> getListOrderByMaxUserFollowers();
-
-    //TODO mirar el resultado que me devuelve
     @Query("SELECT * FROM user WHERE email IN (SELECT user_follow FROM userFollowUser WHERE user=:userEmail AND is_deleted=:is_deleted)")
     List<User> getListUserFollowed(String userEmail, boolean is_deleted);
 
@@ -63,8 +63,19 @@ public interface UserDao extends BaseDao<User> {
     @Transaction
     default void syncFromAPI(List<User> list) {
         List<Long> insertResult = insert(list);
+        List<User> updateList = new ArrayList<>();
 
-        Log.e("TAG", "Tipo ------> User");
-        insertResult.forEach(x-> Log.e("TAG", "Sync Insert -------------------> " + x));
+        Log.e("TAG", "Tipo -----------> USER <-------------");
+
+        for (int i = 0; i < insertResult.size(); i++) {
+            Log.e("TAG", "Insert -------------------> " + insertResult.get(i));
+            if (insertResult.get(i) == -1) {
+                updateList.add(list.get(i));
+            }
+        }
+
+        if (!updateList.isEmpty()) {
+            update(updateList);
+        }
     }
 }

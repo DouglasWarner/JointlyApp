@@ -1,4 +1,4 @@
-package com.douglas.jointlyapp.data;
+package com.douglas.jointlyapp.data.converters;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -8,6 +8,9 @@ import androidx.room.TypeConverter;
 
 import java.io.ByteArrayOutputStream;
 
+/**
+ * Converters Bitmap / byte[] to SQLite DB
+ */
 public class Converters {
 
     /**
@@ -19,20 +22,20 @@ public class Converters {
     public byte[] fromBitmap(Bitmap bitmap)
     {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-            bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
 
-            final BitmapFactory.Options options = new BitmapFactory.Options();
-            options.inJustDecodeBounds = true;
+        final BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = true;
 
-            BitmapFactory.decodeByteArray(outputStream.toByteArray(), 0, outputStream.toByteArray().length, options);
-            options.inSampleSize = calculateInSampleSize(options, 100, 100);
-            options.inJustDecodeBounds = false;
+        BitmapFactory.decodeByteArray(outputStream.toByteArray(), 0, outputStream.toByteArray().length, options);
+        options.inSampleSize = calculateInSampleSize(options, 100, 100);
+        options.inJustDecodeBounds = false;
 
-            Bitmap result = BitmapFactory.decodeByteArray(outputStream.toByteArray(), 0, outputStream.toByteArray().length, options);
-            outputStream = new ByteArrayOutputStream();
-            result.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
+        Bitmap result = BitmapFactory.decodeByteArray(outputStream.toByteArray(), 0, outputStream.toByteArray().length, options);
+        outputStream = new ByteArrayOutputStream();
+        result.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
 
-            return outputStream.toByteArray();
+        return outputStream.toByteArray();
     }
 
     /**
@@ -55,6 +58,13 @@ public class Converters {
         return BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length, options);
     }
 
+    /**
+     * Calculate size for save bitmap
+     * @param options
+     * @param reqWidth
+     * @param reqHeight
+     * @return int
+     */
     @Ignore
     private int calculateInSampleSize(BitmapFactory.Options options, int reqWidth, int reqHeight) {
         // Raw height and width of image
