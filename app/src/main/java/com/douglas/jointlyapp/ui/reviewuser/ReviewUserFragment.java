@@ -19,6 +19,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.douglas.jointlyapp.R;
 import com.douglas.jointlyapp.data.model.User;
 import com.douglas.jointlyapp.data.model.UserReviewUser;
+import com.douglas.jointlyapp.ui.JointlyApplication;
 import com.douglas.jointlyapp.ui.adapter.ReviewAdapter;
 import com.douglas.jointlyapp.ui.preferences.JointlyPreferences;
 import com.douglas.jointlyapp.ui.utils.CommonUtils;
@@ -103,6 +104,9 @@ public class ReviewUserFragment extends Fragment implements ReviewUserContract.V
         if(JointlyPreferences.getInstance().getUser().equals(user.getEmail())) {
             flSendMessage.setVisibility(View.GONE);
         }
+        if(JointlyApplication.getCurrentSignInUser().getEmail().equals(user.getEmail())) {
+            flSendMessage.setVisibility(View.GONE);
+        }
     }
 
     /**
@@ -123,7 +127,7 @@ public class ReviewUserFragment extends Fragment implements ReviewUserContract.V
     private void setListener() {
         tilSendMessage.setEndIconOnClickListener(v -> {
             if(user != null) {
-                String loginUser = JointlyPreferences.getInstance().getUser();
+                String loginUser = JointlyApplication.getCurrentSignInUser().getEmail();
                 UserReviewUser userReviewUser = new UserReviewUser(loginUser, user.getEmail(), CommonUtils.getDateNow(), tieSendMessage.getText().toString(),
                         (int)rbStars.getRating());
                 presenter.sendMessage(userReviewUser);
@@ -161,7 +165,7 @@ public class ReviewUserFragment extends Fragment implements ReviewUserContract.V
 
     @Override
     public void setError(String message) {
-        Snackbar.make(getView(), message != null ? message : getString(R.string.default_error_action), Snackbar.LENGTH_SHORT);
+        Snackbar.make(getActivity().findViewById(R.id.coordinator_main), message != null ? message : getString(R.string.default_error_action), Snackbar.LENGTH_SHORT);
     }
 
     @Override

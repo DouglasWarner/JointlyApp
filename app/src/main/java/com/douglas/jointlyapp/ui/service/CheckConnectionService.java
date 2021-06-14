@@ -25,6 +25,9 @@ import retrofit2.Response;
  */
 public class CheckConnectionService extends Service {
 
+    public static final String TAG_CONNECTION = "connection";
+    public static final String TAG_SYNC = "sync";
+
     CheckInternetAsyncTask checkInternetAsyncTask;
 
     @Override
@@ -36,7 +39,7 @@ public class CheckConnectionService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         checkInternetAsyncTask.start();
-        return START_NOT_STICKY;
+        return START_STICKY;
     }
 
     @Nullable
@@ -74,7 +77,7 @@ public class CheckConnectionService extends Service {
                 if (cm != null) {
                     activeNetwork = cm.getActiveNetworkInfo();
                 } else {
-                    checkBroadCast.putExtra("connection", false);
+                    checkBroadCast.putExtra(TAG_CONNECTION, false);
                 }
 
                 boolean isConnected = activeNetwork != null && activeNetwork.isConnected();
@@ -85,20 +88,22 @@ public class CheckConnectionService extends Service {
                         Response<APIResponse<Object>> response = testCall.execute();
                         if (response.isSuccessful() &&
                                 response.body() != null) {
-                            checkBroadCast.putExtra("connection", true);
+                            checkBroadCast.putExtra(TAG_SYNC, true);
+                            checkBroadCast.putExtra(TAG_CONNECTION, true);
                         } else {
-                            checkBroadCast.putExtra("connection", false);
+                            checkBroadCast.putExtra(TAG_SYNC, false);
                         }
                     } catch (IOException e) {
                         Log.e("TAG", "Error checking internet connection");
-                        checkBroadCast.putExtra("connection", false);
+                        checkBroadCast.putExtra(TAG_SYNC, false);
                     }
                 } else {
                     Log.d("TAG", "No network available!");
-                    checkBroadCast.putExtra("connection", false);
+                    checkBroadCast.putExtra(TAG_CONNECTION, false);
                 }
 
-                LocalBroadcastManager.getInstance(context).sendBroadcast(checkBroadCast);
+                sendBroadcast(checkBroadCast);
+
                 try {
                     Thread.sleep(20000);
                 } catch (InterruptedException e) {

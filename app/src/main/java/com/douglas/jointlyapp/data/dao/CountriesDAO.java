@@ -27,7 +27,7 @@ public interface CountriesDAO extends BaseDao<Countries> {
         deleteAll();
         List<Long> insertResult = insert(list);
 
-        Log.e("TAG", "Tipo ------> Countries");
-        insertResult.forEach(x-> Log.e("TAG", "Sync Insert -------------------> " + x));
+        Log.e("TAG", "-----------------------------> COUNTRIES <--------------------------------");
+        insertResult.forEach(x-> Log.e("TAG", "---------------------> Sync Insert -------------------> " + x));
     }
 }

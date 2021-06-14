@@ -7,7 +7,7 @@ public class Apis {
 
     private static final String URL = "http://192.168.1.129:8080/";
     private static final String URL_AWS = "http://54.78.116.76:8080/";
-    private static final boolean IS_AWS = false;
+    private static final boolean IS_AWS = true;
 
     private static Apis api;
 
@@ -45,6 +45,10 @@ public class Apis {
 
     public JointlyService getJointlyService() { return jointlyService; }
 
+    /**
+     * get endpoint server
+     * @return
+     */
     public static String getURL() {
         if(IS_AWS) {
             return URL_AWS;
@@ -53,6 +57,11 @@ public class Apis {
         }
     }
 
+    //TODO cambiar porque google y facebook tienen otra direccion
+    /**
+     * get the path for imagen on server
+     * @return
+     */
     public static String getURLIMAGE() {
         if(IS_AWS) {
             return URL_AWS+"image/";

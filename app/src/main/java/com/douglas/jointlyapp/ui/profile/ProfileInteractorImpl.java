@@ -24,7 +24,6 @@ import retrofit2.Response;
 public class ProfileInteractorImpl {
 
     interface ProfileInteractor {
-        void onLoadUser(User user);
         void onRatingUser(float average);
         void onUpdateImage();
         void onError(String message);
@@ -35,16 +34,6 @@ public class ProfileInteractorImpl {
 
     public ProfileInteractorImpl(ProfileInteractor interactor) {
         this.interactor = interactor;
-    }
-
-    /**
-     * loadUser
-     * @param userEmail
-     */
-    public void loadUser(final String userEmail) {
-        User user = UserRepository.getInstance().getUser(userEmail);
-
-        interactor.onLoadUser(user);
     }
 
     //region updateImage

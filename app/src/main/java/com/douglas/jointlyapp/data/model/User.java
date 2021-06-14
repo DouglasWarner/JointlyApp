@@ -28,7 +28,7 @@ public class User implements Comparable<User>, Serializable, Parcelable {
 
     @SerializedName("id")
     @NonNull
-    @PrimaryKey
+    @PrimaryKey(autoGenerate = true)
     private long id;
 
     @SerializedName("email")

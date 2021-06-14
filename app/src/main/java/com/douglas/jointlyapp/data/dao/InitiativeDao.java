@@ -11,6 +11,7 @@ import androidx.room.Transaction;
 import androidx.room.Update;
 
 import com.douglas.jointlyapp.data.model.Initiative;
+import com.douglas.jointlyapp.data.model.UserJoinInitiative;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -62,6 +63,9 @@ public interface InitiativeDao {
 
     @Query("SELECT * FROM initiative WHERE id=:idInitiative AND is_deleted=:is_deleted")
     Initiative getInitiative(long idInitiative, boolean is_deleted);
+
+    @Query("SELECT * FROM initiative WHERE ref_code=:ref_code AND is_deleted=:is_deleted AND id in (SELECT id_initiative FROM userJoinInitiative WHERE user_email=:user)")
+    Initiative getInitiativeByRefCode(String ref_code, String user, boolean is_deleted);
 
     @Query("DELETE FROM initiative")
     void deleteAll();

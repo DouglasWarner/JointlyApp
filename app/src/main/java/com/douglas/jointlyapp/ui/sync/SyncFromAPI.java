@@ -15,7 +15,6 @@ import com.douglas.jointlyapp.data.repository.UserRepository;
 import com.douglas.jointlyapp.services.APIResponse;
 import com.douglas.jointlyapp.services.Apis;
 import com.douglas.jointlyapp.ui.JointlyApplication;
-import com.douglas.jointlyapp.ui.utils.CommonUtils;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -27,6 +26,9 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+/**
+ * Entity thread that make sync with the API
+ */
 public class SyncFromAPI extends FutureTask<Boolean> {
 
     public SyncFromAPI(Callable<Boolean> callable) {
@@ -37,60 +39,13 @@ public class SyncFromAPI extends FutureTask<Boolean> {
     public void run() {
         boolean result = syncDataFromAPI();
         JointlyApplication.setIsSyncronized(result);
-        JointlyApplication.setConnection(result);
     }
 
+    /**
+     * Make sync from API
+     * @return boolean
+     */
     private boolean syncDataFromAPI() {
-
-        //---------------------------------
-
-        List<User> u = new ArrayList<>();
-        u.add(new User(1,"douglas@gmail.com","Dou123456","douglas","600500400", null,
-                "location", "description", "10/10/2021", false));
-        u.add(new User(2,"email@gmail.com","Dou123456","douglas","600500400", null,
-                "location", "description", "10/10/2021", false));
-        UserRepository.getInstance().syncUserFromAPI(u);
-
-//        InitiativeRepository.getInstance().deleteAllInitiative();
-        List<Initiative> i = new ArrayList<>();
-        i.add(new Initiative(1,"namename","10/10/2021 10:10:00","10/12/2021 10:10:00","description","area","sevilla",
-                null,
-                "10","douglas@gmail.com","123456",false,false));
-        i.add(new Initiative(2,"recogida","10/10/2021 10:10:00","20/12/2021 10:10:00","description","area","granada",
-                null,
-                "10","douglas@gmail.com","asddasd",false,false));
-        i.add(new Initiative(3,"saneasanea","10/10/2021 10:10:00","05/02/2021 10:10:00","description","area","malaga",
-                null,
-                "10","douglas@gmail.com","asd34svs",false,false));
-
-//        InitiativeRepository.getInstance().syncInitiativeFromAPI(i);
-
-//        InitiativeRepository.getInstance().deleteAllUserJoin();
-        List<UserJoinInitiative> j = new ArrayList<>();
-        j.add(new UserJoinInitiative(1, "email@gmail.com", false, false));
-        j.add(new UserJoinInitiative(2, "email@gmail.com", false, false));
-        InitiativeRepository.getInstance().syncUserJoinFromAPI(j);
-
-        List<UserFollowUser> userFollowUsers = new ArrayList<>();
-        userFollowUsers.add(new UserFollowUser(u.get(0).getEmail(), u.get(1).getEmail(), false, false));
-
-        UserRepository.getInstance().syncUserFollowFromAPI(userFollowUsers);
-
-        List<UserReviewUser> reviewUsers = new ArrayList<>();
-        reviewUsers.add(new UserReviewUser(u.get(0).getEmail(), u.get(1).getEmail(), "10/10/2021 10:20:00", "Esto es un review muy bonito", 5, false, false));
-        reviewUsers.add(new UserReviewUser(u.get(0).getEmail(), u.get(1).getEmail(), "10/10/2021 20:20:00", "Esto es un review muy feo", 1, false, false));
-//        reviewUsers.add(new UserReviewUser(u.get(0).getEmail(), u.get(1).getEmail(), "10/11/2021 10:20:00", "Esto es un review muy bonito", 3, false, false));
-//        reviewUsers.add(new UserReviewUser(u.get(0).getEmail(), u.get(1).getEmail(), "10/11/2021 20:20:00", "Esto es un review muy feo", 1, false, false));
-//        reviewUsers.add(new UserReviewUser(u.get(0).getEmail(), u.get(1).getEmail(), "10/12/2021 10:20:00", "Esto es un review muy bonito", 3, false, false));
-//        reviewUsers.add(new UserReviewUser(u.get(0).getEmail(), u.get(1).getEmail(), "10/12/2021 20:20:00", "Esto es un review muy feo", 1, false, false));
-//        reviewUsers.add(new UserReviewUser(u.get(0).getEmail(), u.get(1).getEmail(), "1/10/2021 10:20:00", "Esto es un review muy bonito", 3, false, false));
-//        reviewUsers.add(new UserReviewUser(u.get(0).getEmail(), u.get(1).getEmail(), "1/10/2021 20:20:00", "Esto es un review muy feo", 1, false, false));
-//        reviewUsers.add(new UserReviewUser(u.get(0).getEmail(), u.get(1).getEmail(), "1/11/2021 10:20:00", "Esto es un review muy bonito", 3, false, false));
-//        reviewUsers.add(new UserReviewUser(u.get(0).getEmail(), u.get(1).getEmail(), "1/5/2021 20:20:00", "Esto es un review muy feo", 1, false, false));
-//        reviewUsers.add(new UserReviewUser(u.get(0).getEmail(), u.get(1).getEmail(), "10/2/2021 10:20:00", "Esto es un review muy bonito", 3, false, false));
-//        reviewUsers.add(new UserReviewUser(u.get(0).getEmail(), u.get(1).getEmail(), "10/1/2021 20:20:00", "Esto es un review muy feo", 1, false, false));
-
-        UserRepository.getInstance().syncUserReviewFromAPI(reviewUsers);
 
         Call<APIResponse<List<User>>> userCall = Apis.getInstance().getUserService().getListUser();
         try {

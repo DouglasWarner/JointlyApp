@@ -453,8 +453,13 @@ public class UserRepository {
      * @return
      */
     public List<User> getListUserToSync(boolean isSync) {
-
-        return null;
+        List<User> result = null;
+        try {
+            result = JointlyDatabase.DATABASE_WRITE_EXECUTOR.submit(() -> userDao.getListToSync(isSync)).get();
+        } catch (ExecutionException | InterruptedException e) {
+            e.printStackTrace();
+        }
+        return result;
     }
 
     //endregion

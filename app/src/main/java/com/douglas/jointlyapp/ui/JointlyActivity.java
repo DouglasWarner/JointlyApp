@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
@@ -11,7 +12,9 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.widget.NestedScrollView;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
@@ -20,13 +23,13 @@ import androidx.navigation.ui.NavigationUI;
 
 import com.douglas.jointlyapp.R;
 import com.douglas.jointlyapp.ui.broadcast.CheckConnectionBroadCast;
+import com.douglas.jointlyapp.ui.login.LoginActivity;
 import com.douglas.jointlyapp.ui.preferences.JointlyPreferences;
 import com.douglas.jointlyapp.ui.service.CheckConnectionService;
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 /**
@@ -42,11 +45,10 @@ public class JointlyActivity extends AppCompatActivity {
     private NavController navController;
     private NestedScrollView nestedScrollView;
     private FloatingActionButton floatingActionButton;
-    private View viewBottomSheetInitiative;
-    private BottomSheetBehavior<View> bottomSheetInitiative;
     private TextView tvNoConnection;
     private Intent intentCheckConnection;
     private CheckConnectionBroadCast checkConnectionBroadCast;
+    private ConstraintLayout bottomSheet;
 
     //endregion
 
@@ -59,8 +61,6 @@ public class JointlyActivity extends AppCompatActivity {
         toolbar = findViewById(R.id.toolbar);
         nestedScrollView = findViewById(R.id.nestedScrollView);
         floatingActionButton = findViewById(R.id.faButton);
-        viewBottomSheetInitiative = findViewById(R.id.bottomSheetJoinInitiative);
-        bottomSheetInitiative = BottomSheetBehavior.from(viewBottomSheetInitiative);
 
         tvNoConnection = findViewById(R.id.tvNoConnection);
 
@@ -106,11 +106,14 @@ public class JointlyActivity extends AppCompatActivity {
             nestedScrollView.scrollTo(0,0);
         });
 
-        //TODO sync
-        // set info connection
-//        tvNoConnection.setVisibility(JointlyApplication.getConnection() && JointlyApplication.isIsSyncronized()? View.GONE : View.VISIBLE);
+        tvNoConnection.setVisibility(JointlyApplication.getConnection() && JointlyApplication.isIsSyncronized()? View.GONE : View.VISIBLE);
 
         createCheckConnectionService();
+
+//        // Establecer tema de notificaciones para los usuario que crean iniciativas nuevas
+//        FirebaseMessaging.getInstance().subscribeToTopic("follow");
+//        // Obtener la notificacion para mandar la notificacion a los usuarios
+//        String id = getIntent().getStringExtra("idInitiative");
     }
 
     /**
@@ -135,12 +138,13 @@ public class JointlyActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_base, menu);
+        SearchView searchView = (SearchView)menu.findItem(R.id.action_search).getActionView();
+        searchView.setMaxWidth(Integer.MAX_VALUE);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-
         switch (item.getItemId()) {
             case R.id.action_settings:
                 Navigation.findNavController(this, R.id.nav_host_fragment).navigate(R.id.settingFragment);
@@ -149,10 +153,14 @@ public class JointlyActivity extends AppCompatActivity {
                 AuthUI.getInstance().signOut(this).addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
-                        Toast.makeText(JointlyActivity.this, "Sesion cerrada", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(JointlyActivity.this, getString(R.string.message_logout), Toast.LENGTH_SHORT).show();
                     }
                 });
                 JointlyPreferences.getInstance().putRemember(false);
+                // set sync to true make reset the instance of user on the app
+                JointlyPreferences.getInstance().putSync(true);
+                // go to login activity
+                startActivity(new Intent(this, LoginActivity.class));
                 finish();
                 break;
             case R.id.action_editAccount:

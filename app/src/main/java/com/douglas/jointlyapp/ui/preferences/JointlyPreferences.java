@@ -7,6 +7,7 @@ import android.util.Log;
 import androidx.preference.PreferenceManager;
 
 import com.douglas.jointlyapp.R;
+import com.douglas.jointlyapp.ui.JointlyApplication;
 
 /**
  * Entity that init all the preferences of app
@@ -40,10 +41,9 @@ public class JointlyPreferences {
      * @param user
      * @return true si se realizo correctamente
      */
-    public boolean putUser(String user, String name, String location, String phone, String description) {
+    public boolean putUser(String name, String location, String phone, String description) {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString(context.getResources().getString(R.string.key_user), user);
         editor.putString(context.getResources().getString(R.string.key_name), name);
         editor.putString(context.getResources().getString(R.string.key_location), location);
         editor.putString(context.getResources().getString(R.string.key_phone), phone);
@@ -119,19 +119,19 @@ public class JointlyPreferences {
      * set if the app is sync to API
      * @param sync
      */
-    public void putSync(String sync) {
+    public void putSync(boolean sync) {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString(context.getResources().getString(R.string.key_sync), sync);
+        editor.putBoolean(context.getResources().getString(R.string.key_sync), sync);
         editor.commit();
     }
 
     /**
      * get if the app is sync to API
-     * @return String
+     * @return boolean
      */
-    public String getSync() {
+    public boolean getSync() {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
-        return sharedPreferences.getString(KEY_SYNC, "");
+        return sharedPreferences.getBoolean(KEY_SYNC, true);
     }
 }

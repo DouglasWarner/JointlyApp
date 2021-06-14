@@ -68,6 +68,12 @@ public class SignUpPresenter implements SignUpContract.Presenter, SignUpInteract
     }
 
     @Override
+    public void onError(String message) {
+        view.hideProgressDialog();
+        view.onError(message);
+    }
+
+    @Override
     public void onDestroy() {
         view = null;
         signUpInteractor = null;

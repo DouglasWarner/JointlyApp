@@ -135,11 +135,11 @@ public class ShowInitiativeInteractorImpl {
      * @param initiative
      */
     public void joinInitiative(final Initiative initiative) {
-        String user = JointlyPreferences.getInstance().getUser();
+        User user = JointlyApplication.getCurrentSignInUser();
         if(JointlyApplication.getConnection() && JointlyApplication.isIsSyncronized()) {
-            manageJoinToAPI(user, initiative);
+            manageJoinToAPI(user.getEmail(), initiative);
         } else {
-            manageJoinToLocal(user, initiative);
+            manageJoinToLocal(user.getEmail(), initiative);
         }
     }
 

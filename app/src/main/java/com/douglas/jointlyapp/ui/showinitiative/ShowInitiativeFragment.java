@@ -13,6 +13,8 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -36,7 +38,6 @@ import com.douglas.jointlyapp.ui.initiative.InitiativeFragment;
 import com.douglas.jointlyapp.ui.preferences.JointlyPreferences;
 import com.douglas.jointlyapp.ui.service.BackgroundJobService;
 import com.douglas.jointlyapp.ui.utils.CommonUtils;
-import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.snackbar.Snackbar;
 
 import net.glxn.qrgen.android.QRCode;
@@ -70,8 +71,7 @@ public class ShowInitiativeFragment extends Fragment implements ShowInitiativeCo
     private UserJoinedAdapter adapter;
 
     private View coordinatorLayout;
-    private View viewBottomSheet;
-    private BottomSheetBehavior<View> bottomSheetBehavior;
+    private View bottomSheet;
     private Button btnJoin;
     private ImageButton imgBtnChat;
 
@@ -107,15 +107,19 @@ public class ShowInitiativeFragment extends Fragment implements ShowInitiativeCo
         initRecycler();
 
         // When I come from InitiativeFragment
-        if(!isHistory)
-            showBottomSheetBehavior();
+        if(!isHistory) {
+            bottomSheet.setVisibility(View.VISIBLE);
+            Animation animation;
+            animation = AnimationUtils.loadAnimation(JointlyApplication.getContext(),
+                    R.anim.show_bottom_sheet);
+            bottomSheet.setAnimation(animation);
+        }
         if(isCreated) {
             setIsCreated();
         } else {
             imgBtnChat.setImageResource(R.drawable.ic_chat);
             btnJoin.setText(R.string.join_user_join);
-            //TODO
-//            btnJoin.setPaddingRelative((int) getResources().getDimension(R.dimen.default_dimen_large), 0, 0, 0);
+            btnJoin.setPaddingRelative((int) getResources().getDimension(R.dimen.default_dimen_large), 0, (int) getResources().getDimension(R.dimen.default_dimen_large), 0);
             btnJoin.setCompoundDrawablesWithIntrinsicBounds(0,0,0,0);
         }
 
@@ -133,7 +137,7 @@ public class ShowInitiativeFragment extends Fragment implements ShowInitiativeCo
         imgBtnChat.setEnabled(true);
         imgBtnChat.setImageResource(R.drawable.ic_qr);
         btnJoin.setText(R.string.show_initiative_go_to_chat);
-        btnJoin.setPaddingRelative((int) getResources().getDimension(R.dimen.default_dimen_large), 0, 0, 0);
+        btnJoin.setPaddingRelative((int) getResources().getDimension(R.dimen.default_dimen_large), 0, (int) getResources().getDimension(R.dimen.default_dimen_large), 0);
         btnJoin.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_chat,0,0,0);
     }
 
@@ -155,10 +159,9 @@ public class ShowInitiativeFragment extends Fragment implements ShowInitiativeCo
         tvNoUserData = view.findViewById(R.id.tvNoUserData);
 
         coordinatorLayout = getActivity().findViewById(R.id.coordinator_main);
-        viewBottomSheet = coordinatorLayout.findViewById(R.id.bottomSheetJoinInitiative);
-        btnJoin = viewBottomSheet.findViewById(R.id.btnJoin);
-        imgBtnChat = viewBottomSheet.findViewById(R.id.btnChat);
-        bottomSheetBehavior = BottomSheetBehavior.from(viewBottomSheet);
+        bottomSheet = coordinatorLayout.findViewById(R.id.bottomSheetJoinInitiative);
+        btnJoin = bottomSheet.findViewById(R.id.btnJoin);
+        imgBtnChat = bottomSheet.findViewById(R.id.btnChat);
     }
 
     /**
@@ -265,23 +268,6 @@ public class ShowInitiativeFragment extends Fragment implements ShowInitiativeCo
         NavHostFragment.findNavController(this).navigate(R.id.action_showInitiativeFragment_to_chatFragment, bundle);
     }
 
-    /**
-     * showBottomSheetBehavior
-     */
-    private void showBottomSheetBehavior() {
-        if(bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_HIDDEN || bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_COLLAPSED)
-            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
-    }
-
-    /**
-     * hideBottomSheetBehavior
-     */
-    private void hideBottomSheetBehavior() {
-        if(bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED) {
-            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
-        }
-    }
-
     //TODO no se que es esto, quizas para lo de notificaciones de chat
     private void initScheludeJob(Initiative initiative) {
         ComponentName serviceComponentName = new ComponentName(getContext(), BackgroundJobService.class);
@@ -304,14 +290,14 @@ public class ShowInitiativeFragment extends Fragment implements ShowInitiativeCo
         super.onStart();
 
         //TODO Quizar obtener desde firebase
-        String email = JointlyPreferences.getInstance().getUser();
+        User user = JointlyApplication.getCurrentSignInUser();
 
-        if(email != null) {
+        if(user != null) {
             presenter.loadInitiative(initiative.getId());
             presenter.loadUserOwner(initiative.getCreated_by());
             presenter.loadListUserJoined(initiative.getId());
             if(!isCreated) {
-                presenter.loadUserStateJoined(email, initiative.getId());
+                presenter.loadUserStateJoined(user.getEmail(), initiative.getId());
             }
         }
     }
@@ -349,8 +335,7 @@ public class ShowInitiativeFragment extends Fragment implements ShowInitiativeCo
         Bundle bundle = new Bundle();
         bundle.putSerializable(User.TAG, user);
 
-        //TODO Quizas obtener desde firebase
-        if(user.getEmail().equals(JointlyPreferences.getInstance().getUser()))
+        if(user.getEmail().equals(JointlyApplication.getCurrentSignInUser().getEmail()))
             NavHostFragment.findNavController(this).navigate(R.id.action_showInitiativeFragment_to_profileFragment);
         else
             NavHostFragment.findNavController(this).navigate(R.id.action_showInitiativeFragment_to_userProfileFragment, bundle);
@@ -436,18 +421,18 @@ public class ShowInitiativeFragment extends Fragment implements ShowInitiativeCo
 
     @Override
     public void setCannotDeleted() {
-        Snackbar.make(getView(), getString(R.string.error_initiative_user_joined), Snackbar.LENGTH_LONG).show();
+        Snackbar.make(getActivity().findViewById(R.id.coordinator_main), getString(R.string.error_initiative_user_joined), Snackbar.LENGTH_LONG).show();
     }
 
     @Override
     public void setSuccessDeleted() {
-        Snackbar.make(getView(), String.format(getString(R.string.initiative_success_deleted), initiative.getName()), Snackbar.LENGTH_SHORT).show();
+        Snackbar.make(getActivity().findViewById(R.id.coordinator_main), String.format(getString(R.string.initiative_success_deleted), initiative.getName()), Snackbar.LENGTH_SHORT).show();
         NavHostFragment.findNavController(this).popBackStack();
     }
 
     @Override
     public void onError(String message) {
-        Snackbar.make(getView(), message != null ? message : getString(R.string.default_error_action), Snackbar.LENGTH_SHORT).show();
+        Snackbar.make(getActivity().findViewById(R.id.coordinator_main), message != null ? message : getString(R.string.default_error_action), Snackbar.LENGTH_SHORT).show();
     }
 
     @Override
@@ -457,9 +442,9 @@ public class ShowInitiativeFragment extends Fragment implements ShowInitiativeCo
 
     @Override
     public void onDestroyView() {
+        bottomSheet.setVisibility(View.GONE);
         super.onDestroyView();
         presenter.onDestroy();
-        new Thread(this::hideBottomSheetBehavior).start();
     }
 
     @Override

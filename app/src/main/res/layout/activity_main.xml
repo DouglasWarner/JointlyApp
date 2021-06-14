@@ -89,8 +89,7 @@
         app:itemIconTint="?attr/colorOnPrimary"
         app:itemBackground="?attr/colorPrimary"
         android:background="?attr/colorPrimary"
-        app:menu="@menu/bottom_navigation_menu"
-        style="@style/Widget.MaterialComponents.BottomNavigationView.Colored"/>
+        app:menu="@menu/bottom_navigation_menu"/>
 
     <!-- Elemento BottomSheetBehavior -->
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -100,11 +99,9 @@
         android:layout_gravity="bottom"
         android:background="@drawable/shape_bottom_sheet"
         android:elevation="8dp"
-        app:behavior_hideable="true"
-        app:behavior_draggable="false"
-        app:behavior_skipCollapsed="true"
-        app:behavior_saveFlags="all"
-        app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
+        android:fillAfter="true"
+        android:fillEnabled="true"
+        android:visibility="gone">
 
         <ImageButton
             android:id="@+id/btnChat"
@@ -112,8 +109,8 @@
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:layout_gravity="center_vertical"
-            android:src="@drawable/ic_chat"
             android:clickable="true"
+            android:src="@drawable/ic_chat"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/btnJoin"
             app:layout_constraintHorizontal_chainStyle="spread"
@@ -123,12 +120,12 @@
         <Button
             android:id="@+id/btnJoin"
             style="@style/MiButton"
-            android:layout_width="@dimen/default_width_medium"
+            android:layout_width="wrap_content"
             android:layout_height="40dp"
             android:layout_gravity="center_vertical"
+            android:clickable="true"
             android:text="@string/join_user_join"
             android:textSize="@dimen/default_text_size_medium"
-            android:clickable="true"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/btnChat"

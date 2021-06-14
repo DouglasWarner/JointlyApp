@@ -11,14 +11,12 @@ import com.douglas.jointlyapp.ui.base.BasePresenter;
 public interface ProfileContract {
 
     interface View {
-        void onLoadUser(User user);
         void setRatingUser(float average);
         void setUpdateImage();
         void onError(String message);
     }
 
     interface Presenter extends BasePresenter {
-        void loadUser(String userEmail);
         void loadRatingUser(String user);
         void updateImage(User user, Uri image);
     }

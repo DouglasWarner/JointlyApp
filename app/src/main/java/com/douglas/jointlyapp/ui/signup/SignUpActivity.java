@@ -4,13 +4,18 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.douglas.jointlyapp.R;
+import com.douglas.jointlyapp.data.model.User;
 import com.douglas.jointlyapp.ui.JointlyActivity;
+import com.douglas.jointlyapp.ui.JointlyApplication;
 import com.douglas.jointlyapp.ui.preferences.JointlyPreferences;
 import com.douglas.jointlyapp.ui.utils.CommonUtils;
 import com.google.android.material.snackbar.Snackbar;
@@ -45,8 +50,71 @@ public class SignUpActivity extends AppCompatActivity implements SignUpContract.
         setContentView(R.layout.activity_sign_up);
 
         initUI();
+        setListeners();
 
         signUpPresenter = new SignUpPresenter(this);
+    }
+
+    /**
+     * setListeners
+     */
+    private void setListeners() {
+        tieEmail.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                tilEmail.setErrorEnabled(false);
+            }
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+        tiePassword.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                tilPassword.setErrorEnabled(false);
+            }
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+        tieConfirmPassword.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                tilConfirmPassword.setErrorEnabled(false);
+            }
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+        tieUserName.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                tilUserName.setErrorEnabled(false);
+            }
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
     }
 
     /**
@@ -69,6 +137,7 @@ public class SignUpActivity extends AppCompatActivity implements SignUpContract.
      * @param v
      */
     public void signUp(View v) {
+        hideKeyboard(v);
         signUpPresenter.addUser(tieEmail.getText().toString(), tiePassword.getText().toString(), tieConfirmPassword.getText().toString(), tieUserName.getText().toString());
         clearErrors();
     }
@@ -85,42 +154,42 @@ public class SignUpActivity extends AppCompatActivity implements SignUpContract.
 
     @Override
     public void setEmailEmptyError() {
-        tilEmail.setError("Se requiere un email");
+        tilEmail.setError(getString(R.string.error_email_empty));
         showKeyboard(tieEmail);
     }
 
     @Override
     public void setPasswordEmptyError() {
-        tilPassword.setError("Se requiere la contraseña");
+        tilPassword.setError(getString(R.string.error_password_empty));
         showKeyboard(tiePassword);
     }
 
     @Override
     public void setUserNameEmptyError() {
-        tilUserName.setError("Se requiere un nombre de usuario");
+        tilUserName.setError(getString(R.string.error_user_name_empty));
         showKeyboard(tieUserName);
     }
 
     @Override
     public void setUserExistsError() {
-        Snackbar.make(findViewById(R.id.signUpContent), "El usuario existe", Snackbar.LENGTH_LONG).show();
+        Snackbar.make(findViewById(R.id.signUpContent), R.string.error_user_exists, Snackbar.LENGTH_LONG).show();
     }
 
     @Override
     public void setEmailFormatError() {
-        tilEmail.setError("Email incorrecto");
+        tilEmail.setError(getString(R.string.error_email_format));
         showKeyboard(tieEmail);
     }
 
     @Override
     public void setPasswordFormatError() {
-        tilPassword.setError("Contraseña incorrecto");
+        tilPassword.setError(getString(R.string.error_password_format));
         showKeyboard(tiePassword);
     }
 
     @Override
     public void setPasswordNotEqualError() {
-        tilConfirmPassword.setError("Las contraseñas deben ser iguales");
+        tilConfirmPassword.setError(getString(R.string.error_confirm_password));
     }
 
     @Override
@@ -135,11 +204,15 @@ public class SignUpActivity extends AppCompatActivity implements SignUpContract.
     }
 
     @Override
-    public void onSuccess() {
-        JointlyPreferences.getInstance().putUser(tieEmail.getText().toString(), tieUserName.getText().toString(), " "," ", " ");
-        JointlyPreferences.getInstance().putRemember(true);
-        startActivity(new Intent(this, JointlyActivity.class));
+    public void onError(String message) {
+        Toast.makeText(this, message!=null ? message : getString(R.string.error_register_connection), Toast.LENGTH_SHORT).show();
+    }
 
+    @Override
+    public void onSuccess() {
+        JointlyPreferences.getInstance().putRemember(true);
+
+        startActivity(new Intent(this, JointlyActivity.class));
         finish();
     }
 

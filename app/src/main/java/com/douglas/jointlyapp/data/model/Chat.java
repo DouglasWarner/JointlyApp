@@ -23,6 +23,9 @@ public class Chat implements Parcelable {
 
     public static final String TAG = "Chat";
     public static final String TABLE_NAME = "chat";
+    public static final String COLUMN_TEXT = "message";
+    public static final String COLUMN_DATE = "datetime";
+    public static final String COLUMN_USER = "username";
 
     //region Variables
 
@@ -42,6 +45,9 @@ public class Chat implements Parcelable {
     @SerializedName("mensaje")
     private String message;
 
+    @SerializedName("UUID")
+    private String uuid;
+
     @SerializedName("read")
     private boolean read;
 
@@ -58,17 +64,36 @@ public class Chat implements Parcelable {
     }
 
     /**
+     * Create a new chat formater to firebase
+     * @param dateMessage
+     * @param userEmail
+     * @param message
+     * @param read
+     * @param is_sync
+     */
+    @Ignore
+    public Chat(@NonNull String dateMessage, long idInitiative, @NonNull String userEmail, String message, boolean read, boolean is_sync) {
+        this.dateMessage = dateMessage;
+        this.userEmail = userEmail;
+        this.idInitiative = idInitiative;
+        this.message = message;
+        this.read = read;
+        this.is_sync = is_sync;
+    }
+
+    /**
      * Create a new chat
      * @param dateMessage
      * @param idInitiative
      * @param userEmail
      * @param message
      */
-    public Chat(String dateMessage, long idInitiative, String userEmail, String message, boolean read, boolean is_sync) {
+    public Chat(String dateMessage, long idInitiative, String userEmail, String message, String uuid, boolean read, boolean is_sync) {
         this.dateMessage = dateMessage;
         this.idInitiative = idInitiative;
         this.userEmail = userEmail;
         this.message = message;
+        this.uuid = uuid;
         this.read = read;
         this.is_sync = is_sync;
     }
@@ -79,6 +104,7 @@ public class Chat implements Parcelable {
         idInitiative = in.readLong();
         userEmail = in.readString();
         message = in.readString();
+        uuid = in.readString();
         read = in.readByte() != 0;
         is_sync = in.readByte() != 0;
     }
@@ -149,6 +175,14 @@ public class Chat implements Parcelable {
         this.is_sync = is_sync;
     }
 
+    public String getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
+    }
+
     //endregion
 
     @Override
@@ -178,7 +212,8 @@ public class Chat implements Parcelable {
                 ", idInitiative=" + idInitiative +
                 ", userEmail='" + userEmail + '\'' +
                 ", message='" + message + '\'' +
-                ", isRead='" + read + '\'' +
+                ", uuid='" + uuid + '\'' +
+                ", read=" + read +
                 ", is_sync=" + is_sync +
                 '}';
     }
@@ -194,6 +229,7 @@ public class Chat implements Parcelable {
         dest.writeLong(idInitiative);
         dest.writeString(userEmail);
         dest.writeString(message);
+        dest.writeString(uuid);
         dest.writeByte((byte)(read ? 1:0));
         dest.writeByte((byte)(is_sync ? 1:0));
     }

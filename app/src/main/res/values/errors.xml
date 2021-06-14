@@ -2,7 +2,7 @@
 <resources>
     <string name="default_error_action">ERROR - Vuelve a intentarlo</string>
     <string name="default_error_load">ERROR - Algo salio mal, vuelve a intentarlo</string>
-    <string name="error_no_connection">Se ha perdido la conexion</string>
+    <string name="error_no_connection">Se ha perdido la conexion con el servidor</string>
     <string name="error_insert_initiative">Error al crear la iniciativa</string>
     <string name="error_edit_initiative">Error al editar la iniciativa</string>
     <string name="error_initiative_name_empty">Se requiere un nombre</string>
@@ -15,4 +15,17 @@
     <string name="error_initiative_amount_empty">Se requiere una cantidad prevista a modo de información</string>
     <string name="error_initiative_amount_format">No puede ser 0 o inferior</string>
     <string name="error_initiative_user_joined">Imposible eliminar porque hay usuarios unidos. Avisa a los usuarios unidos de que salga, y podras borrarlo.</string>
+    <string name="error_cancel_qr_lector">ERROR se ha cerrado el lector QR</string>
+    <string name="error_auth_failed">Authentication Failed</string>
+    <string name="error_qr_camare">\"Error ejecutando la camara \"</string>
+    <string name="error_register_connection">Se necesita conexion para el registro. Vuelve a intentarlo.</string>
+    <string name="error_confirm_password">Las contraseñas deben ser iguales</string>
+    <string name="error_password_format">Contraseña incorrecto</string>
+    <string name="error_email_format">Email incorrecto</string>
+    <string name="error_user_name_empty">Se requiere un nombre de usuario</string>
+    <string name="error_user_exists">El usuario existe</string>
+    <string name="error_password_empty">Se requiere la contraseña</string>
+    <string name="error_email_empty">Se requiere un email</string>
+    <string name="error_user_auth">El usuario no existe</string>
+    <string name="error_login_connection">Se necesita conexion para el registro. Vuelve a intentarlo.</string>
 </resources>

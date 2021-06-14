@@ -42,7 +42,7 @@
     <TextView
         android:id="@+id/tvUserName"
         style="@style/TextOnPrimary"
-        android:layout_width="@dimen/default_width_large"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/default_margin_large"
         android:gravity="center"
@@ -55,13 +55,14 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/imgUser" />
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/tvUserLocation"
         style="@style/TextOnPrimary"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/default_margin_medium"
         android:drawableStart="@drawable/ic_location"
+        android:paddingHorizontal="@dimen/default_dimen_medium"
         android:gravity="center"
         android:textAlignment="center"
         android:text="@string/tvUserLocation"
@@ -70,13 +71,14 @@
         app:layout_constraintStart_toStartOf="@+id/tvUserName"
         app:layout_constraintTop_toBottomOf="@+id/tvUserName" />
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/tvUserEmail"
         style="@style/TextOnPrimary"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/default_margin_medium"
         android:drawableStart="@drawable/ic_email"
+        android:paddingHorizontal="@dimen/default_dimen_medium"
         android:gravity="center"
         android:textAlignment="center"
         android:text="@string/tvUserEmail"
@@ -85,13 +87,14 @@
         app:layout_constraintStart_toStartOf="@+id/tvUserLocation"
         app:layout_constraintTop_toBottomOf="@+id/tvUserLocation" />
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/tvUserPhone"
         style="@style/TextOnPrimary"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/default_margin_medium"
         android:drawableStart="@drawable/ic_phone"
+        android:paddingHorizontal="@dimen/default_dimen_medium"
         android:gravity="center"
         android:textAlignment="center"
         android:text="@string/tvUserPhone"
@@ -100,9 +103,9 @@
         app:layout_constraintStart_toStartOf="@+id/tvUserEmail"
         app:layout_constraintTop_toBottomOf="@+id/tvUserEmail" />
 
-    <RatingBar
+    <androidx.appcompat.widget.AppCompatRatingBar
         android:id="@+id/rbUser"
-        style="?attr/ratingBarStyleSmall"
+        style="@style/Widget.AppCompat.RatingBar.Indicator"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/default_margin_medium"
@@ -115,13 +118,14 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tvUserPhone" />
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/tvAverageRating"
         style="@style/TextOnPrimary"
         android:layout_width="60dp"
         android:layout_height="wrap_content"
         android:gravity="center"
         android:textAlignment="center"
+        android:textSize="@dimen/default_text_size_medium"
         app:layout_constraintBottom_toBottomOf="@+id/rbUser"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"

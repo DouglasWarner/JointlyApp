@@ -37,6 +37,13 @@ public interface UserService {
                                      @Query("description") String description, @Query("created_at") String created_at);
 
     @Multipart
+    @POST("api/users/user/")
+    Call<APIResponse<User>> postUserWithImage(@Query("email") String email, @Query("password") String password, @Query("name") String name,
+                                              @Query("phone") String phone, @Query("location") String location,
+                                              @Query("description") String description, @Query("created_at") String created_at,
+                                              @Part("file") MultipartBody.Part file);
+
+    @Multipart
     @PUT("api/users/user/")
     Call<APIResponse<User>> putUserWithoutImage(@Query("email") String email, @Query("password") String password, @Query("name") String name,
                                     @Query("phone") String phone, @Query("location") String location,

@@ -330,5 +330,22 @@ public class InitiativeRepository {
         JointlyDatabase.DATABASE_WRITE_EXECUTOR.submit(() -> initiativeDao.syncFromAPI(list));
     }
 
+    /**
+     * getUserJoinToParticipate
+     * @param user
+     * @param ref_code
+     * @param is_deleted
+     * @return UserJoinInitiative
+     */
+    public UserJoinInitiative getUserJoinToParticipate(String user, String ref_code, boolean is_deleted) {
+        UserJoinInitiative result = null;
+        try {
+            result = JointlyDatabase.DATABASE_WRITE_EXECUTOR.submit(() -> userJoinInitiativeDao.getUserJoinToParticipate(user, ref_code, is_deleted)).get();
+        } catch (ExecutionException | InterruptedException e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
+
     //endregion
 }

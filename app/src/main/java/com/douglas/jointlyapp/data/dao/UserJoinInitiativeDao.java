@@ -18,7 +18,7 @@ import java.util.List;
  * Interface UserJoinInitiativeDao
  */
 @Dao
-public interface UserJoinInitiativeDao extends BaseDao<UserJoinInitiative>{
+public interface UserJoinInitiativeDao {
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     long insert(UserJoinInitiative userJoinInitiative);
@@ -37,6 +37,9 @@ public interface UserJoinInitiativeDao extends BaseDao<UserJoinInitiative>{
 
     @Query("UPDATE userJoinInitiative SET type=:type, is_deleted=:is_deleted, is_sync=:is_sync WHERE id_initiative=:id_initiative AND user_email=:user_email")
     void update(long id_initiative, String user_email, int type, boolean is_deleted, boolean is_sync);
+
+    @Query("SELECT * FROM userJoinInitiative WHERE is_deleted=:is_deleted AND user_email=:user AND id_initiative in (SELECT id FROM initiative WHERE ref_code=:ref_code)")
+    UserJoinInitiative getUserJoinToParticipate(String user, String ref_code, boolean is_deleted);
 
     @Query("SELECT * FROM userJoinInitiative WHERE is_deleted=:is_deleted")
     List<UserJoinInitiative> getList(boolean is_deleted);

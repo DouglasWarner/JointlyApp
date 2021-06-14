@@ -6,9 +6,11 @@ import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.douglas.jointlyapp.R;
+import com.douglas.jointlyapp.data.repository.UserRepository;
 import com.douglas.jointlyapp.ui.login.LoginActivity;
 import com.douglas.jointlyapp.ui.preferences.JointlyPreferences;
 import com.douglas.jointlyapp.ui.sync.SyncFromAPI;
+import com.douglas.jointlyapp.ui.sync.SyncToAPI;
 
 /**
  * Activity launcher
@@ -33,11 +35,14 @@ public class SplashActivity extends AppCompatActivity {
         super.onStart();
 
         new Thread(() -> {
-            SyncFromAPI syncFromAPI = new SyncFromAPI(() -> null);
+            new Thread(() -> {
+                SyncToAPI syncToAPI = new SyncToAPI(() -> null);
+                syncToAPI.run();
+                SyncFromAPI syncFromAPI = new SyncFromAPI(() -> null);
+                syncFromAPI.run();
+            });
 
-            syncFromAPI.run();
-
-            //TODO Volver a activar
+            //TODO Volver a activar por si la sync no funciona
 //            if(!JointlyApplication.getConnection()) {
 //                initNoConnectionActivity();
 //                return;
@@ -45,8 +50,10 @@ public class SplashActivity extends AppCompatActivity {
 
             if(!JointlyPreferences.getInstance().getRemember())
                 initLogin();
-            else
+            else {
+                runOnUiThread(() -> JointlyApplication.setCurrentSignInUser(UserRepository.getInstance().getUser(JointlyPreferences.getInstance().getUser())));
                 initJointlyApp();
+            }
         }).start();
     }
 

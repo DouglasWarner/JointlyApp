@@ -1,6 +1,7 @@
 package com.douglas.jointlyapp.ui.chat;
 
-import com.douglas.jointlyapp.data.model.Chat;
+import com.douglas.jointlyapp.data.model.ChatListAdapter;
+import com.douglas.jointlyapp.data.model.Initiative;
 
 import java.util.List;
 
@@ -18,14 +19,14 @@ public class ChatPresenter implements ChatContract.Presenter, ChatInteractorImpl
     }
 
     @Override
-    public void loadChat(long idInitiative) {
+    public void loadChat(Initiative initiative) {
         view.showProgress();
-        interactor.loadChat(idInitiative);
+        interactor.loadChat(initiative);
     }
 
     @Override
-    public void sendMessage(long idInitiative, String userEmail, String message) {
-        interactor.sendMessage(idInitiative, userEmail, message);
+    public void sendMessage(Initiative initiative, String userEmail, String message) {
+        interactor.sendMessage(initiative, userEmail, message);
     }
 
     @Override
@@ -41,13 +42,13 @@ public class ChatPresenter implements ChatContract.Presenter, ChatInteractorImpl
     }
 
     @Override
-    public void onSuccess(List<Chat> list) {
+    public void onSuccess(List<ChatListAdapter> list) {
         view.hideProgress();
         view.onSuccess(list);
     }
 
     @Override
-    public void onSendMessageSuccess(Chat chat) {
+    public void onSendMessageSuccess(ChatListAdapter chat) {
         view.onSuccessSendMessage(chat);
     }
 }

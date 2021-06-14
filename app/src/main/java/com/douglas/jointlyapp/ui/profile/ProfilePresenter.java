@@ -18,18 +18,8 @@ public class ProfilePresenter implements ProfileContract.Presenter, ProfileInter
     }
 
     @Override
-    public void loadUser(String userEmail) {
-        interactor.loadUser(userEmail);
-    }
-
-    @Override
     public void updateImage(User user, Uri image) {
         interactor.updateImage(user, image);
-    }
-
-    @Override
-    public void onLoadUser(User user) {
-        view.onLoadUser(user);
     }
 
     @Override

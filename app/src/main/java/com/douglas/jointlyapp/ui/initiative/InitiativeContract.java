@@ -17,6 +17,7 @@ public interface InitiativeContract {
         void onNoDataCreatedHistory();
         void onNoDataJoinedInProgress();
         void onNoDataJoinedHistory();
+        void onSuccessParticipate();
         void onSuccessCreatedInProgress(List<Initiative> initiativeList);
         void onSuccessJoinedInProgress(List<Initiative> initiativeList);
         void onSuccessCreatedHistory(List<Initiative> initiativeList);
@@ -25,7 +26,8 @@ public interface InitiativeContract {
     }
 
     interface Presenter extends BasePresenter {
-        void loadCreated(String history);
-        void loadJoined(String history, int type);
+        void setParticipate(String ref_code);
+        void loadCreated();
+        void loadJoined();
     }
 }

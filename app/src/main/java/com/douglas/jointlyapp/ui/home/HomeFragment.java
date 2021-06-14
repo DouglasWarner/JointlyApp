@@ -139,7 +139,7 @@ public class HomeFragment extends Fragment implements HomeContract.View, HomeAda
 
     @Override
     public void showOnError(String message) {
-        Snackbar.make(getView(), message != null ? message : getString(R.string.default_error_action), Snackbar.LENGTH_SHORT).show();
+        Snackbar.make(getActivity().findViewById(R.id.coordinator_main), message != null ? message : getString(R.string.default_error_action), Snackbar.LENGTH_SHORT).show();
     }
 
     @Override

@@ -198,10 +198,8 @@ public class InitiativeFragment extends Fragment implements InitiativeContract.V
     @Override
     public void onStart() {
         super.onStart();
-        presenter.loadCreated(TYPE_INPROGRESS);
-        presenter.loadCreated(TYPE_HISTORY);
-        presenter.loadJoined(TYPE_INPROGRESS, 0);
-        presenter.loadJoined(TYPE_HISTORY, 0);
+        presenter.loadCreated();
+        presenter.loadJoined();
     }
 
     /**
@@ -242,6 +240,11 @@ public class InitiativeFragment extends Fragment implements InitiativeContract.V
     }
 
     @Override
+    public void onSuccessParticipate() {
+        Snackbar.make(getActivity().findViewById(R.id.coordinator_main), getString(R.string.success_participate), Snackbar.LENGTH_SHORT).show();
+    }
+
+    @Override
     public void onSuccessCreatedInProgress(List<Initiative> list) {
         if(llNoDataCreatedInProgress.getVisibility() == View.VISIBLE)
             llNoDataCreatedInProgress.setVisibility(View.GONE);
@@ -275,7 +278,7 @@ public class InitiativeFragment extends Fragment implements InitiativeContract.V
 
     @Override
     public void onError(String message) {
-        Snackbar.make(getView(), (message != null) ? message : getString(R.string.default_error_action), Snackbar.LENGTH_SHORT).show();
+        Snackbar.make(getActivity().findViewById(R.id.coordinator_main), (message != null) ? message : getString(R.string.default_error_action), Snackbar.LENGTH_SHORT).show();
     }
 
     @Override
@@ -357,7 +360,7 @@ public class InitiativeFragment extends Fragment implements InitiativeContract.V
      * show the QRScanner
      */
     private void showQRscanner() {
-        IntentIntegrator.forSupportFragment(this)
+        IntentIntegrator.forSupportFragment(InitiativeFragment.this)
                 .setDesiredBarcodeFormats(IntentIntegrator.ALL_CODE_TYPES)
                 .setPrompt(getString(R.string.prompt_lector_qr))
                 .setRequestCode(JointlyApplication.REQUEST_PERMISSION_CAMERA_CODE)
@@ -373,20 +376,17 @@ public class InitiativeFragment extends Fragment implements InitiativeContract.V
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         if(requestCode == JointlyApplication.REQUEST_PERMISSION_CAMERA_CODE) {
             if(resultCode == Activity.RESULT_OK && data != null) {
-                IntentResult intentResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
-                if (intentResult != null) {
-                    if (intentResult.getContents() == null) {
-                        Toast.makeText(getActivity(), getString(R.string.cancel_qr_lector), Toast.LENGTH_SHORT).show();
-                    } else {
-                        qrEscaneado.setText(intentResult.getContents().toString());
-                    }
+                IntentResult intentResult = IntentIntegrator.parseActivityResult(resultCode, data);
+                if (intentResult.getContents() == null) {
+                    Toast.makeText(getActivity(), getString(R.string.cancel_qr_lector), Toast.LENGTH_SHORT).show();
                 } else {
-                    super.onActivityResult(requestCode, resultCode, data);
+                    presenter.setParticipate(intentResult.getContents().toString());
                 }
             } else {
                 Toast.makeText(getActivity(), getString(R.string.error_cancel_qr_lector), Toast.LENGTH_SHORT).show();
             }
         }
+         super.onActivityResult(requestCode, resultCode, data);
     }
 
     /**

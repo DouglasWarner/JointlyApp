@@ -93,6 +93,9 @@
         <action
             android:id="@+id/action_settingFragment_to_aboutUsFragment"
             app:destination="@id/aboutUsFragment" />
+        <action
+            android:id="@+id/action_settingFragment_to_aboutLibrariesFragment"
+            app:destination="@id/aboutLibrariesFragment" />
     </fragment>
     <fragment
         android:id="@+id/accountFragment"
@@ -115,4 +118,8 @@
         android:name="com.douglas.jointlyapp.ui.preferences.AboutUsFragment"
         android:label="fragment_about_us"
         tools:layout="@layout/fragment_about_us" />
+    <fragment
+        android:id="@+id/aboutLibrariesFragment"
+        android:name="com.douglas.jointlyapp.ui.preferences.AboutLibrariesFragment"
+        android:label="AboutLibrariesFragment" />
 </navigation>

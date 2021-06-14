@@ -2,6 +2,7 @@ package com.douglas.jointlyapp.ui.home;
 
 import android.util.Log;
 
+import com.douglas.jointlyapp.data.JointlyDatabase;
 import com.douglas.jointlyapp.data.model.HomeListAdapter;
 import com.douglas.jointlyapp.data.model.Initiative;
 import com.douglas.jointlyapp.data.model.User;
@@ -14,6 +15,8 @@ import com.douglas.jointlyapp.services.InitiativeService;
 import com.douglas.jointlyapp.services.UserService;
 import com.douglas.jointlyapp.ui.JointlyApplication;
 import com.douglas.jointlyapp.ui.preferences.JointlyPreferences;
+import com.douglas.jointlyapp.ui.sync.SyncFromAPI;
+import com.douglas.jointlyapp.ui.sync.SyncToAPI;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -100,7 +103,7 @@ public class HomeInteractorImpl {
      * Get the data from the local DB
      */
     private void fromLocal() {
-        String user = JointlyPreferences.getInstance().getUser();
+        String user = JointlyApplication.getCurrentSignInUser().getEmail();
 
         List<Initiative> listInitiative = InitiativeRepository.getInstance().getList(user,false);
         List<User> userOwner = UserRepository.getInstance().getListInitiativeOwners(false);
@@ -235,12 +238,13 @@ public class HomeInteractorImpl {
      * sync data when make swipe refresh on homefragment
      */
     public void syncData() {
+        //TODO comprobar si funciona con datos reales
 
-//        SyncToAPI syncToAPI = new SyncToAPI(() -> null);
-//        syncToAPI.run();
-//
-//        SyncFromAPI syncFromAPI = new SyncFromAPI(() -> null);
-//        syncFromAPI.run();
+        SyncToAPI syncToAPI = new SyncToAPI(() -> null);
+        syncToAPI.run();
+
+        SyncFromAPI syncFromAPI = new SyncFromAPI(() -> null);
+        syncFromAPI.run();
 
         interactor.onSync();
     }

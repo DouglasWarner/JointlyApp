@@ -7,11 +7,14 @@ import android.view.View;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.preference.ListPreference;
 import androidx.preference.Preference;
+import androidx.preference.PreferenceCategory;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceManager;
 
 import com.douglas.jointlyapp.R;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.mikepenz.aboutlibraries.LibsBuilder;
+import com.mikepenz.aboutlibraries.ui.LibsFragment;
 
 /**
  * Fragment Settings of the app
@@ -23,10 +26,22 @@ public class SettingFragment extends PreferenceFragmentCompat implements SharedP
         addPreferencesFromResource(R.xml.settings_preferences);
         initPreferenceAccount();
         initPreferenceAboutUs();
+        iniPreferenceAboutLibraries();
 
         // Se quiere recoger el evento onSharedPreferenceChanged cuando la preferencia lista
         // cambie
         onSharedPreferenceChanged(PreferenceManager.getDefaultSharedPreferences(getContext()), getString(R.string.key_orderby_initiative));
+    }
+
+    /**
+     * initPreferenceAboutLibraries
+     */
+    private void iniPreferenceAboutLibraries() {
+        Preference aboutLibraries = getPreferenceScreen().findPreference(getString(R.string.key_libraries));
+        aboutLibraries.setOnPreferenceClickListener(preference -> {
+            NavHostFragment.findNavController(SettingFragment.this).navigate(R.id.action_settingFragment_to_aboutLibrariesFragment);
+            return true;
+        });
     }
 
     /**

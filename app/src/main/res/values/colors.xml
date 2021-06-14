@@ -2,6 +2,7 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="yellow">#FFEB3B</color>
 
     <color name="primaryColor">#a8c8f9</color>
     <color name="primaryLightColor">#dbfbff</color>
@@ -11,5 +12,4 @@
     <color name="secondaryDarkColor">#81b9bf</color>
     <color name="primaryTextColor">#000000</color>
     <color name="secondaryTextColor">#000000</color>
-    <color name="yellow">#FFEB3B</color>
 </resources>

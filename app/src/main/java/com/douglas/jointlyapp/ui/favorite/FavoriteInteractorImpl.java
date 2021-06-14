@@ -1,6 +1,9 @@
 package com.douglas.jointlyapp.ui.favorite;
 
 import android.util.Log;
+import android.widget.Toast;
+
+import androidx.annotation.NonNull;
 
 import com.douglas.jointlyapp.data.model.User;
 import com.douglas.jointlyapp.data.model.UserFollowUser;
@@ -10,6 +13,9 @@ import com.douglas.jointlyapp.services.Apis;
 import com.douglas.jointlyapp.services.UserService;
 import com.douglas.jointlyapp.ui.JointlyApplication;
 import com.douglas.jointlyapp.ui.preferences.JointlyPreferences;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.messaging.FirebaseMessaging;
 
 import java.util.List;
 
@@ -42,7 +48,7 @@ public class FavoriteInteractorImpl {
     //region loadData
 
     public void loadData() {
-        String user = JointlyPreferences.getInstance().getUser();
+        String user = JointlyApplication.getCurrentSignInUser().getEmail();
 
         if (JointlyApplication.getConnection() && JointlyApplication.isIsSyncronized()) {
             getListfromAPI(user);
@@ -72,8 +78,8 @@ public class FavoriteInteractorImpl {
         userFollowCall.enqueue(new Callback<APIResponse<List<User>>>() {
             @Override
             public void onResponse(Call<APIResponse<List<User>>> call, Response<APIResponse<List<User>>> response) {
-                Log.e("TAG", response.message());
                 if (response.isSuccessful() && response.body() != null) {
+                    Log.e("TAG", response.message());
                     if (!response.body().isError()) {
                         List<User> list = response.body().getData();
                         if (list.isEmpty()) {
@@ -93,6 +99,7 @@ public class FavoriteInteractorImpl {
             public void onFailure(Call<APIResponse<List<User>>> call, Throwable t) {
                 Log.e("ERR", t.getMessage());
                 interactor.onError(null);
+                userFollowCall.cancel();
             }
         });
     }
@@ -123,9 +130,11 @@ public class FavoriteInteractorImpl {
         if(userFollowUser != null) {
             UserRepository.getInstance().updateUserFollowed(new UserFollowUser(user.getEmail(), userFollowed.getEmail(), true, false));
             interactor.onSuccessUnFollow();
+            unSubscribeNotificationFollow(userFollowed.getEmail());
         } else {
             UserRepository.getInstance().upsertUserFollowUser(new UserFollowUser(user.getEmail(), userFollowed.getEmail(), false, false));
             interactor.onSuccessFollow();
+            subscribeNotificationFollow(userFollowed.getEmail());
         }
     }
 
@@ -136,14 +145,15 @@ public class FavoriteInteractorImpl {
         insertUserFollowCall.enqueue(new Callback<APIResponse<UserFollowUser>>() {
             @Override
             public void onResponse(Call<APIResponse<UserFollowUser>> call, Response<APIResponse<UserFollowUser>> response) {
-                Log.e("TAG", response.message());
                 if (response.isSuccessful() && response.body() != null) {
+                    Log.e("TAG", response.message());
                     if (!response.body().isError()) {
                         Log.e("TAG-------------> ", String.valueOf(response.body().getData()));
                         UserFollowUser followUser = response.body().getData();
                         if (followUser != null) {
                             UserRepository.getInstance().insertUserFollowed(followUser);
                             interactor.onSuccessFollow();
+                            subscribeNotificationFollow(followUser.getUser_follow());
                         }
                     } else {
                         deleteUserFollowCall.enqueue(deleteUserFollowCallBack(user, userFollowed));
@@ -157,6 +167,7 @@ public class FavoriteInteractorImpl {
             public void onFailure(Call<APIResponse<UserFollowUser>> call, Throwable t) {
                 Log.e("ERR", t.getMessage());
                 interactor.onError(null);
+                insertUserFollowCall.cancel();
             }
         });
     }
@@ -165,11 +176,12 @@ public class FavoriteInteractorImpl {
         return new Callback<APIResponse<UserFollowUser>>() {
             @Override
             public void onResponse(Call<APIResponse<UserFollowUser>> call, Response<APIResponse<UserFollowUser>> response) {
-                Log.e("TAG", response.message());
                 if (response.isSuccessful() && response.body() != null) {
+                    Log.e("TAG", response.message());
                     if (!response.body().isError()) {
                         UserRepository.getInstance().deleteUserFollowed(new UserFollowUser(user, userFollowed, true, true));
                         interactor.onSuccessUnFollow();
+                        unSubscribeNotificationFollow(userFollowed);
                     } else {
                         interactor.onError(response.body().getMessage());
                     }
@@ -182,9 +194,28 @@ public class FavoriteInteractorImpl {
             public void onFailure(Call<APIResponse<UserFollowUser>> call, Throwable t) {
                 Log.e("ERR", t.getMessage());
                 interactor.onError(null);
+                call.cancel();
             }
         };
     }
 
     //endregion
+
+    private void subscribeNotificationFollow(String userFollow) {
+        FirebaseMessaging.getInstance().subscribeToTopic(userFollow).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                Toast.makeText(JointlyApplication.getContext(), "Suscrito a "+ userFollow, Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void unSubscribeNotificationFollow(String userFollow) {
+        FirebaseMessaging.getInstance().unsubscribeFromTopic(userFollow).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                Toast.makeText(JointlyApplication.getContext(), "Desuscrito a "+ userFollow, Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
 }

@@ -18,6 +18,7 @@ public interface SignUpContract {
         void setPasswordNotEqualError();
         void showProgressDialog();
         void hideProgressDialog();
+        void onError(String message);
     }
 
     interface Presenter extends BasePresenter {

@@ -3,6 +3,8 @@ package com.douglas.jointlyapp.ui.login;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -16,12 +18,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.douglas.jointlyapp.R;
 import com.douglas.jointlyapp.data.model.User;
 import com.douglas.jointlyapp.ui.JointlyActivity;
-import com.douglas.jointlyapp.ui.firebase.FirebaseLogin;
+import com.douglas.jointlyapp.ui.JointlyApplication;
 import com.douglas.jointlyapp.ui.preferences.JointlyPreferences;
 import com.douglas.jointlyapp.ui.signup.SignUpActivity;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
+import com.facebook.FacebookSdk;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -33,9 +36,10 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
-import java.util.Arrays;
+import java.util.Collections;
 
 /**
  * Activity manage login of app
@@ -43,6 +47,7 @@ import java.util.Arrays;
 public class LoginActivity extends AppCompatActivity implements LoginContract.View {
 
     //region Variables
+    public static final int REQUEST_CODE_GOOGLE = 10000;
 
     private LoginContract.Presenter presenter;
 
@@ -76,11 +81,37 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Vi
     private void setListeners() {
         btnLoginWithGoogle.setOnClickListener(v -> {
             doLoginGoogle();
-            Toast.makeText(this, "google", Toast.LENGTH_SHORT).show();
         });
         btnLoginWithFacebook.setOnClickListener(v -> {
             doLoginFacebook();
-            Toast.makeText(this, "facebook", Toast.LENGTH_SHORT).show();
+        });
+        tieEmail.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                tilEmail.setErrorEnabled(false);
+            }
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+        tiePassword.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                tilPassword.setErrorEnabled(false);
+            }
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
         });
     }
 
@@ -96,19 +127,17 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Vi
         GoogleSignInClient googleSignInClient = GoogleSignIn.getClient(this, signOptions);
 
         Intent signInIntent = googleSignInClient.getSignInIntent();
-        startActivityForResult(signInIntent, FirebaseLogin.REQUEST_CODE_GOOGLE);
+        startActivityForResult(signInIntent, REQUEST_CODE_GOOGLE);
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
-        if(requestCode == FirebaseLogin.REQUEST_CODE_GOOGLE) {
+        if(requestCode == REQUEST_CODE_GOOGLE) {
             Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
             handleSignInResult(task);
         }
-        if(requestCode == FirebaseLogin.REQUEST_CODE_FACEBOOK) {
-            // Pass the activity result back to the Facebook SDK
+        if(FacebookSdk.isFacebookRequestCode(requestCode)) {
             callbackManager.onActivityResult(requestCode, resultCode, data);
         }
     }
@@ -121,12 +150,9 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Vi
         try {
             GoogleSignInAccount googleSignInAccount = task.getResult(ApiException.class);
             Log.d("TAG", "firebaseAuthWithGoogle:" + googleSignInAccount.getEmail());
-            //Update UI
-            //TODO implementar guardar usuario en base de datos
-//            FirebaseLogin.getInstance().firebaseAuthWithGoogle(googleSignInAccount.getIdToken(),this);
+            presenter.doLoginGoogle(googleSignInAccount.getIdToken(), this);
         } catch (ApiException e) {
             Log.w("TAG", "signInResult:failed code=" + e.getStatusCode());
-//            updateUI(null);
         }
     }
 
@@ -136,33 +162,29 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Vi
     private void doLoginFacebook() {
         callbackManager = CallbackManager.Factory.create();
 
+        LoginManager.getInstance().logInWithReadPermissions(this, Collections.singleton("email"));
         LoginManager.getInstance().registerCallback(callbackManager,
                 new FacebookCallback<LoginResult>() {
                     @Override
                     public void onSuccess(LoginResult loginResult) {
                         Log.d("TAG", "facebook:onSuccess:" + loginResult);
-
-//                        FirebaseLogin.getInstance().firebaseAuthWithFacebook(loginResult.getAccessToken(), LoginActivity.this);
+                        presenter.doLoginFacebook(loginResult.getAccessToken(), LoginActivity.this);
                     }
                     @Override
                     public void onCancel() {
                         Log.d("TAG", "facebook:onCancel");
-                        // ...
                     }
                     @Override
                     public void onError(FacebookException error) {
                         Log.d("TAG", "facebook:onError", error);
-                        // ...
                     }
                 });
-
-        LoginManager.getInstance().logInWithReadPermissions(this, Arrays.asList("public_profile"));
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        FirebaseUser currentUser = FirebaseLogin.getInstance().getFirebaseAuth().getCurrentUser();
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
         if(currentUser != null)
             Log.d("TAG", "usuario logueado " + currentUser.getEmail());
 
@@ -188,11 +210,8 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Vi
     public void validateUser(View v) {
         email = tieEmail.getText().toString();
         password = tiePassword.getText().toString();
-
         hideKeyboard(v);
-
         clearErrors();
-
         presenter.validateCredentialsUser(email, password);
     }
 
@@ -207,25 +226,25 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Vi
 
     @Override
     public void setEmailEmptyError() {
-        tilEmail.setError("Se requiere un email");
+        tilEmail.setError(getString(R.string.error_email_empty));
         showKeyboard(tieEmail);
     }
 
     @Override
     public void setPasswordEmptyError() {
-        tilPassword.setError("Se requiere la contraseña");
+        tilPassword.setError(getString(R.string.error_password_empty));
         showKeyboard(tiePassword);
     }
 
     @Override
     public void setEmailFormatError() {
-        tilEmail.setError("Email incorrecto");
+        tilEmail.setError(getString(R.string.error_email_format));
         showKeyboard(tieEmail);
     }
 
     @Override
     public void setPasswordFormatError() {
-        tilPassword.setError("Contraseña incorrecto");
+        tilPassword.setError(getString(R.string.error_password_format));
         showKeyboard(tiePassword);
     }
 
@@ -236,22 +255,23 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Vi
 
     @Override
     public void hideProgress() {
-        findViewById(R.id.pbLoad).setVisibility(View.GONE);
+        findViewById(R.id.pbLoad).setVisibility(View.INVISIBLE);
     }
 
     @Override
-    public void setAuthenticationError() {
-        Snackbar.make(findViewById(R.id.loginContent), "El usuario no existe", Snackbar.LENGTH_LONG).show();
+    public void setAuthenticationError(String message) {
+        Snackbar.make(findViewById(R.id.loginContent), message, Snackbar.LENGTH_LONG).show();
     }
 
     @Override
-    public void onSuccess(User user) {
+    public void onError(String message) {
+        Toast.makeText(this, message!=null ? message : getString(R.string.error_login_connection), Toast.LENGTH_LONG).show();
+    }
 
-        JointlyPreferences.getInstance().putUser(user.getEmail(), user.getName(), user.getLocation(), user.getPhone(), user.getDescription());
+    @Override
+    public void onSuccess() {
         JointlyPreferences.getInstance().putRemember(chbRemember.isChecked());
-
         startActivity(new Intent(LoginActivity.this, JointlyActivity.class));
-
         finish();
     }
 
@@ -270,7 +290,7 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Vi
     public void showKeyboard(View view) {
         view.requestFocus();
         InputMethodManager imn = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-        imn.showSoftInput(view, InputMethodManager.SHOW_IMPLICIT);
+        imn.showSoftInput(view, InputMethodManager.RESULT_SHOWN);
     }
 
     /**

@@ -31,7 +31,7 @@ import java.util.concurrent.Executors;
 /**
  * DB SQLite config
  */
-@Database(entities = {User.class, Initiative.class, UserFollowUser.class, UserJoinInitiative.class, Chat.class, UserReviewUser.class, TargetArea.class, Countries.class}, version = 28, exportSchema = false)
+@Database(entities = {User.class, Initiative.class, UserFollowUser.class, UserJoinInitiative.class, Chat.class, UserReviewUser.class, TargetArea.class, Countries.class}, version = 30, exportSchema = false)
 @TypeConverters(ConverterUri.class)
 public abstract class JointlyDatabase extends RoomDatabase {
 

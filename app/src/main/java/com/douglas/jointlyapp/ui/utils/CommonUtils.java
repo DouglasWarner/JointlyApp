@@ -17,9 +17,19 @@ import com.douglas.jointlyapp.data.model.Initiative;
 import com.douglas.jointlyapp.data.model.UserReviewUser;
 import com.douglas.jointlyapp.ui.JointlyApplication;
 
+import org.apache.commons.io.FileUtils;
+
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
 import java.net.URI;
+import java.net.URL;
+import java.net.URLConnection;
+import java.nio.channels.Channels;
+import java.nio.channels.ReadableByteChannel;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.text.ParseException;
@@ -233,25 +243,34 @@ public class CommonUtils {
     public static MultipartBody.Part uploadFile(Uri fileUri) {
         byte[] content = new byte[]{};
 
-        if(fileUri.toString().isEmpty()) {
+//        if(fileUri.toString().isEmpty()) {
             return MultipartBody.Part.createFormData("picture", "file" , (RequestBody.create(content, MediaType.get("multipart/form-data"))));
-        }
+//        }
 
-        try {
-            content = Files.readAllBytes(Paths.get(fileUri.getPath()));
-        } catch (IOException e) {
-            Log.e("TAG", String.valueOf(Paths.get(fileUri.getPath())));
-        }
+////        try {
+////            content = Files.readAllBytes(Paths.get(URI.create(fileUri.getPath())));
+////        } catch (IOException e) {
+////            Log.e("TAG", String.valueOf(Paths.get(fileUri.getPath())));
+////        }
+////
+////        String name = new File(URI.create(String.valueOf(fileUri.getPath()))).getName();
+////
+////        // https://github.com/iPaulPro/aFileChooser/blob/master/aFileChooser/src/com/ipaulpro/afilechooser/utils/FileUtils.java
+////        // use the FileUtils to get the actual file by uri
+////
+////        RequestBody responseBody = RequestBody.create(content, MediaType.get("multipart/form-data"));
+////        MultipartBody.Part body =
+////                MultipartBody.Part.createFormData("picture", name , responseBody);
+//
+//        return body;
+    }
 
-        String name = new File(URI.create(String.valueOf(fileUri.getPath()))).getName();
-
-        // https://github.com/iPaulPro/aFileChooser/blob/master/aFileChooser/src/com/ipaulpro/afilechooser/utils/FileUtils.java
-        // use the FileUtils to get the actual file by uri
-
-        RequestBody responseBody = RequestBody.create(content, MediaType.get("multipart/form-data"));
-        MultipartBody.Part body =
-                MultipartBody.Part.createFormData("picture", name , responseBody);
-
-        return body;
+    /**
+     * Convert long to DateFormat
+     * @param creationTimestamp
+     * @return String
+     */
+    public static String getDateFromLong(long creationTimestamp) {
+        return new SimpleDateFormat(JointlyApplication.FORMAT_DD_MM_YYYY_HH_MM, Locale.getDefault()).format(new Date(creationTimestamp));
     }
 }

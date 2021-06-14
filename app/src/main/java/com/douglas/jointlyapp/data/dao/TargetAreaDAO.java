@@ -27,7 +27,7 @@ public interface TargetAreaDAO extends BaseDao<TargetArea> {
         deleteAll();
         List<Long> insertResult = insert(list);
 
-        Log.e("TAG", "Tipo ------> TargetArea");
-        insertResult.forEach(x-> Log.e("TAG", "Sync Insert -------------------> " + x));
+        Log.e("TAG", "---------------------> TargetArea <-----------------------");
+        insertResult.forEach(x-> Log.e("TAG", "----------------------------> Sync Insert -------------------> " + x));
     }
 }

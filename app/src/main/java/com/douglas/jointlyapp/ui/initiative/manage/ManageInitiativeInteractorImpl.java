@@ -13,12 +13,11 @@ import com.douglas.jointlyapp.services.APIResponse;
 import com.douglas.jointlyapp.services.Apis;
 import com.douglas.jointlyapp.services.InitiativeService;
 import com.douglas.jointlyapp.ui.JointlyApplication;
+import com.douglas.jointlyapp.ui.notification.FirebaseNotification;
 import com.douglas.jointlyapp.ui.utils.CommonUtils;
 
-import net.glxn.qrgen.android.QRCode;
-
-import java.io.ByteArrayOutputStream;
 import java.util.List;
+import java.util.UUID;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -82,9 +81,10 @@ public class ManageInitiativeInteractorImpl {
         Initiative initiative = new Initiative(name, CommonUtils.getDateNow(), CommonUtils.formatDateToAPI(targetDate, targetTime) , description, targetArea,
                     location, pathImage.toString(), targetAmount, created_by);
 
-        ByteArrayOutputStream byteArrayOutputStream = QRCode.from(initiative.toString()).stream();
+//        ByteArrayOutputStream byteArrayOutputStream = QRCode.from(initiative.getCreated_by()+initiative.getCreated_at()).stream();
 
-        initiative.setRef_code(byteArrayOutputStream.toString());
+        String uniqueID = UUID.randomUUID().toString();
+        initiative.setRef_code(uniqueID);
 
         if(JointlyApplication.getConnection() && JointlyApplication.isIsSyncronized()) {
             insertToAPI(initiative);
@@ -105,6 +105,7 @@ public class ManageInitiativeInteractorImpl {
 
         if(initiative != null) {
             interactor.onSuccess(initiative);
+            FirebaseNotification.sendNotification(FirebaseNotification.TOPICO);
         } else {
             interactor.onUnsuccess();
         }
@@ -128,6 +129,7 @@ public class ManageInitiativeInteractorImpl {
                     if (!response.body().isError()) {
                         InitiativeRepository.getInstance().insert(response.body().getData());
                         interactor.onSuccess(response.body().getData());
+                        FirebaseNotification.sendNotification(FirebaseNotification.TOPICO);
                     } else {
                         interactor.onUnsuccess();
                     }

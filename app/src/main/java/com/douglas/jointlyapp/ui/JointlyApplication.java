@@ -10,6 +10,7 @@ import android.graphics.Color;
 import android.os.Build;
 
 import com.douglas.jointlyapp.data.JointlyDatabase;
+import com.douglas.jointlyapp.data.model.User;
 import com.douglas.jointlyapp.ui.broadcast.NotificationNewMessageChatBroadCast;
 import com.douglas.jointlyapp.ui.preferences.JointlyPreferences;
 
@@ -29,13 +30,15 @@ public class JointlyApplication extends Application {
 
     public static final int REQUEST_IMAGE_GALLERY = 101;
     public static final int REQUEST_PERMISSION_CODE = 100;
-    public static final int REQUEST_PERMISSION_CAMERA_CODE = 102;
+    public static final int REQUEST_PERMISSION_CAMERA_CODE = 1020;
     public static final String CHANNEL_ID = "1234";
     public static JobScheduler jobScheduler;
 
-    private static boolean connection;
+    private static User currentSignInUser;
+    private static boolean connection = true;
     private static boolean isSyncronized;
     private static Context context;
+    private static String token;
 
     @Override
     public void onCreate() {
@@ -81,10 +84,35 @@ public class JointlyApplication extends Application {
     }
 
     public static boolean isIsSyncronized() {
-        return isSyncronized;
+        return JointlyPreferences.getInstance().getSync();
     }
 
-    public static void setIsSyncronized(boolean isSync) {
-        isSyncronized = isSync;
+    public static void setIsSyncronized(boolean isSyncronized) {
+        JointlyPreferences.getInstance().putSync(isSyncronized);
+    }
+
+    public static void setCurrentSignInUser(User user) {
+        JointlyPreferences.getInstance().putUser(user.getName(), user.getLocation(), user.getPhone(), user.getDescription());
+        currentSignInUser = user;
+    }
+
+    public static User getCurrentSignInUser() {
+        return currentSignInUser;
+    }
+
+    /**
+     * save the token on Firebase database for notification
+     * @param t
+     */
+    public static void saveToken(String t){
+        token = t;
+    }
+
+    /**
+     * get the token to reference the user for notification
+     * @return String
+     */
+    public static String getToken() {
+        return token;
     }
 }

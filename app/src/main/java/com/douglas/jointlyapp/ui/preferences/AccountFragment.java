@@ -14,6 +14,7 @@ import androidx.preference.PreferenceFragmentCompat;
 import com.douglas.jointlyapp.R;
 import com.douglas.jointlyapp.data.model.User;
 import com.douglas.jointlyapp.data.repository.UserRepository;
+import com.douglas.jointlyapp.ui.JointlyApplication;
 import com.douglas.jointlyapp.ui.preferences.JointlyPreferences;
 import com.douglas.jointlyapp.ui.utils.CommonUtils;
 
@@ -36,7 +37,7 @@ public class AccountFragment extends PreferenceFragmentCompat {
 
         initPreferences();
 
-        initListenerPreferenceEmail();
+//        initListenerPreferenceEmail();
         initListenerPreferenceName();
         initListenerPreferenceLocation();
         initListenerPreferencePhone();
@@ -54,32 +55,33 @@ public class AccountFragment extends PreferenceFragmentCompat {
         descriptionPreferences = getPreferenceManager().findPreference(getString(R.string.key_description));
     }
 
-    /**
-     * Preferencia Email
-     * Metodo que inicializa los listener de la preferencia Email
-     */
-    private void initListenerPreferenceEmail() {
-
-        emailPreferences.setOnBindEditTextListener(editText -> {
-            editText.setSingleLine(true);
-            editText.setInputType(InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
-            // Esta linea debe ser la ultima para que se seleccione el texto
-            editText.selectAll();
-        });
-
-        emailPreferences.setOnPreferenceChangeListener((preference, newValue) -> {
-            String text = (String)newValue;
-
-            if (noValidEmail(text))
-                return false;
-
-            user.setEmail((String)newValue);
-            UserRepository.getInstance().update(user);
-            Toast.makeText(getContext(), "Email actualizado con exito", Toast.LENGTH_SHORT).show();
-
-            return true;
-        });
-    }
+//    /**
+//     * Preferencia Email
+//     * Metodo que inicializa los listener de la preferencia Email
+//     */
+//    private void initListenerPreferenceEmail() {
+//
+//        emailPreferences.setOnBindEditTextListener(editText -> {
+//            editText.setSingleLine(true);
+//            editText.setInputType(InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
+//            // Esta linea debe ser la ultima para que se seleccione el texto
+//            editText.selectAll();
+//        });
+//
+//        emailPreferences.setOnPreferenceChangeListener((preference, newValue) -> {
+//            String text = (String)newValue;
+//
+//            if (noValidEmail(text))
+//                return false;
+//
+//            user.setEmail((String)newValue);
+//            JointlyApplication.getCurrentSignInUser().setEmail(user.getEmail());
+//            UserRepository.getInstance().update(user);
+//            Toast.makeText(getContext(), "Email actualizado con exito", Toast.LENGTH_SHORT).show();
+//
+//            return true;
+//        });
+//    }
 
     /**
      * Preferencia Name
@@ -103,6 +105,7 @@ public class AccountFragment extends PreferenceFragmentCompat {
 
             user.setName(text);
             UserRepository.getInstance().update(user);
+            JointlyApplication.getCurrentSignInUser().setEmail(user.getName());
             Toast.makeText(getContext(), "El nombre actualizado con exito", Toast.LENGTH_SHORT).show();
 
             return true;
@@ -132,6 +135,7 @@ public class AccountFragment extends PreferenceFragmentCompat {
 
                 user.setPhone(text);
                 UserRepository.getInstance().update(user);
+                JointlyApplication.getCurrentSignInUser().setEmail(user.getPhone());
                 Toast.makeText(getContext(), "El telefono actualizado con exito", Toast.LENGTH_SHORT).show();
             }
 
@@ -154,6 +158,7 @@ public class AccountFragment extends PreferenceFragmentCompat {
             String text = (String)newValue;
             user.setLocation(text);
             UserRepository.getInstance().update(user);
+            JointlyApplication.getCurrentSignInUser().setEmail(user.getLocation());
             Toast.makeText(getContext(), "El localidad actualizado con exito", Toast.LENGTH_SHORT).show();
             return true;
         });
@@ -173,6 +178,7 @@ public class AccountFragment extends PreferenceFragmentCompat {
             String text = (String)newValue;
             user.setDescription(text);
             UserRepository.getInstance().update(user);
+            JointlyApplication.getCurrentSignInUser().setEmail(user.getDescription());
             Toast.makeText(getContext(), "El descripcion actualizado con exito", Toast.LENGTH_SHORT).show();
             return true;
         });

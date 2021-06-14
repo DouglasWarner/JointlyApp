@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.douglas.jointlyapp.R;
 import com.douglas.jointlyapp.data.model.Initiative;
 import com.douglas.jointlyapp.data.model.User;
+import com.douglas.jointlyapp.ui.JointlyApplication;
 import com.douglas.jointlyapp.ui.adapter.InitiativeAdapter;
 import com.douglas.jointlyapp.ui.preferences.JointlyPreferences;
 import com.google.android.material.snackbar.Snackbar;
@@ -80,7 +81,7 @@ public class InfoUserFragment extends Fragment implements InfoUserContract.View,
         setUser(user);
 
         // set visibility
-        if(JointlyPreferences.getInstance().getUser().equals(user.getEmail())){
+        if(JointlyApplication.getCurrentSignInUser().getEmail().equals(user.getEmail())){
             view.findViewById(R.id.linearLayoutInitiatives).setVisibility(View.GONE);
             view.findViewById(R.id.divider4).setVisibility(View.GONE);
         }
@@ -221,7 +222,7 @@ public class InfoUserFragment extends Fragment implements InfoUserContract.View,
 
     @Override
     public void onError(String message) {
-        Snackbar.make(getView(), message != null ? message : getString(R.string.default_error_action), Snackbar.LENGTH_SHORT).show();
+        Snackbar.make(getActivity().findViewById(R.id.coordinator_main), message != null ? message : getString(R.string.default_error_action), Snackbar.LENGTH_SHORT).show();
     }
 
     @Override

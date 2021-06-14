@@ -60,6 +60,9 @@ public interface UserDao {
     @Query("DELETE FROM user")
     void deleteAll();
 
+    @Query("SELECT * FROM user WHERE is_sync=:isSync")
+    List<User> getListToSync(boolean isSync);
+
     @Transaction
     default void syncFromAPI(List<User> list) {
         List<Long> insertResult = insert(list);

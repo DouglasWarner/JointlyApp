@@ -28,7 +28,6 @@ import com.douglas.jointlyapp.data.model.User;
 import com.douglas.jointlyapp.services.Apis;
 import com.douglas.jointlyapp.ui.JointlyApplication;
 import com.douglas.jointlyapp.ui.infouser.InfoUserFragment;
-import com.douglas.jointlyapp.ui.preferences.JointlyPreferences;
 import com.douglas.jointlyapp.ui.reviewuser.ReviewUserFragment;
 import com.douglas.jointlyapp.ui.utils.CommonUtils;
 import com.douglas.jointlyapp.ui.viewpager.UserViewPagerAdapter;
@@ -89,6 +88,8 @@ public class ProfileFragment extends Fragment implements ProfileContract.View {
 
         initUI(view);
         setListeners();
+        setUser();
+        setUpViewPager(viewPager2);
 
         presenter = new ProfilePresenter(this);
     }
@@ -160,9 +161,10 @@ public class ProfileFragment extends Fragment implements ProfileContract.View {
 
     /**
      * setUser
-     * @param user
      */
-    private void setUser(User user) {
+    private void setUser() {
+        this.user = JointlyApplication.getCurrentSignInUser();
+
         if(user.getImagen() != null) {
             Glide.with(JointlyApplication.getContext())
                     .setDefaultRequestOptions(CommonUtils.getGlideOptions(User.TAG))
@@ -175,8 +177,30 @@ public class ProfileFragment extends Fragment implements ProfileContract.View {
         tvUserLocation.setText(user.getLocation());
         tvUserEmail.setText(user.getEmail());
         tvUserPhome.setText(user.getPhone());
+    }
 
-        this.user = user;
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        presenter.loadRatingUser(user.getEmail());
+        getActivity().findViewById(R.id.faButton).setVisibility(View.GONE);
+    }
+
+    @Override
+    public void setRatingUser(float average) {
+        rbUser.setRating(average);
+        tvRatingUser.setText(String.format(Locale.getDefault(),"%.2f/%d", average, rbUser.getNumStars()));
+    }
+
+    @Override
+    public void setUpdateImage() {
+        imgUser.setImageURI(pathImagen);
+    }
+
+    @Override
+    public void onError(String message) {
+        Snackbar.make(getActivity().findViewById(R.id.coordinator_main), message != null ? message : getString(R.string.default_error_action), Snackbar.LENGTH_SHORT).show();
     }
 
     @Override
@@ -210,40 +234,6 @@ public class ProfileFragment extends Fragment implements ProfileContract.View {
         super.onPrepareOptionsMenu(menu);
         menu.setGroupVisible(R.id.group_action_profile, true);
         menu.findItem(R.id.action_editAccount).setVisible(true);
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        //TODO Quizar obtener de firebase
-
-        String user = JointlyPreferences.getInstance().getUser();
-
-        presenter.loadUser(user);
-        presenter.loadRatingUser(user);
-        getActivity().findViewById(R.id.faButton).setVisibility(View.GONE);
-    }
-
-    @Override
-    public void onLoadUser(User user) {
-        setUser(user);
-        setUpViewPager(viewPager2);
-    }
-
-    @Override
-    public void setRatingUser(float average) {
-        rbUser.setRating(average);
-        tvRatingUser.setText(String.format(Locale.getDefault(),"%.2f/%d", average, rbUser.getNumStars()));
-    }
-
-    @Override
-    public void setUpdateImage() {
-        imgUser.setImageURI(pathImagen);
-    }
-
-    @Override
-    public void onError(String message) {
-        Snackbar.make(getView(), message != null ? message : getString(R.string.default_error_action), Snackbar.LENGTH_SHORT).show();
     }
 
     @Override

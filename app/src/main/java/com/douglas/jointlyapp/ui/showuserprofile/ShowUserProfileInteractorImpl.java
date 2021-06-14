@@ -1,6 +1,9 @@
 package com.douglas.jointlyapp.ui.showuserprofile;
 
 import android.util.Log;
+import android.widget.Toast;
+
+import androidx.annotation.NonNull;
 
 import com.douglas.jointlyapp.data.model.User;
 import com.douglas.jointlyapp.data.model.UserFollowUser;
@@ -12,6 +15,9 @@ import com.douglas.jointlyapp.services.UserService;
 import com.douglas.jointlyapp.ui.JointlyApplication;
 import com.douglas.jointlyapp.ui.preferences.JointlyPreferences;
 import com.douglas.jointlyapp.ui.utils.CommonUtils;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.messaging.FirebaseMessaging;
 
 import java.util.List;
 
@@ -60,8 +66,7 @@ public class ShowUserProfileInteractorImpl {
      * @param userFollow
      */
     private void loadUserStateFollowFromLocal(User userFollow) {
-        //TODO Quizas obtener de firebase
-        String user = JointlyPreferences.getInstance().getUser();
+        String user = JointlyApplication.getCurrentSignInUser().getEmail();
         UserFollowUser userFollowUser = UserRepository.getInstance().getUserFollowUser(user, userFollow.getEmail(), false);
 
         interactor.onUserStateFollow(userFollowUser != null);
@@ -72,7 +77,7 @@ public class ShowUserProfileInteractorImpl {
      * @param userFollow
      */
     private void loadUserStateFollowFromAPI(User userFollow) {
-        String user = JointlyPreferences.getInstance().getUser();
+        String user = JointlyApplication.getCurrentSignInUser().getEmail();
 
         Call<APIResponse<List<User>>> userFollowCall = userService.getUserFollowed(user);
         userFollowCall.enqueue(new Callback<APIResponse<List<User>>>() {
@@ -108,7 +113,7 @@ public class ShowUserProfileInteractorImpl {
      * @param userFollow
      */
     public void manageFollowUser(User userFollow) {
-        String user = JointlyPreferences.getInstance().getUser();
+        String user = JointlyApplication.getCurrentSignInUser().getEmail();
         if(JointlyApplication.getConnection() && JointlyApplication.isIsSyncronized()) {
             manageFollowUserFromAPI(user, userFollow);
         } else {
@@ -126,9 +131,11 @@ public class ShowUserProfileInteractorImpl {
         if(userFollowUser != null) {
             UserRepository.getInstance().updateUserFollowed(new UserFollowUser(user, userFollow.getEmail(), true, false));
             interactor.onSuccessUnFollow();
+            unSubscribeNotificationFollow(userFollow.getEmail());
         } else {
             UserRepository.getInstance().upsertUserFollowUser(new UserFollowUser(user, userFollow.getEmail(), false, false));
             interactor.onSuccessFollow();
+            subscribeNotificationFollow(userFollow.getEmail());
         }
     }
 
@@ -152,6 +159,7 @@ public class ShowUserProfileInteractorImpl {
                         if (followUser != null) {
                             UserRepository.getInstance().insertUserFollowed(followUser);
                             interactor.onSuccessFollow();
+                            subscribeNotificationFollow(followUser.getUser_follow());
                         }
                     } else {
                         deleteUserFollowCall.enqueue(deleteUserFollowCallBack(user, userFollow.getEmail()));
@@ -184,6 +192,7 @@ public class ShowUserProfileInteractorImpl {
                     if (!response.body().isError()) {
                         UserRepository.getInstance().deleteUserFollowed(new UserFollowUser(user, userFollow, true, true));
                         interactor.onSuccessUnFollow();
+                        unSubscribeNotificationFollow(userFollow);
                     } else {
                         interactor.onError(response.body().getMessage());
                     }
@@ -268,4 +277,22 @@ public class ShowUserProfileInteractorImpl {
     }
 
     //endregion
+
+    private void subscribeNotificationFollow(String userFollow) {
+        FirebaseMessaging.getInstance().subscribeToTopic(userFollow).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                Toast.makeText(JointlyApplication.getContext(), "Suscrito a "+ userFollow, Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void unSubscribeNotificationFollow(String userFollow) {
+        FirebaseMessaging.getInstance().unsubscribeFromTopic(userFollow).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                Toast.makeText(JointlyApplication.getContext(), "Desuscrito a "+ userFollow, Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
 }

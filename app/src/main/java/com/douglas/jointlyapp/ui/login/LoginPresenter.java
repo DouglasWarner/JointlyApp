@@ -1,6 +1,10 @@
 package com.douglas.jointlyapp.ui.login;
 
+import android.app.Activity;
+import android.view.animation.LinearInterpolator;
+
 import com.douglas.jointlyapp.data.model.User;
+import com.facebook.AccessToken;
 
 /**
  * Entity that connects within view and interactor
@@ -19,6 +23,16 @@ public class LoginPresenter implements LoginContract.Presenter, LoginInteractorI
     public void validateCredentialsUser(String email, String password) {
         view.showProgress();
         interactor.validateCredentials(email, password);
+    }
+
+    @Override
+    public void doLoginGoogle(String idToken, Activity view) {
+        interactor.doLoginGoogle(idToken, view);
+    }
+
+    @Override
+    public void doLoginFacebook(AccessToken accessToken, Activity view) {
+        interactor.doLoginFacebook(accessToken, view);
     }
 
     @Override
@@ -46,15 +60,21 @@ public class LoginPresenter implements LoginContract.Presenter, LoginInteractorI
     }
 
     @Override
-    public void onAuthenticationError() {
+    public void onAuthenticationError(String message) {
         view.hideProgress();
-        view.setAuthenticationError();
+        view.setAuthenticationError(message);
     }
 
     @Override
-    public void onSuccess(User user) {
+    public void onSuccess() {
         view.hideProgress();
-        view.onSuccess(user);
+        view.onSuccess();
+    }
+
+    @Override
+    public void onError(String message) {
+        view.hideProgress();
+        view.onError(message);
     }
 
     @Override

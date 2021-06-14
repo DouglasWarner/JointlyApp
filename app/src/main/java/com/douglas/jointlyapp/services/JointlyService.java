@@ -4,6 +4,7 @@ import com.douglas.jointlyapp.data.model.Chat;
 import com.douglas.jointlyapp.data.model.Countries;
 import com.douglas.jointlyapp.data.model.Initiative;
 import com.douglas.jointlyapp.data.model.TargetArea;
+import com.douglas.jointlyapp.data.model.User;
 import com.douglas.jointlyapp.data.model.UserFollowUser;
 import com.douglas.jointlyapp.data.model.UserJoinInitiative;
 import com.douglas.jointlyapp.data.model.UserReviewUser;
@@ -43,8 +44,8 @@ public interface JointlyService {
     @POST("api/users/userreview/sync/")
     Call<APIResponse<UserReviewUser>> syncUserReviewToAPI(@Body List<UserReviewUser> reviewUserList);
 
-    @POST("api/chat/sync/")
-    Call<APIResponse<Chat>> syncChatToAPI(@Body List<Chat> chatList);
+    @POST("api/users/user/sync/")
+    Call<APIResponse<User>> syncUserToApi(List<User> users);
 
     //endregion
 }

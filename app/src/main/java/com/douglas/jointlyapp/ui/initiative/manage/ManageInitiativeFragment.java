@@ -217,7 +217,7 @@ public class ManageInitiativeFragment extends Fragment implements ManageInitiati
      * editInitiative
      */
     private void editInitiative() {
-        String created_by = JointlyPreferences.getInstance().getUser();
+        String created_by = JointlyApplication.getCurrentSignInUser().getEmail();
 
         presenter.editInitiative(initiative.getId(), initiative.getName(), initiative.getCreated_at(), tieTargetDate.getText().toString(),
                 tieTargetTime.getText().toString(), tieDescription.getText().toString(), tieTargetArea.getText().toString(), tieLocation.getText().toString(),
@@ -228,7 +228,7 @@ public class ManageInitiativeFragment extends Fragment implements ManageInitiati
      * addInitiative
      */
     private void addInitiative() {
-        String user = JointlyPreferences.getInstance().getUser();
+        String user = JointlyApplication.getCurrentSignInUser().getEmail();
 
         presenter.addInitiative(tieName.getText().toString(), tieTargetDate.getText().toString(),
                 tieTargetTime.getText().toString(), tieDescription.getText().toString(), tieTargetArea.getText().toString(),
@@ -247,7 +247,8 @@ public class ManageInitiativeFragment extends Fragment implements ManageInitiati
             }
         });
 
-        timePickerFragment.show(getActivity().getSupportFragmentManager(), "timePicker");
+        if(!timePickerFragment.isAdded())
+            timePickerFragment.show(getActivity().getSupportFragmentManager(), "timePicker");
     }
 
     /**
@@ -263,7 +264,8 @@ public class ManageInitiativeFragment extends Fragment implements ManageInitiati
             }
         });
 
-        datePickerFragment.show(getActivity().getSupportFragmentManager(), "datePicker");
+        if(!datePickerFragment.isAdded())
+            datePickerFragment.show(getActivity().getSupportFragmentManager(), "datePicker");
     }
 
     /**
@@ -389,12 +391,13 @@ public class ManageInitiativeFragment extends Fragment implements ManageInitiati
     @Override
     public void onSuccess(Initiative init) {
         if(isEditing) {
-            Snackbar.make(getView(), String.format(getString(R.string.initiative_success_edited), init.getName()), Snackbar.LENGTH_SHORT).show();
+            Snackbar.make(getActivity().findViewById(R.id.coordinator_main), String.format(getString(R.string.initiative_success_edited), init.getName()), Snackbar.LENGTH_SHORT).show();
         } else {
             initiative = init;
+
 //            if(JointlyPreferences.getInstance().getNotificationAvaible())
 //                Notifications.showNotificationAddInitiative(getActivity(), initiative.getId());
-            Snackbar.make(getView(), String.format(getString(R.string.initiative_success_created), init.getName()), Snackbar.LENGTH_SHORT).show();
+            Snackbar.make(getActivity().findViewById(R.id.coordinator_main), String.format(getString(R.string.initiative_success_created), init.getName()), Snackbar.LENGTH_SHORT).show();
         }
 
         NavHostFragment.findNavController(this).popBackStack();
@@ -403,10 +406,10 @@ public class ManageInitiativeFragment extends Fragment implements ManageInitiati
     @Override
     public void onUnsuccess() {
         if(isEditing) {
-            Snackbar.make(getView(), getString(R.string.error_edit_initiative), Snackbar.LENGTH_SHORT).show();
+            Snackbar.make(getActivity().findViewById(R.id.coordinator_main), getString(R.string.error_edit_initiative), Snackbar.LENGTH_SHORT).show();
 //        Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
         } else {
-            Snackbar.make(getView(), getString(R.string.error_insert_initiative), Snackbar.LENGTH_SHORT).show();
+            Snackbar.make(getActivity().findViewById(R.id.coordinator_main), getString(R.string.error_insert_initiative), Snackbar.LENGTH_SHORT).show();
 //        Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
         }
     }
@@ -424,6 +427,7 @@ public class ManageInitiativeFragment extends Fragment implements ManageInitiati
     @Override
     public void setTargetArea(List<TargetArea> targetArea) {
         targetAreas = new ArrayList<>();
+        targetArea.add(new TargetArea(0, "Selecciona un area", "de"));
         this.targetAreas.addAll(targetArea.stream().map(TargetArea::getName).collect(Collectors.toList()));
 
         targetAreaAdapter = new ArrayAdapter(getContext(), R.layout.support_simple_spinner_dropdown_item, targetAreas);
@@ -432,7 +436,7 @@ public class ManageInitiativeFragment extends Fragment implements ManageInitiati
 
     @Override
     public void setOnError(String message) {
-        Snackbar.make(getView(), message != null ? message : getString(R.string.default_error_action), Snackbar.LENGTH_SHORT).show();
+        Snackbar.make(getActivity().findViewById(R.id.coordinator_main), message != null ? message : getString(R.string.default_error_action), Snackbar.LENGTH_SHORT).show();
     }
 
     @Override

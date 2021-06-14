@@ -5,7 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 
 import com.douglas.jointlyapp.data.model.Initiative;
-import com.douglas.jointlyapp.ui.Notifications;
+import com.douglas.jointlyapp.ui.notification.Notifications;
 
 //TODO quizas quitar esto
 public class NotificationNewMessageChatBroadCast extends BroadcastReceiver {

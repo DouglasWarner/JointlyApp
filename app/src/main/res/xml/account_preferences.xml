@@ -2,12 +2,6 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
     <EditTextPreference
-        android:key="@string/key_user"
-        android:selectAllOnFocus="true"
-        android:singleLine="true"
-        android:inputType="textEmailAddress"
-        android:title="@string/title_user" />
-    <EditTextPreference
         android:key="@string/key_name"
         android:selectAllOnFocus="true"
         android:singleLine="true"
